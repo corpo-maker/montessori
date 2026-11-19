@@ -3,53 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Educativo - Acceso</title>
-  <!-- Usamos Tailwind CSS para un diseño moderno y rápido -->
+  <title>Portal Educativo</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 flex items-center justify-center min-h-screen font-sans">
+<body class="bg-slate-50 font-sans text-slate-800">
 
-  <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
-    <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-slate-800">Portal Docente</h1>
-      <p class="text-slate-500 mt-2 text-sm">Ingresa para gestionar tus evaluaciones</p>
+  <!-- ========================================== -->
+  <!-- SECCIÓN 1: PANTALLAS DE LOGIN (Casi idéntico) -->
+  <!-- ========================================== -->
+  <div id="login-section" class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-slate-800">Portal Docente</h1>
+        <p class="text-slate-500 mt-2 text-sm">Ingresa para gestionar tus evaluaciones</p>
+      </div>
+
+      <div id="step-email">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Correo Electrónico</label>
+        <input type="email" id="emailInput" placeholder="maestra@escuela.com" 
+               class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4">
+        <button onclick="solicitarCodigo()" id="btnSolicitar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all">
+          Continuar
+        </button>
+      </div>
+
+      <div id="step-otp" class="hidden">
+        <p class="text-sm text-slate-600 mb-4 text-center">Hemos enviado un código de 6 dígitos a <br><strong id="displayEmail"></strong></p>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Código de Acceso</label>
+        <input type="text" id="otpInput" maxlength="6" placeholder="123456" 
+               class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4 text-center tracking-widest text-lg font-bold">
+        <button onclick="validarCodigo()" id="btnValidar" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all">
+          Verificar y Entrar
+        </button>
+        <button onclick="volverAEmail()" class="w-full mt-3 text-sm text-slate-500 hover:text-slate-700">Usar otro correo</button>
+      </div>
+
+      <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
     </div>
-
-    <!-- PANTALLA 1: INGRESO DE CORREO -->
-    <div id="step-email">
-      <label class="block text-sm font-semibold text-slate-700 mb-2">Correo Electrónico</label>
-      <input type="email" id="emailInput" placeholder="maestra@escuela.com" 
-             class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all mb-4">
-      <button onclick="solicitarCodigo()" id="btnSolicitar"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all flex justify-center items-center">
-        Continuar
-      </button>
-    </div>
-
-    <!-- PANTALLA 2: INGRESO DE CÓDIGO OTP (Oculta al inicio) -->
-    <div id="step-otp" class="hidden">
-      <p class="text-sm text-slate-600 mb-4 text-center">Hemos enviado un código de 6 dígitos a <br><strong id="displayEmail"></strong></p>
-      
-      <label class="block text-sm font-semibold text-slate-700 mb-2">Código de Acceso</label>
-      <input type="text" id="otpInput" maxlength="6" placeholder="123456" 
-             class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all mb-4 text-center tracking-widest text-lg font-bold">
-      <button onclick="validarCodigo()" id="btnValidar"
-              class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all flex justify-center items-center">
-        Verificar y Entrar
-      </button>
-      <button onclick="volverAEmail()" class="w-full mt-3 text-sm text-slate-500 hover:text-slate-700">
-        Usar otro correo
-      </button>
-    </div>
-
-    <!-- MENSAJES DE ESTADO -->
-    <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
   </div>
 
-  <script>
-    // Tu API conectada a Google Sheets
-    const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
+  <!-- ========================================== -->
+  <!-- SECCIÓN 2: EL PORTAL PRINCIPAL (Oculto al inicio) -->
+  <!-- ========================================== -->
+  <div id="dashboard-section" class="hidden min-h-screen flex flex-col">
+    <!-- Barra Superior -->
+    <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+      <h2 class="text-xl font-bold text-blue-700">Sistema de Evaluación</h2>
+      <div class="flex items-center gap-4">
+        <span id="userNameDisplay" class="font-medium text-slate-600">Maestra</span>
+        <button onclick="cerrarSesion()" class="text-sm text-red-500 hover:text-red-700 font-semibold">Salir</button>
+      </div>
+    </header>
 
+    <!-- Contenido Principal -->
+    <main class="p-6 flex-grow max-w-6xl mx-auto w-full">
+      <h3 class="text-2xl font-bold mb-6">Tus Alumnos Asignados</h3>
+      
+      <!-- Cuadrícula de alumnos (Por ahora de muestra) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow border border-slate-100 hover:shadow-md transition-all cursor-pointer">
+          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xl mb-4">A</div>
+          <h4 class="font-bold text-lg">Ana Camila</h4>
+          <p class="text-sm text-slate-500">Taller 1</p>
+          <div class="mt-4 bg-slate-100 rounded-full h-2 w-full"><div class="bg-green-500 h-2 rounded-full w-3/4"></div></div>
+          <p class="text-xs text-right mt-1 text-slate-400">75% Evaluado</p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow border border-slate-100 hover:shadow-md transition-all cursor-pointer">
+          <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold text-xl mb-4">D</div>
+          <h4 class="font-bold text-lg">Diego Martínez</h4>
+          <p class="text-sm text-slate-500">Taller 1</p>
+          <div class="mt-4 bg-slate-100 rounded-full h-2 w-full"><div class="bg-green-500 h-2 rounded-full w-1/2"></div></div>
+          <p class="text-xs text-right mt-1 text-slate-400">50% Evaluado</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SECCIÓN 3: MODAL DE HUELLA DIGITAL -->
+  <!-- ========================================== -->
+  <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all">
+      <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <!-- Ícono de Huella (SVG) -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 mb-2">Entra más rápido</h3>
+      <p class="text-sm text-slate-500 mb-6">Protege tu cuenta y olvídate de los códigos por correo. Vincula tu huella digital o FaceID para tus próximos accesos.</p>
+      
+      <button onclick="vincularHuella()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3 transition-all">
+        Vincular Huella Ahora
+      </button>
+      <button onclick="cerrarModalHuella()" class="w-full text-slate-500 hover:text-slate-700 text-sm font-medium py-2">
+        Hacerlo en otro momento
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SCRIPTS Y LÓGICA -->
+  <!-- ========================================== -->
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
     let correoActual = "";
 
     function mostrarMensaje(texto, tipo) {
@@ -61,31 +119,25 @@
 
     async function solicitarCodigo() {
       const email = document.getElementById("emailInput").value;
-      if (!email || !email.includes("@")) {
-        mostrarMensaje("Ingresa un correo válido.", "error");
-        return;
-      }
+      if (!email || !email.includes("@")) return mostrarMensaje("Ingresa un correo válido.", "error");
 
       correoActual = email;
       const btn = document.getElementById("btnSolicitar");
-      btn.innerHTML = "Procesando...";
-      btn.disabled = true;
+      btn.innerHTML = "Procesando..."; btn.disabled = true;
       document.getElementById("statusMessage").classList.add("hidden");
 
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Evita problemas de CORS
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: "solicitarOTP", correo: correoActual })
         });
-        
         const data = await response.json();
 
         if (data.success) {
           if (data.requiereHuella) {
-            mostrarMensaje("Este usuario usa huella digital (Próximamente).", "success");
+            mostrarMensaje("Este usuario usa huella digital (Fase 3).", "success");
           } else {
-            // Cambiar de pantalla
             document.getElementById("step-email").classList.add("hidden");
             document.getElementById("step-otp").classList.remove("hidden");
             document.getElementById("displayEmail").textContent = correoActual;
@@ -93,24 +145,17 @@
         } else {
           mostrarMensaje(data.message, "error");
         }
-      } catch (error) {
-        mostrarMensaje("Error de conexión.", "error");
-      }
+      } catch (error) { mostrarMensaje("Error de conexión.", "error"); }
 
-      btn.innerHTML = "Continuar";
-      btn.disabled = false;
+      btn.innerHTML = "Continuar"; btn.disabled = false;
     }
 
     async function validarCodigo() {
       const otp = document.getElementById("otpInput").value;
-      if (otp.length !== 6) {
-        mostrarMensaje("El código debe tener 6 dígitos.", "error");
-        return;
-      }
+      if (otp.length !== 6) return mostrarMensaje("El código debe tener 6 dígitos.", "error");
 
       const btn = document.getElementById("btnValidar");
-      btn.innerHTML = "Verificando...";
-      btn.disabled = true;
+      btn.innerHTML = "Verificando..."; btn.disabled = true;
 
       try {
         const response = await fetch(API_URL, {
@@ -118,21 +163,27 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: "validarOTP", correo: correoActual, otp: otp })
         });
-        
         const data = await response.json();
 
         if (data.success) {
-          mostrarMensaje(`¡Bienvenido ${data.datosUsuario.nombre}! Cargando tu portal...`, "success");
-          // Aquí en el futuro redirigiremos al panel principal de la maestra
+          // 1. Ocultar Login
+          document.getElementById("login-section").classList.add("hidden");
+          // 2. Mostrar Portal y Nombre de Usuario
+          document.getElementById("dashboard-section").classList.remove("hidden");
+          document.getElementById("userNameDisplay").textContent = data.datosUsuario.nombre;
+          
+          // 3. Mostrar la invitación de la Huella Digital
+          // (En la Fase 3 validaremos si ya la tiene para no mostrárselo de nuevo)
+          setTimeout(() => {
+            document.getElementById("modal-huella").classList.remove("hidden");
+          }, 500);
+
         } else {
           mostrarMensaje(data.message, "error");
         }
-      } catch (error) {
-        mostrarMensaje("Error de conexión.", "error");
-      }
+      } catch (error) { mostrarMensaje("Error de conexión.", "error"); }
 
-      btn.innerHTML = "Verificar y Entrar";
-      btn.disabled = false;
+      btn.innerHTML = "Verificar y Entrar"; btn.disabled = false;
     }
 
     function volverAEmail() {
@@ -140,6 +191,22 @@
       document.getElementById("step-email").classList.remove("hidden");
       document.getElementById("statusMessage").classList.add("hidden");
       document.getElementById("otpInput").value = "";
+    }
+
+    // Funciones del Portal y Modal
+    function cerrarModalHuella() {
+      document.getElementById("modal-huella").classList.add("hidden");
+    }
+
+    function vincularHuella() {
+      alert("Iniciando escáner biométrico... (Aquí entraremos en la Fase 3 del código criptográfico)");
+      cerrarModalHuella();
+    }
+
+    function cerrarSesion() {
+      document.getElementById("dashboard-section").classList.add("hidden");
+      document.getElementById("login-section").classList.remove("hidden");
+      volverAEmail();
     }
   </script>
 </body>
