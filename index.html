@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Educativo - Acceso</title>
+  <!-- Usamos Tailwind CSS para un diseño moderno y rápido -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen font-sans">
+
+  <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-slate-800">Portal Docente</h1>
+      <p class="text-slate-500 mt-2 text-sm">Ingresa para gestionar tus evaluaciones</p>
+    </div>
+
+    <!-- PANTALLA 1: INGRESO DE CORREO -->
+    <div id="step-email">
+      <label class="block text-sm font-semibold text-slate-700 mb-2">Correo Electrónico</label>
+      <input type="email" id="emailInput" placeholder="maestra@escuela.com" 
+             class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all mb-4">
+      <button onclick="solicitarCodigo()" id="btnSolicitar"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all flex justify-center items-center">
+        Continuar
+      </button>
+    </div>
+
+    <!-- PANTALLA 2: INGRESO DE CÓDIGO OTP (Oculta al inicio) -->
+    <div id="step-otp" class="hidden">
+      <p class="text-sm text-slate-600 mb-4 text-center">Hemos enviado un código de 6 dígitos a <br><strong id="displayEmail"></strong></p>
+      
+      <label class="block text-sm font-semibold text-slate-700 mb-2">Código de Acceso</label>
+      <input type="text" id="otpInput" maxlength="6" placeholder="123456" 
+             class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all mb-4 text-center tracking-widest text-lg font-bold">
+      <button onclick="validarCodigo()" id="btnValidar"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all flex justify-center items-center">
+        Verificar y Entrar
+      </button>
+      <button onclick="volverAEmail()" class="w-full mt-3 text-sm text-slate-500 hover:text-slate-700">
+        Usar otro correo
+      </button>
+    </div>
+
+    <!-- MENSAJES DE ESTADO -->
+    <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+  </div>
+
+  <script>
+    // Tu API conectada a Google Sheets
+    const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
+
+    let correoActual = "";
+
+    function mostrarMensaje(texto, tipo) {
+      const msgDiv = document.getElementById("statusMessage");
+      msgDiv.textContent = texto;
+      msgDiv.className = `mt-4 text-center text-sm font-medium p-2 rounded ${tipo === 'error' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`;
+      msgDiv.classList.remove("hidden");
+    }
+
+    async function solicitarCodigo() {
+      const email = document.getElementById("emailInput").value;
+      if (!email || !email.includes("@")) {
+        mostrarMensaje("Ingresa un correo válido.", "error");
+        return;
+      }
+
+      correoActual = email;
+      const btn = document.getElementById("btnSolicitar");
+      btn.innerHTML = "Procesando...";
+      btn.disabled = true;
+      document.getElementById("statusMessage").classList.add("hidden");
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Evita problemas de CORS
+          body: JSON.stringify({ action: "solicitarOTP", correo: correoActual })
+        });
+        
+        const data = await response.json();
+
+        if (data.success) {
+          if (data.requiereHuella) {
+            mostrarMensaje("Este usuario usa huella digital (Próximamente).", "success");
+          } else {
+            // Cambiar de pantalla
+            document.getElementById("step-email").classList.add("hidden");
+            document.getElementById("step-otp").classList.remove("hidden");
+            document.getElementById("displayEmail").textContent = correoActual;
+          }
+        } else {
+          mostrarMensaje(data.message, "error");
+        }
+      } catch (error) {
+        mostrarMensaje("Error de conexión.", "error");
+      }
+
+      btn.innerHTML = "Continuar";
+      btn.disabled = false;
+    }
+
+    async function validarCodigo() {
+      const otp = document.getElementById("otpInput").value;
+      if (otp.length !== 6) {
+        mostrarMensaje("El código debe tener 6 dígitos.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("btnValidar");
+      btn.innerHTML = "Verificando...";
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: "validarOTP", correo: correoActual, otp: otp })
+        });
+        
+        const data = await response.json();
+
+        if (data.success) {
+          mostrarMensaje(`¡Bienvenido ${data.datosUsuario.nombre}! Cargando tu portal...`, "success");
+          // Aquí en el futuro redirigiremos al panel principal de la maestra
+        } else {
+          mostrarMensaje(data.message, "error");
+        }
+      } catch (error) {
+        mostrarMensaje("Error de conexión.", "error");
+      }
+
+      btn.innerHTML = "Verificar y Entrar";
+      btn.disabled = false;
+    }
+
+    function volverAEmail() {
+      document.getElementById("step-otp").classList.add("hidden");
+      document.getElementById("step-email").classList.remove("hidden");
+      document.getElementById("statusMessage").classList.add("hidden");
+      document.getElementById("otpInput").value = "";
+    }
+  </script>
+</body>
+</html>
