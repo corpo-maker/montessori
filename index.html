@@ -5,37 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Educativo Montessori</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800">
+<body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 transition-colors duration-200">
 
   <!-- ========================================== -->
   <!-- SECCIÓN 1: PANTALLAS DE LOGIN -->
   <!-- ========================================== -->
   <div id="login-section" class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+    <div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-lg border border-transparent dark:border-slate-800 max-w-md w-full">
       <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-slate-800">Portal Docente</h1>
-        <p class="text-slate-500 mt-2 text-sm">Ingresa para gestionar tus evaluaciones</p>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Portal Docente</h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Ingresa para gestionar tus evaluaciones</p>
       </div>
 
       <div id="step-email">
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Correo Electrónico</label>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Correo Electrónico</label>
         <input type="email" id="emailInput" placeholder="maestra@escuela.com"
-               class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4">
+               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-4">
         <button onclick="solicitarCodigo()" id="btnSolicitar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all">
           Continuar
         </button>
       </div>
 
       <div id="step-otp" class="hidden">
-        <p class="text-sm text-slate-600 mb-4 text-center">Hemos enviado un código de 6 dígitos a <br><strong id="displayEmail"></strong></p>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Código de Acceso</label>
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4 text-center">Hemos enviado un código de 6 dígitos a <br><strong id="displayEmail"></strong></p>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Código de Acceso</label>
         <input type="text" id="otpInput" maxlength="6" placeholder="123456"
-               class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4 text-center tracking-widest text-lg font-bold">
+               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-4 text-center tracking-widest text-lg font-bold">
         <button onclick="validarCodigo()" id="btnValidar" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all">
           Verificar y Entrar
         </button>
-        <button onclick="volverAEmail()" class="w-full mt-3 text-sm text-slate-500 hover:text-slate-700">Usar otro correo</button>
+        <button onclick="volverAEmail()" class="w-full mt-3 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700">Usar otro correo</button>
       </div>
 
       <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
@@ -46,42 +49,50 @@
   <!-- SECCIÓN 2: DASHBOARD PRINCIPAL -->
   <!-- ========================================== -->
   <div id="dashboard-section" class="hidden min-h-screen flex flex-col">
-    <header class="bg-white shadow-sm px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-20">
+    <header class="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-20">
       <div class="flex items-center gap-3">
-        <h2 class="text-xl font-bold text-blue-700">Sistema Montessori</h2>
-        <span id="userRoleBadge" class="text-xs bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full font-semibold"></span>
+        <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400">Sistema Montessori</h2>
+        <span id="userRoleBadge" class="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full font-semibold"></span>
       </div>
-      <div class="flex items-center gap-4">
-        <span id="userNameDisplay" class="font-medium text-slate-600 text-sm"></span>
+      <div class="flex items-center gap-3">
+        <span id="userNameDisplay" class="font-medium text-slate-600 dark:text-slate-300 text-sm"></span>
+        <button onclick="abrirModalConfig()" title="Configuración"
+          class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+          ⚙
+        </button>
         <button onclick="cerrarSesion()" class="text-sm text-red-500 hover:text-red-700 font-semibold">Salir</button>
       </div>
     </header>
 
-    <!-- BARRA DE PESTAÑAS (RBAC) -->
-    <nav class="bg-white border-b border-slate-200 px-6">
+    <!-- BARRA DE PESTAÑAS PRINCIPALES (RBAC) -->
+    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6">
       <div class="max-w-6xl mx-auto flex gap-2 overflow-x-auto">
         <button id="tab-evaluaciones" onclick="cambiarTab('evaluaciones')"
-          class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">
+          class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 whitespace-nowrap">
           Evaluaciones
         </button>
         <button id="tab-matricula" onclick="cambiarTab('matricula')"
-          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">
+          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white whitespace-nowrap">
           Matrícula
         </button>
         <button id="tab-maestras" onclick="cambiarTab('maestras')"
-          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">
+          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white whitespace-nowrap">
           Maestras y Ambientes
+        </button>
+        <button id="tab-plantillas" onclick="cambiarTab('plantillas')"
+          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white whitespace-nowrap">
+          Plantillas
         </button>
       </div>
     </nav>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 1: EVALUACIONES (ALUMNOS + EVALUADOR) -->
+    <!-- PESTAÑA 1: EVALUACIONES (SEGMENTADA) -->
     <!-- ========================================== -->
     <main id="vista-alumnos" class="p-6 flex-grow max-w-6xl mx-auto w-full">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold">Alumnos Asignados</h3>
-        <button onclick="cargarAlumnos()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-lg font-medium">↻ Actualizar</button>
+        <button onclick="cargarAlumnos()" class="text-sm bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg font-medium">↻ Actualizar</button>
       </div>
       <div id="grid-alumnos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <p class="text-slate-500">Cargando alumnos...</p>
@@ -89,30 +100,42 @@
     </main>
 
     <main id="vista-evaluador" class="hidden p-6 flex-grow max-w-5xl mx-auto w-full">
-      <button onclick="volverAAlumnos()" class="mb-4 text-sm text-blue-600 hover:underline font-semibold">← Volver a Alumnos</button>
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap justify-between items-center gap-4">
-        <div>
-          <h3 id="eval-alumno-nombre" class="text-xl font-bold text-slate-800"></h3>
-          <p id="eval-alumno-meta" class="text-sm text-slate-500"></p>
+      <button onclick="volverAAlumnos()" class="mb-4 text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold">← Volver a Alumnos</button>
+
+      <!-- Encabezado y Segmentador de Periodo + Materia -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5">
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+          <div>
+            <h3 id="eval-alumno-nombre" class="text-xl font-bold"></h3>
+            <p id="eval-alumno-meta" class="text-sm text-slate-500 dark:text-slate-400"></p>
+          </div>
+          <div id="eval-resumen-avance" class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-lg"></div>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <select id="filtro-periodo" onchange="renderAprendizajes()" class="border rounded-lg px-3 py-2 text-sm bg-slate-50">
-            <option value="TODOS">Todos los Periodos</option>
-            <option value="1ER">1ER Trimestre</option>
-            <option value="2DO">2DO Trimestre</option>
-            <option value="3ER">3ER Trimestre</option>
-          </select>
-          <select id="filtro-materia" onchange="renderAprendizajes()" class="border rounded-lg px-3 py-2 text-sm bg-slate-50">
-            <option value="TODAS">Todas las Materias</option>
-          </select>
-          <select id="filtro-estado" onchange="renderAprendizajes()" class="border rounded-lg px-3 py-2 text-sm bg-slate-50">
-            <option value="TODOS">Todos</option>
-            <option value="PENDIENTE">Pendientes</option>
-            <option value="EVALUADO">Evaluados</option>
-          </select>
+
+        <!-- Selector visual de Trimestres -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex gap-1.5" id="pills-periodo">
+            <button onclick="seleccionarPeriodoEval('1ER')" data-per="1ER" class="per-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white">1ER Trimestre</button>
+            <button onclick="seleccionarPeriodoEval('2DO')" data-per="2DO" class="per-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">2DO Trimestre</button>
+            <button onclick="seleccionarPeriodoEval('3ER')" data-per="3ER" class="per-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">3ER Trimestre</button>
+            <button onclick="seleccionarPeriodoEval('TODOS')" data-per="TODOS" class="per-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Todos</button>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <select id="filtro-materia" onchange="renderAprendizajesSegmentados()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800">
+              <option value="TODAS">Todas las Materias</option>
+            </select>
+            <select id="filtro-estado" onchange="renderAprendizajesSegmentados()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800">
+              <option value="TODOS">Todos</option>
+              <option value="PENDIENTE">Solo Pendientes</option>
+              <option value="EVALUADO">Solo Evaluados</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div id="lista-aprendizajes" class="space-y-4"></div>
+
+      <!-- Contenedor de Temas Colapsables -->
+      <div id="lista-aprendizajes" class="space-y-3"></div>
     </main>
 
     <!-- ========================================== -->
@@ -122,19 +145,19 @@
       <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
         <div>
           <h3 class="text-2xl font-bold">Matrícula Escolar</h3>
-          <p class="text-sm text-slate-500">El Ambiente Montessori y sus maestras se asignan automáticamente según el Grado SEP</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">El Ambiente Montessori y sus maestras se asignan automáticamente según el Grado SEP</p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="cargarMatricula()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+          <button onclick="cargarMatricula()" class="text-sm bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
           <button onclick="abrirModalImportar()" class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold">↑ Importar CSV</button>
           <button onclick="abrirModalAlumno()" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">+ Nuevo Alumno</button>
         </div>
       </div>
 
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex flex-wrap gap-3">
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4 flex flex-wrap gap-3">
         <input type="text" id="buscador-matricula" oninput="renderMatricula()" placeholder="Buscar por ID o nombre..."
-          class="flex-grow min-w-[220px] border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
-        <select id="filtro-amb-matricula" onchange="renderMatricula()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+          class="flex-grow min-w-[220px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="filtro-amb-matricula" onchange="renderMatricula()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
           <option value="TODOS">Todos los Ambientes</option>
           <option value="TALLER 1">TALLER 1</option>
           <option value="TALLER 2">TALLER 2</option>
@@ -145,9 +168,9 @@
         </select>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
         <table class="w-full text-left text-sm">
-          <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+          <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
             <tr>
               <th class="px-4 py-3">ID</th>
               <th class="px-4 py-3">Alumno</th>
@@ -158,7 +181,7 @@
               <th class="px-4 py-3 text-right">Acción</th>
             </tr>
           </thead>
-          <tbody id="tabla-matricula" class="divide-y divide-slate-200">
+          <tbody id="tabla-matricula" class="divide-y divide-slate-200 dark:divide-slate-800">
             <tr><td colspan="7" class="px-4 py-6 text-center text-slate-500">Cargando matrícula...</td></tr>
           </tbody>
         </table>
@@ -166,24 +189,41 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 3: MAESTRAS Y AMBIENTES (SOLO DIRECTOR) -->
+    <!-- PESTAÑA 3: MAESTRAS Y AMBIENTES (CON 3 SUB-PESTAÑAS) -->
     <!-- ========================================== -->
-    <main id="vista-maestras" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full space-y-8">
-      <!-- BLOQUE A: USUARIOS -->
-      <section>
-        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-          <div>
-            <h3 class="text-2xl font-bold">1. Directorio de Personal (Correos)</h3>
-            <p class="text-sm text-slate-500">Da de alta los correos que aparecerán en los combos de asignación</p>
-          </div>
-          <button onclick="cargarMaestras()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+    <main id="vista-maestras" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
+        <div>
+          <h3 class="text-2xl font-bold">Maestras y Ambientes</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Administra personal, co-docencia por grupo y equivalencias SEP</p>
         </div>
+        <button onclick="cargarMaestras()" class="text-sm bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+      </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-4">
+      <!-- SUB-PESTAÑAS INTERNAS -->
+      <div class="flex flex-wrap gap-2 bg-slate-200/70 dark:bg-slate-900 p-1.5 rounded-xl mb-6 border border-slate-200 dark:border-slate-800">
+        <button id="subtab-personal" onclick="cambiarSubTabMaestras('personal')"
+          class="subtab-btn flex-1 py-2 px-4 rounded-lg text-sm font-bold bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition-all">
+          1. Personal y Correos
+        </button>
+        <button id="subtab-ambientes" onclick="cambiarSubTabMaestras('ambientes')"
+          class="subtab-btn flex-1 py-2 px-4 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+          2. Maestras por Ambiente
+        </button>
+        <button id="subtab-grados" onclick="cambiarSubTabMaestras('grados')"
+          class="subtab-btn flex-1 py-2 px-4 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+          3. Grados SEP → Ambiente
+        </button>
+      </div>
+
+      <!-- SUB-VISTA 1: PERSONAL Y CORREOS -->
+      <section id="subvista-personal">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
+          <h4 class="text-sm font-bold mb-3">Registrar o actualizar correo de acceso</h4>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <input type="email" id="usr-correo" placeholder="correo@gmail.com" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            <input type="text" id="usr-nombre" placeholder="Nombre de la maestra" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            <select id="usr-rol" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+            <input type="email" id="usr-correo" placeholder="correo@gmail.com" class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+            <input type="text" id="usr-nombre" placeholder="Nombre de la maestra" class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+            <select id="usr-rol" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
               <option value="Maestra">Maestra</option>
               <option value="Director">Director</option>
             </select>
@@ -193,9 +233,9 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
               <tr>
                 <th class="px-4 py-3">Nombre</th>
                 <th class="px-4 py-3">Correo</th>
@@ -204,23 +244,19 @@
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
             </thead>
-            <tbody id="tabla-usuarios" class="divide-y divide-slate-200"></tbody>
+            <tbody id="tabla-usuarios" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- BLOQUE B: CO-DOCENCIA POR AMBIENTE MONTESSORI -->
-      <section>
-        <div class="mb-4">
-          <h3 class="text-xl font-bold">2. Vinculación de Maestras por Ambiente Montessori</h3>
-          <p class="text-sm text-slate-500">Vincula 1, 2 o más maestras al mismo grupo; todos los niños de ese ambiente se enlazan automáticamente</p>
-        </div>
-
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-4">
+      <!-- SUB-VISTA 2: MAESTRAS POR AMBIENTE -->
+      <section id="subvista-ambientes" class="hidden">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
+          <h4 class="text-sm font-bold mb-3">Vincular maestra a un Ambiente Montessori (Co-docencia)</h4>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Ambiente Montessori</label>
-              <select id="asig-amb-nombre" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Ambiente Montessori</label>
+              <select id="asig-amb-nombre" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
                 <option value="TALLER 1">TALLER 1</option>
                 <option value="TALLER 2">TALLER 2</option>
                 <option value="TALLER 3">TALLER 3</option>
@@ -230,8 +266,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Correo de Docente (Alta previa)</label>
-              <select id="asig-amb-docente" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50"></select>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Correo de Docente</label>
+              <select id="asig-amb-docente" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800"></select>
             </div>
             <div class="flex items-end">
               <button onclick="vincularDocenteAmbiente()" id="btnAsigAmb" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg text-sm">
@@ -241,9 +277,9 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
               <tr>
                 <th class="px-4 py-3">Ambiente Montessori</th>
                 <th class="px-4 py-3">Maestra Vinculada</th>
@@ -252,22 +288,18 @@
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
             </thead>
-            <tbody id="tabla-asignaciones" class="divide-y divide-slate-200"></tbody>
+            <tbody id="tabla-asignaciones" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- BLOQUE C: EQUIVALENCIA GRADO SEP -> AMBIENTE MONTESSORI -->
-      <section>
-        <div class="mb-4">
-          <h3 class="text-xl font-bold">3. Regla de Equivalencia: Grado SEP → Ambiente Montessori</h3>
-          <p class="text-sm text-slate-500">Define a qué ambiente pertenece cada grado oficial SEP</p>
-        </div>
-
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-4">
+      <!-- SUB-VISTA 3: GRADOS SEP -> AMBIENTE -->
+      <section id="subvista-grados" class="hidden">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
+          <h4 class="text-sm font-bold mb-3">Configurar regla Grado SEP → Ambiente Montessori</h4>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input type="text" id="regla-grado" placeholder="Ej. 4 PRIMARIA" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            <select id="regla-ambiente" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+            <input type="text" id="regla-grado" placeholder="Ej. 4 PRIMARIA" class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+            <select id="regla-ambiente" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
               <option value="TALLER 1">TALLER 1</option>
               <option value="TALLER 2">TALLER 2</option>
               <option value="TALLER 3">TALLER 3</option>
@@ -281,91 +313,173 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
               <tr>
                 <th class="px-4 py-3">Grado SEP</th>
                 <th class="px-4 py-3">Ambiente Montessori Asignado</th>
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
             </thead>
-            <tbody id="tabla-reglas" class="divide-y divide-slate-200"></tbody>
+            <tbody id="tabla-reglas" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
       </section>
     </main>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 4: PLANTILLA DE APRENDIZAJES (SOLO DIRECTOR) -->
+    <!-- ========================================== -->
+    <main id="vista-plantillas" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div>
+          <h3 class="text-2xl font-bold">Plantilla de Aprendizajes</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Catálogo curricular por Ambiente Montessori, Trimestre y Campo Formativo SEP</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="cargarPlantillas()" class="text-sm bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+          <button onclick="abrirModalImportarPlantilla()" class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold">↑ Importar Plantilla CSV</button>
+          <button onclick="abrirModalAprendizaje()" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">+ Nuevo Aprendizaje</button>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+        <select id="filtro-plant-amb" onchange="renderPlantillas()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+          <option value="TODOS">Todos los Ambientes</option>
+          <option value="TALLER 1">TALLER 1</option>
+          <option value="TALLER 2">TALLER 2</option>
+          <option value="TALLER 3">TALLER 3</option>
+          <option value="CNA">CNA</option>
+          <option value="CNB">CNB</option>
+          <option value="CI">CI</option>
+        </select>
+        <select id="filtro-plant-per" onchange="renderPlantillas()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+          <option value="TODOS">Todos los Periodos</option>
+          <option value="1ER">1ER Trimestre</option>
+          <option value="2DO">2DO Trimestre</option>
+          <option value="3ER">3ER Trimestre</option>
+        </select>
+        <input type="text" id="buscador-plantilla" oninput="renderPlantillas()" placeholder="Buscar materia, tema o aprendizaje..."
+          class="md:col-span-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div id="contador-plantillas" class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold"></div>
+
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-3">ID</th>
+              <th class="px-4 py-3">Ambiente / Per.</th>
+              <th class="px-4 py-3">Materia / Tema</th>
+              <th class="px-4 py-3">Aprendizaje Esperado</th>
+              <th class="px-4 py-3">Campo Formativo</th>
+              <th class="px-4 py-3 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-plantillas" class="divide-y divide-slate-200 dark:divide-slate-800">
+            <tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">Cargando catálogo...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
   </div>
 
   <!-- ========================================== -->
-  <!-- MODAL ALTA / EDICIÓN ALUMNO INDIVIDUAL -->
+  <!-- MODAL CONFIGURACIÓN (MODO OSCURO) -->
   <!-- ========================================== -->
-  <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-      <h3 id="modal-alumno-titulo" class="text-xl font-bold text-slate-800 mb-4">Nuevo Alumno</h3>
+  <div id="modal-config" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-sm w-full p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">Configuración</h3>
+        <button onclick="cerrarModalConfig()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+      <div class="flex items-center justify-between py-3 border-y border-slate-100 dark:border-slate-800">
+        <div>
+          <p class="font-semibold text-sm">Modo Oscuro</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Reduce el brillo de la pantalla</p>
+        </div>
+        <button id="btnToggleDark" onclick="toggleDarkMode()"
+          class="w-12 h-6 rounded-full bg-slate-300 dark:bg-blue-600 p-1 transition-colors flex items-center">
+          <span id="knobDark" class="w-4 h-4 rounded-full bg-white shadow transform transition-transform dark:translate-x-6"></span>
+        </button>
+      </div>
+      <button onclick="cerrarModalConfig()" class="w-full mt-5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-2 rounded-lg text-sm font-semibold">
+        Listo
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL ALTA / EDICIÓN ALUMNO -->
+  <!-- ========================================== -->
+  <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-md w-full p-6">
+      <h3 id="modal-alumno-titulo" class="text-xl font-bold mb-4">Nuevo Alumno</h3>
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">ID Alumno *</label>
-          <input type="text" id="al-id" placeholder="Ej. 205" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">ID Alumno *</label>
+          <input type="text" id="al-id" placeholder="Ej. 205" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">Nombre Completo *</label>
-          <input type="text" id="al-nombre" placeholder="APELLIDOS NOMBRE(S)" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Nombre Completo *</label>
+          <input type="text" id="al-nombre" placeholder="APELLIDOS NOMBRE(S)" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Grado SEP *</label>
-            <select id="al-grado" onchange="actualizarAmbientePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50"></select>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Grado SEP *</label>
+            <select id="al-grado" onchange="actualizarAmbientePreview()" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800"></select>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Ambiente (Automático)</label>
-            <input type="text" id="al-ambiente-preview" disabled class="w-full border border-slate-200 bg-blue-50 text-blue-800 font-bold rounded-lg px-3 py-2 text-sm">
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Ambiente (Auto)</label>
+            <input type="text" id="al-ambiente-preview" disabled class="w-full border border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-300 font-bold rounded-lg px-3 py-2 text-sm">
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Estatus</label>
-            <select id="al-estatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Estatus</label>
+            <select id="al-estatus" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
               <option value="vigente">Vigente</option>
               <option value="baja">Baja</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Correo del Tutor</label>
-            <input type="email" id="al-tutor" placeholder="tutor@gmail.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Correo del Tutor</label>
+            <input type="email" id="al-tutor" placeholder="tutor@gmail.com" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
           </div>
         </div>
       </div>
       <div class="flex justify-end gap-2 mt-6">
-        <button onclick="cerrarModalAlumno()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+        <button onclick="cerrarModalAlumno()" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cancelar</button>
         <button onclick="guardarAlumno()" id="btnGuardarAlumno" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg">Guardar</button>
       </div>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- MODAL IMPORTACIÓN MASIVA CSV -->
+  <!-- MODAL IMPORTACIÓN MASIVA ALUMNOS CSV -->
   <!-- ========================================== -->
-  <div id="modal-importar" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] flex flex-col">
+  <div id="modal-importar" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-2xl w-full p-6 max-h-[90vh] flex flex-col">
       <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
         <div>
-          <h3 class="text-xl font-bold text-slate-800">Importación Masiva de Matrícula</h3>
-          <p class="text-xs text-slate-500 mt-1">Sube un archivo CSV con columnas: <strong>ID_Alumno, Nombre_Completo, Grado_SEP, Estatus, Correo_Tutor</strong></p>
+          <h3 class="text-xl font-bold">Importación Masiva de Matrícula</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Columnas: <strong>ID_Alumno, Nombre_Completo, Grado_SEP, Estatus, Correo_Tutor</strong></p>
         </div>
-        <button onclick="descargarPlantillaCSV()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded-lg">
+        <button onclick="descargarPlantillaCSV()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold px-3 py-1.5 rounded-lg">
           ↓ Descargar plantilla CSV
         </button>
       </div>
 
       <input type="file" id="archivo-csv-alumnos" accept=".csv" onchange="previsualizarCSV(event)"
-        class="w-full border border-dashed border-slate-300 rounded-xl p-4 text-sm bg-slate-50 mb-4 cursor-pointer">
+        class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-4 text-sm bg-slate-50 dark:bg-slate-800 mb-4 cursor-pointer">
 
-      <div id="resumen-csv" class="hidden text-xs font-semibold mb-3 p-3 rounded-lg bg-blue-50 text-blue-800"></div>
+      <div id="resumen-csv" class="hidden text-xs font-semibold mb-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-200"></div>
 
-      <div id="preview-csv-container" class="hidden overflow-y-auto border border-slate-200 rounded-xl mb-4 flex-grow">
+      <div id="preview-csv-container" class="hidden overflow-y-auto border border-slate-200 dark:border-slate-800 rounded-xl mb-4 flex-grow">
         <table class="w-full text-left text-xs">
-          <thead class="bg-slate-100 text-slate-600 uppercase sticky top-0">
+          <thead class="bg-slate-100 dark:bg-slate-800 uppercase sticky top-0">
             <tr>
               <th class="px-3 py-2">ID</th>
               <th class="px-3 py-2">Nombre</th>
@@ -374,17 +488,125 @@
               <th class="px-3 py-2">Estatus</th>
             </tr>
           </thead>
-          <tbody id="tabla-preview-csv" class="divide-y divide-slate-200"></tbody>
+          <tbody id="tabla-preview-csv" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
         </table>
       </div>
 
       <div id="resultado-importacion" class="hidden text-xs p-3 rounded-lg mb-4"></div>
 
       <div class="flex justify-end gap-2 mt-auto">
-        <button onclick="cerrarModalImportar()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cerrar</button>
+        <button onclick="cerrarModalImportar()" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cerrar</button>
         <button onclick="ejecutarImportacionCSV()" id="btnEjecutarCSV" disabled
-          class="px-4 py-2 text-sm bg-emerald-600 disabled:bg-slate-300 hover:bg-emerald-700 text-white font-semibold rounded-lg">
+          class="px-4 py-2 text-sm bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 hover:bg-emerald-700 text-white font-semibold rounded-lg">
           Confirmar e Importar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL ALTA / EDICIÓN APRENDIZAJE INDIVIDUAL -->
+  <!-- ========================================== -->
+  <div id="modal-aprendizaje" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-lg w-full p-6">
+      <h3 id="modal-ap-titulo" class="text-xl font-bold mb-4">Nuevo Aprendizaje Esperado</h3>
+      <div class="space-y-3">
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">ID Único *</label>
+            <input type="text" id="ap-id" placeholder="T2-GEO-1ER-003" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Ambiente *</label>
+            <select id="ap-ambiente" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+              <option value="TALLER 1">TALLER 1</option>
+              <option value="TALLER 2">TALLER 2</option>
+              <option value="TALLER 3">TALLER 3</option>
+              <option value="CNA">CNA</option>
+              <option value="CNB">CNB</option>
+              <option value="CI">CI</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Periodo *</label>
+            <select id="ap-periodo" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+              <option value="1ER">1ER</option>
+              <option value="2DO">2DO</option>
+              <option value="3ER">3ER</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Materia *</label>
+            <input type="text" id="ap-materia" placeholder="Ej. Geografía" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Tema / Subtema *</label>
+            <input type="text" id="ap-tema" placeholder="Ej. El sistema solar" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Aprendizaje Esperado *</label>
+          <textarea id="ap-texto" rows="2" placeholder="Descripción del indicador a evaluar..." class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Campo Formativo Oficial SEP *</label>
+          <select id="ap-campo" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+            <option value="Lenguajes">Lenguajes</option>
+            <option value="Saberes y pensamiento científico">Saberes y pensamiento científico</option>
+            <option value="Ética, naturaleza y sociedades">Ética, naturaleza y sociedades</option>
+            <option value="De lo humano y lo comunitario">De lo humano y lo comunitario</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="cerrarModalAprendizaje()" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cancelar</button>
+        <button onclick="guardarAprendizaje()" id="btnGuardarAp" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL IMPORTACIÓN MASIVA PLANTILLA CSV -->
+  <!-- ========================================== -->
+  <div id="modal-importar-plantilla" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-3xl w-full p-6 max-h-[90vh] flex flex-col">
+      <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
+        <div>
+          <h3 class="text-xl font-bold">Importar Plantilla de Aprendizajes (CSV)</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Columnas: <strong>ID_Aprendizaje, Ambiente, Periodo, Materia, Tema, Aprendizaje_Esperado, Campo_Formativo</strong></p>
+        </div>
+        <button onclick="descargarPlantillaAprendizajesCSV()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold px-3 py-1.5 rounded-lg">
+          ↓ Descargar plantilla CSV
+        </button>
+      </div>
+
+      <input type="file" id="archivo-csv-plantilla" accept=".csv" onchange="previsualizarPlantillaCSV(event)"
+        class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-4 text-sm bg-slate-50 dark:bg-slate-800 mb-4 cursor-pointer">
+
+      <div id="resumen-plantilla-csv" class="hidden text-xs font-semibold mb-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-200"></div>
+
+      <div id="preview-plantilla-container" class="hidden overflow-y-auto border border-slate-200 dark:border-slate-800 rounded-xl mb-4 flex-grow">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-100 dark:bg-slate-800 uppercase sticky top-0">
+            <tr>
+              <th class="px-3 py-2">ID</th>
+              <th class="px-3 py-2">Ambiente</th>
+              <th class="px-3 py-2">Per.</th>
+              <th class="px-3 py-2">Materia</th>
+              <th class="px-3 py-2">Aprendizaje</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-preview-plantilla" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-auto">
+        <button onclick="cerrarModalImportarPlantilla()" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cerrar</button>
+        <button onclick="ejecutarImportacionPlantillaCSV()" id="btnEjecutarPlantillaCSV" disabled
+          class="px-4 py-2 text-sm bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 hover:bg-emerald-700 text-white font-semibold rounded-lg">
+          Confirmar e Importar Catálogo
         </button>
       </div>
     </div>
@@ -393,19 +615,19 @@
   <!-- ========================================== -->
   <!-- MODAL HUELLA DIGITAL -->
   <!-- ========================================== -->
-  <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all">
-      <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+  <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-sm w-full p-6 text-center">
+      <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
         </svg>
       </div>
-      <h3 class="text-xl font-bold text-slate-800 mb-2">Entra más rápido</h3>
-      <p class="text-sm text-slate-500 mb-6">Protege tu cuenta y olvídate de los códigos por correo. Vincula tu huella digital o FaceID para tus próximos accesos.</p>
-      <button onclick="vincularHuella()" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3 transition-all">
+      <h3 class="text-xl font-bold mb-2">Entra más rápido</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Vincula tu huella digital o FaceID para tus próximos accesos.</p>
+      <button onclick="vincularHuella()" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3">
         Vincular Huella Ahora
       </button>
-      <button onclick="cerrarModalHuella()" class="w-full text-slate-500 hover:text-slate-700 text-sm font-medium py-2">
+      <button onclick="cerrarModalHuella()" class="w-full text-slate-500 dark:text-slate-400 text-sm py-2">
         Hacerlo en otro momento
       </button>
     </div>
@@ -420,10 +642,26 @@
     let usuarioActual = null;
     let alumnoSeleccionado = null;
     let aprendizajesActuales = [];
+    let periodoEvalActivo = "1ER";
+    let temasAbiertos = new Set();
     let matriculaCache = [];
     let reglasGradosCache = [];
+    let plantillasCache = [];
     let registrosCSVListos = [];
+    let plantillasCSVListas = [];
 
+    // --- MODO OSCURO PERSISTENTE ---
+    if (localStorage.getItem("montessori_dark") === "true") {
+      document.documentElement.classList.add("dark");
+    }
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("montessori_dark", isDark);
+    }
+    function abrirModalConfig() { document.getElementById("modal-config").classList.remove("hidden"); }
+    function cerrarModalConfig() { document.getElementById("modal-config").classList.add("hidden"); }
+
+    // --- UTILIDADES CRIPTOGRAFÍA & RED ---
     function bufferToBase64url(buffer) {
       const bytes = new Uint8Array(buffer);
       let str = '';
@@ -517,24 +755,25 @@
       const esDirector = (datosUsuario.rol || "").toUpperCase() === "DIRECTOR";
       document.getElementById("tab-matricula").classList.toggle("hidden", !esDirector);
       document.getElementById("tab-maestras").classList.toggle("hidden", !esDirector);
+      document.getElementById("tab-plantillas").classList.toggle("hidden", !esDirector);
 
       if (mostrarInvitacionHuella) setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 500);
       cambiarTab("evaluaciones");
     }
 
     function cambiarTab(tab) {
-      ["vista-alumnos", "vista-evaluador", "vista-matricula", "vista-maestras"].forEach(id => {
+      ["vista-alumnos", "vista-evaluador", "vista-matricula", "vista-maestras", "vista-plantillas"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
       });
       document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.classList.remove("border-blue-600", "text-blue-600");
-        btn.classList.add("border-transparent", "text-slate-500");
+        btn.classList.remove("border-blue-600", "text-blue-600", "dark:text-blue-400");
+        btn.classList.add("border-transparent", "text-slate-500", "dark:text-slate-400");
       });
 
       const activeBtn = document.getElementById(`tab-${tab}`);
       if (activeBtn) {
-        activeBtn.classList.add("border-blue-600", "text-blue-600");
-        activeBtn.classList.remove("border-transparent", "text-slate-500");
+        activeBtn.classList.add("border-blue-600", "text-blue-600", "dark:text-blue-400");
+        activeBtn.classList.remove("border-transparent", "text-slate-500", "dark:text-slate-400");
       }
 
       if (tab === "evaluaciones") {
@@ -546,11 +785,14 @@
       } else if (tab === "maestras") {
         document.getElementById("vista-maestras").classList.remove("hidden");
         cargarMaestras();
+      } else if (tab === "plantillas") {
+        document.getElementById("vista-plantillas").classList.remove("hidden");
+        cargarPlantillas();
       }
     }
 
     // ==========================================
-    // PESTAÑA 1: EVALUACIONES
+    // PESTAÑA 1: EVALUACIONES SEGMENTADAS
     // ==========================================
     async function cargarAlumnos() {
       const grid = document.getElementById("grid-alumnos");
@@ -562,17 +804,17 @@
           return;
         }
         grid.innerHTML = data.alumnos.map(al => `
-          <div onclick='abrirEvaluador(${JSON.stringify(al)})' class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer">
+          <div onclick='abrirEvaluador(${JSON.stringify(al)})' class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer">
             <div class="flex justify-between items-start mb-3">
-              <div class="w-11 h-11 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg">${al.nombre.charAt(0)}</div>
-              <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">${al.ambiente}</span>
+              <div class="w-11 h-11 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center font-bold text-lg">${al.nombre.charAt(0)}</div>
+              <span class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-full">${al.ambiente}</span>
             </div>
-            <h4 class="font-bold text-slate-800">${al.nombre}</h4>
-            <p class="text-xs text-slate-500 mb-4">${al.grado} • ID: ${al.id}</p>
-            <div class="bg-slate-100 rounded-full h-2.5 w-full overflow-hidden">
+            <h4 class="font-bold">${al.nombre}</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">${al.grado} • ID: ${al.id}</p>
+            <div class="bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 w-full overflow-hidden">
               <div class="bg-green-500 h-2.5 rounded-full transition-all" style="width: ${al.progreso}%"></div>
             </div>
-            <p class="text-xs text-right mt-1.5 text-slate-500 font-medium">${al.evaluados} / ${al.total} evaluados (${al.progreso}%)</p>
+            <p class="text-xs text-right mt-1.5 text-slate-500 dark:text-slate-400 font-medium">${al.evaluados} / ${al.total} evaluados (${al.progreso}%)</p>
           </div>
         `).join('');
       } catch (e) { grid.innerHTML = `<p class="text-red-500">Error cargando alumnos.</p>`; }
@@ -580,6 +822,7 @@
 
     async function abrirEvaluador(alumno) {
       alumnoSeleccionado = alumno;
+      temasAbiertos = new Set();
       document.getElementById("vista-alumnos").classList.add("hidden");
       document.getElementById("vista-evaluador").classList.remove("hidden");
       document.getElementById("eval-alumno-nombre").textContent = alumno.nombre;
@@ -591,49 +834,111 @@
         aprendizajesActuales = data.aprendizajes;
         const materias = [...new Set(aprendizajesActuales.map(a => a.materia))];
         document.getElementById("filtro-materia").innerHTML = `<option value="TODAS">Todas las Materias</option>` + materias.map(m => `<option value="${m}">${m}</option>`).join('');
-        renderAprendizajes();
+        seleccionarPeriodoEval("1ER");
       }
     }
 
-    function renderAprendizajes() {
-      const per = document.getElementById("filtro-periodo").value;
+    function seleccionarPeriodoEval(periodo) {
+      periodoEvalActivo = periodo;
+      document.querySelectorAll(".per-pill").forEach(btn => {
+        const activo = btn.getAttribute("data-per") === periodo;
+        btn.className = activo
+          ? "per-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white"
+          : "per-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+      });
+      renderAprendizajesSegmentados();
+    }
+
+    function toggleTema(claveTema) {
+      if (temasAbiertos.has(claveTema)) temasAbiertos.delete(claveTema);
+      else temasAbiertos.add(claveTema);
+      renderAprendizajesSegmentados();
+    }
+
+    function renderAprendizajesSegmentados() {
       const mat = document.getElementById("filtro-materia").value;
       const est = document.getElementById("filtro-estado").value;
 
       const filtrados = aprendizajesActuales.filter(a => {
-        if (per !== "TODOS" && a.periodo !== per) return false;
+        if (periodoEvalActivo !== "TODOS" && a.periodo !== periodoEvalActivo) return false;
         if (mat !== "TODAS" && a.materia !== mat) return false;
         if (est === "PENDIENTE" && a.evaluado) return false;
         if (est === "EVALUADO" && !a.evaluado) return false;
         return true;
       });
 
+      const totalEval = filtrados.filter(x => x.evaluado).length;
+      document.getElementById("eval-resumen-avance").textContent = `${totalEval} de ${filtrados.length} evaluados en esta vista`;
+
       const cont = document.getElementById("lista-aprendizajes");
       if (filtrados.length === 0) {
-        cont.innerHTML = `<p class="text-slate-500 text-center py-8 bg-white rounded-xl border">No hay aprendizajes con estos filtros.</p>`;
+        cont.innerHTML = `<p class="text-slate-500 text-center py-8 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">No hay aprendizajes con estos filtros.</p>`;
         return;
       }
 
-      cont.innerHTML = filtrados.map(a => `
-        <div class="bg-white p-5 rounded-xl shadow-sm border ${a.evaluado ? 'border-green-300 bg-green-50/30' : 'border-slate-200'}">
-          <div class="flex flex-wrap justify-between gap-2 mb-2">
-            <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">${a.periodo} • ${a.materia}</span>
-            <span class="text-xs font-semibold ${a.evaluado ? 'text-green-700' : 'text-amber-600'}">${a.evaluado ? '✓ Evaluado' : '● Pendiente'}</span>
+      // Agrupar jerárquicamente por Materia + Tema
+      const grupos = {};
+      filtrados.forEach(a => {
+        const clave = `${a.materia}|||${a.tema || 'General'}`;
+        if (!grupos[clave]) grupos[clave] = { materia: a.materia, tema: a.tema || 'General', items: [] };
+        grupos[clave].items.push(a);
+      });
+
+      const claves = Object.keys(grupos);
+      // Abrir automáticamente el primer tema si ninguno está abierto aún
+      if (temasAbiertos.size === 0 && claves.length > 0) {
+        temasAbiertos.add(claves[0]);
+      }
+
+      cont.innerHTML = claves.map(clave => {
+        const g = grupos[clave];
+        const evaluadosGrupo = g.items.filter(i => i.evaluado).length;
+        const completo = evaluadosGrupo === g.items.length;
+        const abierto = temasAbiertos.has(clave);
+        const claveEscapada = clave.replace(/'/g, "\\'");
+
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border ${completo ? 'border-green-300 dark:border-green-800' : 'border-slate-200 dark:border-slate-800'} overflow-hidden">
+            <button onclick="toggleTema('${claveEscapada}')" class="w-full px-5 py-3.5 flex flex-wrap justify-between items-center gap-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400">${g.materia}</span>
+                <h4 class="font-bold text-sm">${g.tema}</h4>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${completo ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'}">
+                  ${evaluadosGrupo} / ${g.items.length}
+                </span>
+                <span class="text-slate-400 text-xs">${abierto ? '▲' : '▼'}</span>
+              </div>
+            </button>
+
+            ${abierto ? `
+              <div class="divide-y divide-slate-100 dark:divide-slate-800 border-t border-slate-100 dark:border-slate-800">
+                ${g.items.map(a => `
+                  <div class="p-4 ${a.evaluado ? 'bg-green-50/30 dark:bg-green-950/20' : ''}">
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                      <p class="text-sm font-medium">${a.aprendizaje}</p>
+                      <span class="text-[11px] font-semibold whitespace-nowrap ${a.evaluado ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}">
+                        ${a.evaluado ? '✓ Evaluado' : 'Pendiente'}
+                      </span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      ${[1, 2, 3, 4].map(n => `
+                        <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
+                          class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'}">
+                          ${n}
+                        </button>
+                      `).join('')}
+                      <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones (opcional)"
+                        class="flex-grow min-w-[180px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
-          <p class="text-xs text-slate-500 font-semibold">${a.tema}</p>
-          <p class="text-sm font-medium text-slate-800 mb-4">${a.aprendizaje}</p>
-          <div class="flex flex-wrap items-center gap-2">
-            ${[1, 2, 3, 4].map(n => `
-              <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
-                class="px-3.5 py-1.5 rounded-lg text-sm font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'}">
-                ${n}
-              </button>
-            `).join('')}
-            <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones (opcional)"
-              class="flex-grow min-w-[200px] border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-400">
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     async function calificar(idAprendizaje, puntaje, btn) {
@@ -653,7 +958,7 @@
       if (res.success) {
         const item = aprendizajesActuales.find(x => x.idAprendizaje === idAprendizaje);
         if (item) { item.evaluado = true; item.puntaje = puntaje; item.observaciones = obs; }
-        renderAprendizajes();
+        renderAprendizajesSegmentados();
       } else {
         alert("Error al guardar: " + res.message);
         btn.innerHTML = textoOriginal; btn.disabled = false;
@@ -699,22 +1004,22 @@
       }
 
       tbody.innerHTML = filtrados.map(al => `
-        <tr class="hover:bg-slate-50">
-          <td class="px-4 py-3 font-bold text-slate-700">${al.id}</td>
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="px-4 py-3 font-bold">${al.id}</td>
           <td class="px-4 py-3 font-medium">
             <div>${al.nombre}</div>
             <div class="text-xs text-slate-400">${al.correoTutor || 'Sin correo tutor'}</div>
           </td>
-          <td class="px-4 py-3 text-slate-600 font-medium">${al.grado}</td>
-          <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded">${al.ambiente}</span></td>
+          <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">${al.grado}</td>
+          <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">${al.ambiente}</span></td>
           <td class="px-4 py-3">
-            ${al.maestras.length ? al.maestras.map(m => `<span class="inline-block text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded mr-1 mb-1">${m}</span>`).join('') : '<span class="text-xs text-amber-600">Sin docentes en ambiente</span>'}
+            ${al.maestras.length ? al.maestras.map(m => `<span class="inline-block text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded mr-1 mb-1">${m}</span>`).join('') : '<span class="text-xs text-amber-600">Sin docentes en ambiente</span>'}
           </td>
           <td class="px-4 py-3">
-            <span class="text-xs font-bold px-2 py-0.5 rounded-full ${al.estatus === 'vigente' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${al.estatus}</span>
+            <span class="text-xs font-bold px-2 py-0.5 rounded-full ${al.estatus === 'vigente' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 text-red-700'}">${al.estatus}</span>
           </td>
           <td class="px-4 py-3 text-right">
-            <button onclick='abrirModalAlumno(${JSON.stringify(al)})' class="text-blue-600 hover:underline font-semibold text-xs">Editar</button>
+            <button onclick='abrirModalAlumno(${JSON.stringify(al)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
           </td>
         </tr>
       `).join('');
@@ -771,7 +1076,7 @@
       } else alert(res.message);
     }
 
-    // --- FUNCIONES CSV MASIVO ---
+    // --- CSV ALUMNOS ---
     function abrirModalImportar() {
       registrosCSVListos = [];
       document.getElementById("archivo-csv-alumnos").value = "";
@@ -781,10 +1086,7 @@
       document.getElementById("btnEjecutarCSV").disabled = true;
       document.getElementById("modal-importar").classList.remove("hidden");
     }
-
-    function cerrarModalImportar() {
-      document.getElementById("modal-importar").classList.add("hidden");
-    }
+    function cerrarModalImportar() { document.getElementById("modal-importar").classList.add("hidden"); }
 
     function descargarPlantillaCSV() {
       const contenido = [
@@ -795,9 +1097,7 @@
       const blob = new Blob(["\uFEFF" + contenido], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
-      a.download = "Plantilla_Matricula_Montessori.csv";
-      a.click();
+      a.href = url; a.download = "Plantilla_Matricula_Montessori.csv"; a.click();
       URL.revokeObjectURL(url);
     }
 
@@ -807,14 +1107,9 @@
       let enComillas = false;
       for (let i = 0; i < linea.length; i++) {
         const ch = linea[i];
-        if (ch === '"') {
-          enComillas = !enComillas;
-        } else if (ch === separador && !enComillas) {
-          resultado.push(actual.trim());
-          actual = "";
-        } else {
-          actual += ch;
-        }
+        if (ch === '"') enComillas = !enComillas;
+        else if (ch === separador && !enComillas) { resultado.push(actual.trim()); actual = ""; }
+        else actual += ch;
       }
       resultado.push(actual.trim());
       return resultado;
@@ -823,19 +1118,14 @@
     function previsualizarCSV(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = function(e) {
         const texto = e.target.result.replace(/^\uFEFF/, "");
         const lineas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
-        if (lineas.length < 2) {
-          alert("El archivo CSV está vacío o solo tiene encabezados.");
-          return;
-        }
+        if (lineas.length < 2) return alert("El archivo CSV está vacío.");
 
         const separador = lineas[0].includes(";") ? ";" : ",";
         const headers = parsearLineaCSV(lineas[0], separador).map(h => h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-
         const idxId = headers.findIndex(h => h === "id" || h.includes("id_alumno"));
         const idxNom = headers.findIndex(h => h.includes("nombre"));
         const idxGrado = headers.findIndex(h => h.includes("grado"));
@@ -843,14 +1133,10 @@
         const idxTutor = headers.findIndex(h => h.includes("tutor") || h.includes("correo"));
 
         if (idxId === -1 || idxNom === -1 || idxGrado === -1) {
-          alert("No se encontraron las columnas obligatorias: ID_Alumno, Nombre_Completo y Grado_SEP.");
-          return;
+          return alert("Faltan columnas obligatorias: ID_Alumno, Nombre_Completo y Grado_SEP.");
         }
 
         registrosCSVListos = [];
-        let idsVistos = new Set();
-        let duplicados = [];
-
         for (let i = 1; i < lineas.length; i++) {
           const cols = parsearLineaCSV(lineas[i], separador);
           const id = (cols[idxId] || "").trim();
@@ -858,24 +1144,14 @@
           const grado = (cols[idxGrado] || "").trim().toUpperCase();
           const estatus = idxEst !== -1 && cols[idxEst] ? cols[idxEst].trim().toLowerCase() : "vigente";
           const correoTutor = idxTutor !== -1 && cols[idxTutor] ? cols[idxTutor].trim().toLowerCase() : "";
-
           if (!id && !nombre) continue;
-          if (idsVistos.has(id)) duplicados.push(id);
-          idsVistos.add(id);
 
           const regla = reglasGradosCache.find(r => r.grado === grado);
-          registrosCSVListos.push({
-            id, nombre, grado,
-            ambiente: regla ? regla.ambiente : "SIN REGLA",
-            estatus, correoTutor
-          });
+          registrosCSVListos.push({ id, nombre, grado, ambiente: regla ? regla.ambiente : "SIN REGLA", estatus, correoTutor });
         }
 
-        const sinRegla = registrosCSVListos.filter(r => r.ambiente === "SIN REGLA").length;
         const resumen = document.getElementById("resumen-csv");
-        resumen.innerHTML = `Se detectaron <strong>${registrosCSVListos.length} alumnos</strong>.` +
-          (duplicados.length ? ` <span class="text-red-600">⚠️ IDs duplicados en el archivo: ${[...new Set(duplicados)].join(", ")}.</span>` : "") +
-          (sinRegla ? ` <span class="text-amber-700">⚠️ ${sinRegla} filas tienen un Grado SEP sin equivalencia en Config_Grados.</span>` : "");
+        resumen.innerHTML = `Se detectaron <strong>${registrosCSVListos.length} alumnos</strong> listos para importar.`;
         resumen.classList.remove("hidden");
 
         document.getElementById("tabla-preview-csv").innerHTML = registrosCSVListos.slice(0, 50).map(r => `
@@ -883,11 +1159,10 @@
             <td class="px-3 py-1.5 font-bold">${r.id}</td>
             <td class="px-3 py-1.5">${r.nombre}</td>
             <td class="px-3 py-1.5">${r.grado}</td>
-            <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded font-bold ${r.ambiente === 'SIN REGLA' ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-blue-700'}">${r.ambiente}</span></td>
+            <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">${r.ambiente}</span></td>
             <td class="px-3 py-1.5">${r.estatus}</td>
           </tr>
-        `).join('') + (registrosCSVListos.length > 50 ? `<tr><td colspan="5" class="px-3 py-2 text-center text-slate-400">... y ${registrosCSVListos.length - 50} registros más</td></tr>` : "");
-
+        `).join('');
         document.getElementById("preview-csv-container").classList.remove("hidden");
         document.getElementById("btnEjecutarCSV").disabled = registrosCSVListos.length === 0;
       };
@@ -907,11 +1182,9 @@
       btn.textContent = "Confirmar e Importar";
       const box = document.getElementById("resultado-importacion");
       box.classList.remove("hidden");
-
       if (res.success) {
-        box.className = "text-xs p-3 rounded-lg mb-4 bg-green-50 text-green-800 border border-green-200";
-        box.innerHTML = `<strong>✅ ${res.message}</strong>` +
-          (res.errores && res.errores.length ? `<ul class="mt-2 list-disc pl-4 text-amber-800">${res.errores.map(e => `<li>${e}</li>`).join('')}</ul>` : "");
+        box.className = "text-xs p-3 rounded-lg mb-4 bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800";
+        box.innerHTML = `<strong>✅ ${res.message}</strong>`;
         cargarMatricula();
       } else {
         box.className = "text-xs p-3 rounded-lg mb-4 bg-red-50 text-red-700";
@@ -921,36 +1194,48 @@
     }
 
     // ==========================================
-    // PESTAÑA 3: MAESTRAS, AMBIENTES Y GRADOS SEP
+    // PESTAÑA 3: MAESTRAS Y AMBIENTES (3 SUB-PESTAÑAS)
     // ==========================================
+    function cambiarSubTabMaestras(sub) {
+      ["personal", "ambientes", "grados"].forEach(s => {
+        document.getElementById(`subvista-${s}`).classList.add("hidden");
+        const btn = document.getElementById(`subtab-${s}`);
+        btn.className = "subtab-btn flex-1 py-2 px-4 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all";
+      });
+      document.getElementById(`subvista-${sub}`).classList.remove("hidden");
+      document.getElementById(`subtab-${sub}`).className =
+        "subtab-btn flex-1 py-2 px-4 rounded-lg text-sm font-bold bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition-all";
+    }
+
     async function cargarMaestras() {
       const data = await apiCall({ action: "listarMaestrasYAsignaciones", correoSolicitante: usuarioActual.correo });
       if (!data.success) return alert(data.message);
 
       document.getElementById("tabla-usuarios").innerHTML = data.usuarios.map(u => `
-        <tr class="hover:bg-slate-50">
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
           <td class="px-4 py-3 font-medium">${u.nombre}</td>
-          <td class="px-4 py-3 text-slate-600">${u.correo}</td>
-          <td class="px-4 py-3"><span class="text-xs font-bold px-2 py-0.5 rounded ${u.rol.toUpperCase() === 'DIRECTOR' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">${u.rol}</span></td>
-          <td class="px-4 py-3 text-xs">${u.tieneHuella ? '<span class="text-green-600 font-semibold">✓ Vinculada</span>' : '<span class="text-slate-400">Pendiente</span>'}</td>
+          <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${u.correo}</td>
+          <td class="px-4 py-3"><span class="text-xs font-bold px-2 py-0.5 rounded ${u.rol.toUpperCase() === 'DIRECTOR' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}">${u.rol}</span></td>
+          <td class="px-4 py-3 text-xs">${u.tieneHuella ? '<span class="text-green-600 dark:text-green-400 font-semibold">✓ Vinculada</span>' : '<span class="text-slate-400">Pendiente</span>'}</td>
           <td class="px-4 py-3 text-right">
-            <button onclick='cargarUsuarioEnForm(${JSON.stringify(u)})' class="text-blue-600 hover:underline font-semibold text-xs">Editar</button>
+            <button onclick='cargarUsuarioEnForm(${JSON.stringify(u)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
           </td>
         </tr>
       `).join('');
 
-      const selDoc = document.getElementById("asig-amb-docente");
-      selDoc.innerHTML = data.usuarios.map(u => `<option value="${u.correo}">${u.nombre} — ${u.correo}</option>`).join('');
+      document.getElementById("asig-amb-docente").innerHTML = data.usuarios.map(u =>
+        `<option value="${u.correo}">${u.nombre} — ${u.correo}</option>`
+      ).join('');
 
       const tbodyAsig = document.getElementById("tabla-asignaciones");
       if (data.asignaciones.length === 0) {
         tbodyAsig.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">Aún no hay maestras vinculadas a ambientes.</td></tr>`;
       } else {
         tbodyAsig.innerHTML = data.asignaciones.map(a => `
-          <tr class="hover:bg-slate-50">
-            <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded">${a.ambiente}</span></td>
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded">${a.ambiente}</span></td>
             <td class="px-4 py-3 font-medium">${a.nombreDocente}<div class="text-xs text-slate-400">${a.correoDocente}</div></td>
-            <td class="px-4 py-3 text-slate-600">${a.totalAlumnos} alumnos</td>
+            <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${a.totalAlumnos} alumnos</td>
             <td class="px-4 py-3 text-slate-500 text-xs">${a.ciclo}</td>
             <td class="px-4 py-3 text-right">
               <button onclick="quitarAsignacion('${a.idAsignacion}')" class="text-red-500 hover:underline font-semibold text-xs">Desvincular</button>
@@ -961,11 +1246,11 @@
 
       reglasGradosCache = data.reglasGrados || [];
       document.getElementById("tabla-reglas").innerHTML = reglasGradosCache.map(r => `
-        <tr class="hover:bg-slate-50">
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
           <td class="px-4 py-2.5 font-medium">${r.grado}</td>
-          <td class="px-4 py-2.5"><span class="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">${r.ambiente}</span></td>
+          <td class="px-4 py-2.5"><span class="text-xs font-bold bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded">${r.ambiente}</span></td>
           <td class="px-4 py-2.5 text-right">
-            <button onclick="cargarReglaEnForm('${r.grado}', '${r.ambiente}')" class="text-blue-600 hover:underline font-semibold text-xs">Cambiar</button>
+            <button onclick="cargarReglaEnForm('${r.grado}', '${r.ambiente}')" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Cambiar</button>
           </td>
         </tr>
       `).join('');
@@ -975,13 +1260,11 @@
       document.getElementById("usr-correo").value = u.correo;
       document.getElementById("usr-nombre").value = u.nombre;
       document.getElementById("usr-rol").value = u.rol;
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     async function guardarUsuario() {
       const btn = document.getElementById("btnGuardarUsr");
       btn.textContent = "Guardando..."; btn.disabled = true;
-
       const res = await apiCall({
         action: "guardarUsuario",
         correoSolicitante: usuarioActual.correo,
@@ -989,7 +1272,6 @@
         nombre: document.getElementById("usr-nombre").value,
         rol: document.getElementById("usr-rol").value
       });
-
       btn.textContent = "Guardar Usuario"; btn.disabled = false;
       if (res.success) {
         document.getElementById("usr-correo").value = "";
@@ -1001,7 +1283,6 @@
     async function vincularDocenteAmbiente() {
       const btn = document.getElementById("btnAsigAmb");
       btn.textContent = "Vinculando..."; btn.disabled = true;
-
       const res = await apiCall({
         action: "guardarAsignacionAmbiente",
         correoSolicitante: usuarioActual.correo,
@@ -1009,7 +1290,6 @@
         correoDocente: document.getElementById("asig-amb-docente").value,
         ciclo: "2026-2027"
       });
-
       btn.textContent = "+ Vincular Maestra al Ambiente"; btn.disabled = false;
       if (res.success) cargarMaestras();
       else alert(res.message);
@@ -1034,19 +1314,206 @@
     async function guardarRegla() {
       const btn = document.getElementById("btnGuardarRegla");
       btn.textContent = "Guardando..."; btn.disabled = true;
-
       const res = await apiCall({
         action: "guardarReglaGrado",
         correoSolicitante: usuarioActual.correo,
         grado: document.getElementById("regla-grado").value,
         ambiente: document.getElementById("regla-ambiente").value
       });
-
       btn.textContent = "Guardar Equivalencia"; btn.disabled = false;
       if (res.success) {
         document.getElementById("regla-grado").value = "";
         cargarMaestras();
       } else alert(res.message);
+    }
+
+    // ==========================================
+    // PESTAÑA 4: PLANTILLA DE APRENDIZAJES
+    // ==========================================
+    async function cargarPlantillas() {
+      const tbody = document.getElementById("tabla-plantillas");
+      tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">Cargando catálogo...</td></tr>`;
+      const data = await apiCall({ action: "listarCatalogoAprendizajes", correoSolicitante: usuarioActual.correo });
+      if (data.success) {
+        plantillasCache = data.aprendizajes;
+        renderPlantillas();
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-red-500">${data.message}</td></tr>`;
+      }
+    }
+
+    function renderPlantillas() {
+      const amb = document.getElementById("filtro-plant-amb").value;
+      const per = document.getElementById("filtro-plant-per").value;
+      const txt = (document.getElementById("buscador-plantilla").value || "").toLowerCase();
+
+      const filtrados = plantillasCache.filter(p => {
+        if (amb !== "TODOS" && p.ambiente !== amb) return false;
+        if (per !== "TODOS" && p.periodo !== per) return false;
+        if (txt && !p.materia.toLowerCase().includes(txt) && !p.tema.toLowerCase().includes(txt) && !p.aprendizaje.toLowerCase().includes(txt) && !p.id.toLowerCase().includes(txt)) return false;
+        return true;
+      });
+
+      document.getElementById("contador-plantillas").textContent = `Mostrando ${Math.min(filtrados.length, 100)} de ${filtrados.length} aprendizajes`;
+
+      const tbody = document.getElementById("tabla-plantillas");
+      if (filtrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">Sin aprendizajes registrados con estos filtros.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtrados.slice(0, 100).map(p => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="px-4 py-2.5 font-mono text-xs font-bold text-slate-500">${p.id}</td>
+          <td class="px-4 py-2.5">
+            <span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">${p.ambiente}</span>
+            <span class="text-xs font-semibold text-slate-500 ml-1">${p.periodo}</span>
+          </td>
+          <td class="px-4 py-2.5">
+            <div class="font-bold text-xs">${p.materia}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">${p.tema}</div>
+          </td>
+          <td class="px-4 py-2.5 text-xs max-w-md">${p.aprendizaje}</td>
+          <td class="px-4 py-2.5 text-xs text-slate-500 dark:text-slate-400">${p.campo}</td>
+          <td class="px-4 py-2.5 text-right">
+            <button onclick='abrirModalAprendizaje(${JSON.stringify(p)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function abrirModalAprendizaje(ap = null) {
+      document.getElementById("modal-ap-titulo").textContent = ap ? "Editar Aprendizaje" : "Nuevo Aprendizaje Esperado";
+      document.getElementById("ap-id").value = ap ? ap.id : "";
+      document.getElementById("ap-id").disabled = !!ap;
+      document.getElementById("ap-ambiente").value = ap ? ap.ambiente : "TALLER 1";
+      document.getElementById("ap-periodo").value = ap ? ap.periodo : "1ER";
+      document.getElementById("ap-materia").value = ap ? ap.materia : "";
+      document.getElementById("ap-tema").value = ap ? ap.tema : "";
+      document.getElementById("ap-texto").value = ap ? ap.aprendizaje : "";
+      if (ap && ap.campo) document.getElementById("ap-campo").value = ap.campo;
+      document.getElementById("modal-aprendizaje").classList.remove("hidden");
+    }
+    function cerrarModalAprendizaje() { document.getElementById("modal-aprendizaje").classList.add("hidden"); }
+
+    async function guardarAprendizaje() {
+      const btn = document.getElementById("btnGuardarAp");
+      btn.textContent = "Guardando..."; btn.disabled = true;
+      const res = await apiCall({
+        action: "guardarAprendizaje",
+        correoSolicitante: usuarioActual.correo,
+        id: document.getElementById("ap-id").value,
+        ambiente: document.getElementById("ap-ambiente").value,
+        periodo: document.getElementById("ap-periodo").value,
+        materia: document.getElementById("ap-materia").value,
+        tema: document.getElementById("ap-tema").value,
+        aprendizaje: document.getElementById("ap-texto").value,
+        campo: document.getElementById("ap-campo").value
+      });
+      btn.textContent = "Guardar"; btn.disabled = false;
+      if (res.success) {
+        cerrarModalAprendizaje();
+        cargarPlantillas();
+      } else alert(res.message);
+    }
+
+    // --- CSV PLANTILLA APRENDIZAJES ---
+    function abrirModalImportarPlantilla() {
+      plantillasCSVListas = [];
+      document.getElementById("archivo-csv-plantilla").value = "";
+      document.getElementById("resumen-plantilla-csv").classList.add("hidden");
+      document.getElementById("preview-plantilla-container").classList.add("hidden");
+      document.getElementById("btnEjecutarPlantillaCSV").disabled = true;
+      document.getElementById("modal-importar-plantilla").classList.remove("hidden");
+    }
+    function cerrarModalImportarPlantilla() { document.getElementById("modal-importar-plantilla").classList.add("hidden"); }
+
+    function descargarPlantillaAprendizajesCSV() {
+      const contenido = [
+        "ID_Aprendizaje,Ambiente,Periodo,Materia,Tema,Aprendizaje_Esperado,Campo_Formativo",
+        "T1-BIO-1ER-001,TALLER 1,1ER,Biología,El precámbrico,Descubre la formación de los primeros mares,Saberes y pensamiento científico",
+        "T2-GEO-1ER-003,TALLER 2,1ER,Geografía,El sistema solar,Identifica los planetas del sistema solar,Ética naturaleza y sociedades"
+      ].join("\n");
+      const blob = new Blob(["\uFEFF" + contenido], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "Plantilla_Aprendizajes_Montessori.csv"; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function previsualizarPlantillaCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const texto = e.target.result.replace(/^\uFEFF/, "");
+        const lineas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
+        if (lineas.length < 2) return alert("Archivo vacío.");
+
+        const separador = lineas[0].includes(";") ? ";" : ",";
+        const headers = parsearLineaCSV(lineas[0], separador).map(h => h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+        const idxId = headers.findIndex(h => h.includes("id"));
+        const idxAmb = headers.findIndex(h => h.includes("ambiente") || h.includes("nivel"));
+        const idxPer = headers.findIndex(h => h.includes("periodo"));
+        const idxMat = headers.findIndex(h => h.includes("materia"));
+        const idxTema = headers.findIndex(h => h.includes("tema"));
+        const idxAp = headers.findIndex(h => h.includes("aprendizaje"));
+        const idxCampo = headers.findIndex(h => h.includes("campo"));
+
+        if (idxId === -1 || idxAmb === -1 || idxAp === -1) {
+          return alert("Faltan columnas obligatorias: ID_Aprendizaje, Ambiente, Aprendizaje_Esperado.");
+        }
+
+        plantillasCSVListas = [];
+        for (let i = 1; i < lineas.length; i++) {
+          const cols = parsearLineaCSV(lineas[i], separador);
+          const id = (cols[idxId] || "").trim().toUpperCase();
+          const ambiente = (cols[idxAmb] || "").trim().toUpperCase();
+          const periodo = idxPer !== -1 ? (cols[idxPer] || "1ER").trim().toUpperCase() : "1ER";
+          const materia = idxMat !== -1 ? (cols[idxMat] || "").trim() : "";
+          const tema = idxTema !== -1 ? (cols[idxTema] || "").trim() : "";
+          const aprendizaje = (cols[idxAp] || "").trim();
+          const campo = idxCampo !== -1 ? (cols[idxCampo] || "").trim() : "";
+          if (!id || !aprendizaje) continue;
+          plantillasCSVListas.push({ id, ambiente, periodo, materia, tema, aprendizaje, campo, activo: true });
+        }
+
+        const resumen = document.getElementById("resumen-plantilla-csv");
+        resumen.innerHTML = `Se detectaron <strong>${plantillasCSVListas.length} aprendizajes</strong> listos para cargar al catálogo.`;
+        resumen.classList.remove("hidden");
+
+        document.getElementById("tabla-preview-plantilla").innerHTML = plantillasCSVListas.slice(0, 50).map(r => `
+          <tr>
+            <td class="px-3 py-1.5 font-mono font-bold">${r.id}</td>
+            <td class="px-3 py-1.5">${r.ambiente}</td>
+            <td class="px-3 py-1.5">${r.periodo}</td>
+            <td class="px-3 py-1.5">${r.materia}</td>
+            <td class="px-3 py-1.5">${r.aprendizaje}</td>
+          </tr>
+        `).join('');
+        document.getElementById("preview-plantilla-container").classList.remove("hidden");
+        document.getElementById("btnEjecutarPlantillaCSV").disabled = plantillasCSVListas.length === 0;
+      };
+      reader.readAsText(file, "UTF-8");
+    }
+
+    async function ejecutarImportacionPlantillaCSV() {
+      const btn = document.getElementById("btnEjecutarPlantillaCSV");
+      btn.textContent = "Importando..."; btn.disabled = true;
+      const res = await apiCall({
+        action: "importarAprendizajesMasivo",
+        correoSolicitante: usuarioActual.correo,
+        aprendizajes: plantillasCSVListas
+      });
+      btn.textContent = "Confirmar e Importar Catálogo";
+      if (res.success) {
+        alert("✅ " + res.message);
+        cerrarModalImportarPlantilla();
+        cargarPlantillas();
+      } else {
+        alert(res.message);
+        btn.disabled = false;
+      }
     }
 
     // ==========================================
