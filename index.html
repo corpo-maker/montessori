@@ -165,7 +165,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 1B: EVALUADOR DEL ALUMNO (FICHAS / TABLA + PAGINADO + FILTROS) -->
+    <!-- PESTAÑA 1B: EVALUADOR DEL ALUMNO (APRENDIZAJE ESPERADO + FICHAS/TABLA) -->
     <!-- ========================================== -->
     <main id="vista-evaluador" class="hidden p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
@@ -205,8 +205,8 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2 flex-grow md:flex-grow-0">
-            <input type="text" id="buscador-detalle" oninput="resetPagDetalle()" placeholder="Buscar tema o aprendizaje..."
-              class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]">
+            <input type="text" id="buscador-detalle" oninput="resetPagDetalle()" placeholder="Buscar tema o aprendizaje esperado..."
+              class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]">
             <div class="flex items-center gap-1.5 text-xs text-slate-500">
               <span>Mostrar:</span>
               <select id="pag-size-detalle" onchange="resetPagDetalle()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
@@ -309,7 +309,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 3: MAESTRAS Y AMBIENTES (CON 3 SUB-PESTAÑAS) -->
+    <!-- PESTAÑA 3: MAESTRAS Y AMBIENTES (CON PAGINACIÓN EN LOS 3 SUBMÓDULOS) -->
     <!-- ========================================== -->
     <main id="vista-maestras" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
@@ -335,7 +335,7 @@
         </button>
       </div>
 
-      <!-- SUB-VISTA 1: PERSONAL -->
+      <!-- SUB-VISTA 1: PERSONAL (PAGINADA) -->
       <section id="subvista-personal">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
           <h4 class="text-sm font-bold mb-3">Registrar o actualizar correo de acceso</h4>
@@ -353,13 +353,28 @@
           </div>
         </div>
 
+        <!-- Filtro y Paginación Personal -->
+        <div class="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-3 flex flex-wrap items-center gap-3">
+          <input type="text" id="buscador-usuarios" oninput="resetPagUsuarios()" placeholder="Buscar por nombre o correo..."
+            class="flex-grow min-w-[200px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none">
+          <div class="flex items-center gap-1.5 text-xs text-slate-500">
+            <span>Mostrar:</span>
+            <select id="pag-size-usuarios" onchange="resetPagUsuarios()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
         <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
               <tr>
-                <th class="px-4 py-3">Nombre</th>
-                <th class="px-4 py-3">Correo</th>
-                <th class="px-4 py-3">Rol</th>
+                <th onclick="ordenarUsuarios('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Nombre ⇅</th>
+                <th onclick="ordenarUsuarios('correo')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Correo ⇅</th>
+                <th onclick="ordenarUsuarios('rol')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Rol ⇅</th>
                 <th class="px-4 py-3">Huella Digital</th>
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
@@ -367,9 +382,10 @@
             <tbody id="tabla-usuarios" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
+        <div id="pag-controls-usuarios" class="mt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
       </section>
 
-      <!-- SUB-VISTA 2: AMBIENTES -->
+      <!-- SUB-VISTA 2: AMBIENTES (PAGINADA) -->
       <section id="subvista-ambientes" class="hidden">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
           <h4 class="text-sm font-bold mb-3">Vincular maestra a un Ambiente Montessori (Co-docencia)</h4>
@@ -397,13 +413,28 @@
           </div>
         </div>
 
+        <!-- Filtro y Paginación Asignaciones -->
+        <div class="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-3 flex flex-wrap items-center gap-3">
+          <input type="text" id="buscador-asignaciones" oninput="resetPagAsignaciones()" placeholder="Buscar maestra o ambiente..."
+            class="flex-grow min-w-[200px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none">
+          <div class="flex items-center gap-1.5 text-xs text-slate-500">
+            <span>Mostrar:</span>
+            <select id="pag-size-asignaciones" onchange="resetPagAsignaciones()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
         <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
               <tr>
-                <th class="px-4 py-3">Ambiente Montessori</th>
-                <th class="px-4 py-3">Maestra Vinculada</th>
-                <th class="px-4 py-3">Alumnos en Grupo</th>
+                <th onclick="ordenarAsignaciones('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente Montessori ⇅</th>
+                <th onclick="ordenarAsignaciones('nombreDocente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Maestra Vinculada ⇅</th>
+                <th onclick="ordenarAsignaciones('totalAlumnos')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumnos en Grupo ⇅</th>
                 <th class="px-4 py-3">Ciclo</th>
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
@@ -411,9 +442,10 @@
             <tbody id="tabla-asignaciones" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
+        <div id="pag-controls-asignaciones" class="mt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
       </section>
 
-      <!-- SUB-VISTA 3: GRADOS SEP -->
+      <!-- SUB-VISTA 3: GRADOS SEP (PAGINADA) -->
       <section id="subvista-grados" class="hidden">
         <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
           <h4 class="text-sm font-bold mb-3">Configurar regla Grado SEP → Ambiente Montessori</h4>
@@ -433,18 +465,34 @@
           </div>
         </div>
 
+        <!-- Filtro y Paginación Reglas -->
+        <div class="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-3 flex flex-wrap items-center gap-3">
+          <input type="text" id="buscador-reglas" oninput="resetPagReglas()" placeholder="Buscar grado SEP o ambiente..."
+            class="flex-grow min-w-[200px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none">
+          <div class="flex items-center gap-1.5 text-xs text-slate-500">
+            <span>Mostrar:</span>
+            <select id="pag-size-reglas" onchange="resetPagReglas()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
         <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
               <tr>
-                <th class="px-4 py-3">Grado SEP</th>
-                <th class="px-4 py-3">Ambiente Montessori Asignado</th>
+                <th onclick="ordenarReglas('grado')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Grado SEP ⇅</th>
+                <th onclick="ordenarReglas('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente Montessori Asignado ⇅</th>
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
             </thead>
             <tbody id="tabla-reglas" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
+        <div id="pag-controls-reglas" class="mt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
       </section>
     </main>
 
@@ -717,7 +765,7 @@
               <th class="px-3 py-2">Ambiente</th>
               <th class="px-3 py-2">Per.</th>
               <th class="px-3 py-2">Materia</th>
-              <th class="px-3 py-2">Aprendizaje</th>
+              <th class="px-3 py-2">Aprendizaje Esperado</th>
             </tr>
           </thead>
           <tbody id="tabla-preview-plantilla" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
@@ -757,6 +805,7 @@
   <!-- ========================================== -->
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
+    const SESSION_KEY = "montessori_sesion_v2";
     let correoActual = "";
     let usuarioActual = null;
 
@@ -783,6 +832,18 @@
     let sortMatricula = { col: 'id', asc: true };
     let registrosCSVListos = [];
 
+    // Estado Maestras y Ambientes (3 Submódulos Paginados)
+    let usuariosCache = [];
+    let pagUsuarios = 1;
+    let sortUsuarios = { col: 'nombre', asc: true };
+
+    let asignacionesCache = [];
+    let pagAsignaciones = 1;
+    let sortAsignaciones = { col: 'ambiente', asc: true };
+
+    let pagReglas = 1;
+    let sortReglas = { col: 'grado', asc: true };
+
     // Estado Plantillas
     let plantillasCache = [];
     let pagPlantillas = 1;
@@ -799,6 +860,30 @@
     }
     function abrirModalConfig() { document.getElementById("modal-config").classList.remove("hidden"); }
     function cerrarModalConfig() { document.getElementById("modal-config").classList.add("hidden"); }
+
+    // --- RESTAURAR SESIÓN AL RECARGAR (EVITA QUE TE BOTE AL ACTUALIZAR) ---
+    window.addEventListener("DOMContentLoaded", () => {
+      try {
+        const guardada = localStorage.getItem(SESSION_KEY);
+        if (guardada) {
+          const sesion = JSON.parse(guardada);
+          if (sesion && sesion.datosUsuario && sesion.datosUsuario.correo) {
+            correoActual = sesion.datosUsuario.correo;
+            entrarAlPortal(sesion.datosUsuario, false, sesion.tabActiva || "evaluaciones");
+          }
+        }
+      } catch (e) {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    });
+
+    function guardarSesionLocal(datosUsuario, tabActiva) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        datosUsuario,
+        tabActiva: tabActiva || "evaluaciones",
+        timestamp: Date.now()
+      }));
+    }
 
     // --- UTILIDADES RED, CSV Y PAGINACIÓN ---
     function bufferToBase64url(buffer) {
@@ -906,7 +991,7 @@
               }
             });
             const authData = await apiCall({ action: "validarHuella", correo: correoActual, passkeyId: bufferToBase64url(assertion.rawId) });
-            if (authData.success) entrarAlPortal(authData.datosUsuario, false);
+            if (authData.success) entrarAlPortal(authData.datosUsuario, false, "evaluaciones");
             else mostrarMensaje(authData.message, "error");
           } else {
             document.getElementById("step-email").classList.add("hidden");
@@ -926,14 +1011,16 @@
 
       try {
         const data = await apiCall({ action: "validarOTP", correo: correoActual, otp });
-        if (data.success) entrarAlPortal(data.datosUsuario, true);
+        if (data.success) entrarAlPortal(data.datosUsuario, true, "evaluaciones");
         else mostrarMensaje(data.message, "error");
       } catch (e) { mostrarMensaje("Error de conexión.", "error"); }
       btn.innerHTML = "Verificar y Entrar"; btn.disabled = false;
     }
 
-    function entrarAlPortal(datosUsuario, mostrarInvitacionHuella) {
+    function entrarAlPortal(datosUsuario, mostrarInvitacionHuella, tabInicial = "evaluaciones") {
       usuarioActual = datosUsuario;
+      guardarSesionLocal(datosUsuario, tabInicial);
+
       document.getElementById("login-section").classList.add("hidden");
       document.getElementById("dashboard-section").classList.remove("hidden");
       document.getElementById("userNameDisplay").textContent = datosUsuario.nombre;
@@ -953,10 +1040,12 @@
       document.getElementById("optRolAdmin").classList.toggle("hidden", !esAdmin);
 
       if (mostrarInvitacionHuella) setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 500);
-      cambiarTab("evaluaciones");
+      cambiarTab(tabInicial);
     }
 
     function cambiarTab(tab) {
+      if (usuarioActual) guardarSesionLocal(usuarioActual, tab);
+
       ["vista-alumnos", "vista-evaluador", "vista-matricula", "vista-maestras", "vista-plantillas"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
       });
@@ -1119,7 +1208,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 1B: EVALUADOR DETALLE (FICHAS/TABLA + PAGINACIÓN + FILTROS)
+    // PESTAÑA 1B: EVALUADOR DETALLE (APRENDIZAJE ESPERADO DESTACADO)
     // ==========================================
     async function abrirEvaluadorConFiltro(idAlumno, periodoInicial, materiaInicial) {
       const alumno = alumnosCache.find(x => x.id === idAlumno);
@@ -1135,7 +1224,7 @@
       document.getElementById("eval-alumno-nombre").textContent = alumno.nombre;
       document.getElementById("eval-alumno-meta").textContent = `${alumno.ambiente} • ${alumno.grado} • ID: ${alumno.id}`;
       document.getElementById("buscador-detalle").value = "";
-      document.getElementById("detalle-fichas-wrap").innerHTML = `<p class="text-slate-500 text-sm">Cargando aprendizajes...</p>`;
+      document.getElementById("detalle-fichas-wrap").innerHTML = `<p class="text-slate-500 text-sm">Cargando aprendizajes esperados...</p>`;
 
       const data = await apiCall({ action: "obtenerDetalleAlumno", idAlumno: alumno.id, ambiente: alumno.ambiente });
       if (data.success) {
@@ -1256,7 +1345,7 @@
       const pagina = filtrados.slice((pagDetalle - 1) * pageSize, pagDetalle * pageSize);
 
       document.getElementById("resumen-filtro-detalle").textContent =
-        `${filtrados.length} aprendizajes encontrados (${estadoEvalActivo === 'PENDIENTE' ? 'Por Evaluar' : estadoEvalActivo === 'EVALUADO' ? 'Validados / Evaluados' : 'Todos'})`;
+        `${filtrados.length} aprendizajes esperados (${estadoEvalActivo === 'PENDIENTE' ? 'Por Evaluar' : estadoEvalActivo === 'EVALUADO' ? 'Validados / Evaluados' : 'Todos'})`;
 
       const fichasWrap = document.getElementById("detalle-fichas-wrap");
       const tablaWrap = document.getElementById("detalle-tabla-wrap");
@@ -1266,11 +1355,10 @@
         tablaWrap.classList.add("hidden");
 
         if (pagina.length === 0) {
-          fichasWrap.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-xl text-center text-sm text-slate-500">No hay aprendizajes con los filtros seleccionados.</div>`;
+          fichasWrap.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-xl text-center text-sm text-slate-500">No hay aprendizajes esperados con los filtros seleccionados.</div>`;
         } else {
           fichasWrap.innerHTML = pagina.map(a => `
             <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border ${a.evaluado ? 'border-green-300 dark:border-green-800 bg-green-50/20 dark:bg-green-950/10' : 'border-slate-200 dark:border-slate-800'}">
-              <!-- Etiquetas superiores bien legibles: Trimestre, Materia, Tema y Campo Formativo -->
               <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="text-xs font-bold bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2.5 py-1 rounded-md">${a.periodo} • ${a.materia}</span>
@@ -1278,7 +1366,7 @@
                     Tema: ${a.tema || 'General'}
                   </span>
                   <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md">
-                    Campo: ${a.campo || 'Sin campo'}
+                    Campo Formativo: ${a.campo || 'Sin campo'}
                   </span>
                 </div>
                 <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${a.evaluado ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'}">
@@ -1286,13 +1374,15 @@
                 </span>
               </div>
 
-              <!-- Aprendizaje Esperado protagonista -->
-              <p class="text-base font-bold text-slate-900 dark:text-white leading-relaxed mb-4">
-                ${a.aprendizaje}
-              </p>
+              <!-- Bloque destacado de Aprendizaje Esperado -->
+              <div class="bg-slate-50 dark:bg-slate-800/60 border-l-4 border-blue-600 p-3.5 rounded-r-lg mb-4">
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">Aprendizaje Esperado (${a.idAprendizaje})</span>
+                <p class="text-base font-bold text-slate-900 dark:text-white leading-relaxed">
+                  ${a.aprendizaje || '<span class="italic text-slate-400">Sin descripción registrada</span>'}
+                </p>
+              </div>
 
-              <!-- Controles de calificación 1-4 y Observaciones -->
-              <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div class="flex flex-wrap items-center gap-2">
                 ${[1, 2, 3, 4].map(n => `
                   <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
                     class="px-4 py-2 rounded-lg text-xs font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'}">
@@ -1310,7 +1400,7 @@
         tablaWrap.classList.remove("hidden");
         const tbody = document.getElementById("tbody-detalle");
         if (pagina.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">No hay aprendizajes con estos filtros.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">No hay aprendizajes esperados con estos filtros.</td></tr>`;
         } else {
           tbody.innerHTML = pagina.map(a => `
             <tr class="${a.evaluado ? 'bg-green-50/30 dark:bg-green-950/10' : ''} hover:bg-slate-50 dark:hover:bg-slate-800/40">
@@ -1319,7 +1409,10 @@
                 <div class="font-bold text-xs text-blue-700 dark:text-blue-300">${a.materia}</div>
                 <div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-0.5">${a.tema || 'General'}</div>
               </td>
-              <td class="px-3 py-3 font-bold text-sm text-slate-900 dark:text-white max-w-md">${a.aprendizaje}</td>
+              <td class="px-3 py-3 max-w-md">
+                <span class="block text-[10px] font-mono text-slate-400">${a.idAprendizaje}</span>
+                <span class="font-bold text-sm text-slate-900 dark:text-white">${a.aprendizaje}</span>
+              </td>
               <td class="px-3 py-3 text-xs font-medium text-slate-600 dark:text-slate-300">${a.campo || '-'}</td>
               <td class="px-3 py-3">
                 <div class="flex flex-wrap items-center gap-1.5">
@@ -1601,7 +1694,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 3: MAESTRAS Y AMBIENTES (3 SUB-PESTAÑAS)
+    // PESTAÑA 3: MAESTRAS Y AMBIENTES (3 SUB-PESTAÑAS PAGINADAS)
     // ==========================================
     function cambiarSubTabMaestras(sub) {
       ["personal", "ambientes", "grados"].forEach(s => {
@@ -1618,26 +1711,83 @@
       const data = await apiCall({ action: "listarMaestrasYAsignaciones", correoSolicitante: usuarioActual.correo });
       if (!data.success) return alert(data.message);
 
-      document.getElementById("tabla-usuarios").innerHTML = data.usuarios.map(u => `
-        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-          <td class="px-4 py-3 font-medium">${u.nombre}</td>
-          <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${u.correo}</td>
-          <td class="px-4 py-3"><span class="text-xs font-bold px-2 py-0.5 rounded ${u.rol.toUpperCase() === 'ADMIN' ? 'bg-amber-100 text-amber-800' : u.rol.toUpperCase() === 'DIRECTOR' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}">${u.rol}</span></td>
-          <td class="px-4 py-3 text-xs">${u.tieneHuella ? '<span class="text-green-600 dark:text-green-400 font-semibold">✓ Vinculada</span>' : '<span class="text-slate-400">Pendiente</span>'}</td>
-          <td class="px-4 py-3 text-right">
-            <button onclick='cargarUsuarioEnForm(${JSON.stringify(u)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
-          </td>
-        </tr>
-      `).join('');
+      usuariosCache = data.usuarios || [];
+      asignacionesCache = data.asignaciones || [];
+      reglasGradosCache = data.reglasGrados || [];
 
-      document.getElementById("asig-amb-docente").innerHTML = data.usuarios.map(u =>
+      document.getElementById("asig-amb-docente").innerHTML = usuariosCache.map(u =>
         `<option value="${u.correo}">${u.nombre} — ${u.correo}</option>`
       ).join('');
 
-      const tbodyAsig = document.getElementById("tabla-asignaciones");
-      tbodyAsig.innerHTML = data.asignaciones.length === 0
+      renderUsuariosPaginado();
+      renderAsignacionesPaginado();
+      renderReglasPaginado();
+    }
+
+    // --- Submódulo 1: Personal ---
+    function resetPagUsuarios() { pagUsuarios = 1; renderUsuariosPaginado(); }
+    function irPagUsuarios(p) { pagUsuarios = p; renderUsuariosPaginado(); }
+    function ordenarUsuarios(col) {
+      if (sortUsuarios.col === col) sortUsuarios.asc = !sortUsuarios.asc;
+      else { sortUsuarios.col = col; sortUsuarios.asc = true; }
+      renderUsuariosPaginado();
+    }
+
+    function renderUsuariosPaginado() {
+      const txt = (document.getElementById("buscador-usuarios").value || "").toLowerCase();
+      const pageSize = Number(document.getElementById("pag-size-usuarios").value);
+
+      let filtrados = usuariosCache.filter(u =>
+        !txt || u.nombre.toLowerCase().includes(txt) || u.correo.toLowerCase().includes(txt) || u.rol.toLowerCase().includes(txt)
+      );
+      filtrados.sort((a, b) => compararValores(a[sortUsuarios.col], b[sortUsuarios.col], sortUsuarios.asc));
+
+      const totalPags = Math.max(1, Math.ceil(filtrados.length / pageSize));
+      if (pagUsuarios > totalPags) pagUsuarios = totalPags;
+      const pagina = filtrados.slice((pagUsuarios - 1) * pageSize, pagUsuarios * pageSize);
+
+      document.getElementById("tabla-usuarios").innerHTML = pagina.length === 0
+        ? `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">Sin usuarios registrados.</td></tr>`
+        : pagina.map(u => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="px-4 py-3 font-medium">${u.nombre}</td>
+            <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${u.correo}</td>
+            <td class="px-4 py-3"><span class="text-xs font-bold px-2 py-0.5 rounded ${u.rol.toUpperCase() === 'ADMIN' ? 'bg-amber-100 text-amber-800' : u.rol.toUpperCase() === 'DIRECTOR' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}">${u.rol}</span></td>
+            <td class="px-4 py-3 text-xs">${u.tieneHuella ? '<span class="text-green-600 dark:text-green-400 font-semibold">✓ Vinculada</span>' : '<span class="text-slate-400">Pendiente</span>'}</td>
+            <td class="px-4 py-3 text-right">
+              <button onclick='cargarUsuarioEnForm(${JSON.stringify(u)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
+            </td>
+          </tr>
+        `).join('');
+
+      renderControlesPaginacion("pag-controls-usuarios", filtrados.length, pagUsuarios, pageSize, "irPagUsuarios");
+    }
+
+    // --- Submódulo 2: Ambientes ---
+    function resetPagAsignaciones() { pagAsignaciones = 1; renderAsignacionesPaginado(); }
+    function irPagAsignaciones(p) { pagAsignaciones = p; renderAsignacionesPaginado(); }
+    function ordenarAsignaciones(col) {
+      if (sortAsignaciones.col === col) sortAsignaciones.asc = !sortAsignaciones.asc;
+      else { sortAsignaciones.col = col; sortAsignaciones.asc = true; }
+      renderAsignacionesPaginado();
+    }
+
+    function renderAsignacionesPaginado() {
+      const txt = (document.getElementById("buscador-asignaciones").value || "").toLowerCase();
+      const pageSize = Number(document.getElementById("pag-size-asignaciones").value);
+
+      let filtrados = asignacionesCache.filter(a =>
+        !txt || a.ambiente.toLowerCase().includes(txt) || a.nombreDocente.toLowerCase().includes(txt) || a.correoDocente.toLowerCase().includes(txt)
+      );
+      filtrados.sort((a, b) => compararValores(a[sortAsignaciones.col], b[sortAsignaciones.col], sortAsignaciones.asc));
+
+      const totalPags = Math.max(1, Math.ceil(filtrados.length / pageSize));
+      if (pagAsignaciones > totalPags) pagAsignaciones = totalPags;
+      const pagina = filtrados.slice((pagAsignaciones - 1) * pageSize, pagAsignaciones * pageSize);
+
+      document.getElementById("tabla-asignaciones").innerHTML = pagina.length === 0
         ? `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">Aún no hay maestras vinculadas a ambientes.</td></tr>`
-        : data.asignaciones.map(a => `
+        : pagina.map(a => `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
             <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded">${a.ambiente}</span></td>
             <td class="px-4 py-3 font-medium">${a.nombreDocente}<div class="text-xs text-slate-400">${a.correoDocente}</div></td>
@@ -1649,16 +1799,44 @@
           </tr>
         `).join('');
 
-      reglasGradosCache = data.reglasGrados || [];
-      document.getElementById("tabla-reglas").innerHTML = reglasGradosCache.map(r => `
-        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-          <td class="px-4 py-2.5 font-medium">${r.grado}</td>
-          <td class="px-4 py-2.5"><span class="text-xs font-bold bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded">${r.ambiente}</span></td>
-          <td class="px-4 py-2.5 text-right">
-            <button onclick="cargarReglaEnForm('${r.grado}', '${r.ambiente}')" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Cambiar</button>
-          </td>
-        </tr>
-      `).join('');
+      renderControlesPaginacion("pag-controls-asignaciones", filtrados.length, pagAsignaciones, pageSize, "irPagAsignaciones");
+    }
+
+    // --- Submódulo 3: Grados SEP ---
+    function resetPagReglas() { pagReglas = 1; renderReglasPaginado(); }
+    function irPagReglas(p) { pagReglas = p; renderReglasPaginado(); }
+    function ordenarReglas(col) {
+      if (sortReglas.col === col) sortReglas.asc = !sortReglas.asc;
+      else { sortReglas.col = col; sortReglas.asc = true; }
+      renderReglasPaginado();
+    }
+
+    function renderReglasPaginado() {
+      const txt = (document.getElementById("buscador-reglas").value || "").toLowerCase();
+      const pageSize = Number(document.getElementById("pag-size-reglas").value);
+
+      let filtrados = reglasGradosCache.filter(r =>
+        !txt || r.grado.toLowerCase().includes(txt) || r.ambiente.toLowerCase().includes(txt)
+      );
+      filtrados.sort((a, b) => compararValores(a[sortReglas.col], b[sortReglas.col], sortReglas.asc));
+
+      const totalPags = Math.max(1, Math.ceil(filtrados.length / pageSize));
+      if (pagReglas > totalPags) pagReglas = totalPags;
+      const pagina = filtrados.slice((pagReglas - 1) * pageSize, pagReglas * pageSize);
+
+      document.getElementById("tabla-reglas").innerHTML = pagina.length === 0
+        ? `<tr><td colspan="3" class="px-4 py-6 text-center text-slate-500">Sin reglas configuradas.</td></tr>`
+        : pagina.map(r => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="px-4 py-2.5 font-medium">${r.grado}</td>
+            <td class="px-4 py-2.5"><span class="text-xs font-bold bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded">${r.ambiente}</span></td>
+            <td class="px-4 py-2.5 text-right">
+              <button onclick="cargarReglaEnForm('${r.grado}', '${r.ambiente}')" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Cambiar</button>
+            </td>
+          </tr>
+        `).join('');
+
+      renderControlesPaginacion("pag-controls-reglas", filtrados.length, pagReglas, pageSize, "irPagReglas");
     }
 
     function cargarUsuarioEnForm(u) {
@@ -1731,7 +1909,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10)
+    // PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10 + CARGA POR LOTES)
     // ==========================================
     async function cargarPlantillas() {
       const tbody = document.getElementById("tabla-plantillas");
@@ -1831,7 +2009,7 @@
       else alert(res.message);
     }
 
-    // --- CSV PLANTILLA APRENDIZAJES ---
+    // --- CSV PLANTILLA APRENDIZAJES (CARGA POR LOTES DE 500) ---
     function abrirModalImportarPlantilla() {
       plantillasCSVListas = [];
       document.getElementById("archivo-csv-plantilla").value = "";
@@ -1905,20 +2083,43 @@
 
     async function ejecutarImportacionPlantillaCSV() {
       const btn = document.getElementById("btnEjecutarPlantillaCSV");
-      btn.textContent = "Importando..."; btn.disabled = true;
-      const res = await apiCall({
-        action: "importarAprendizajesMasivo",
-        correoSolicitante: usuarioActual.correo,
-        aprendizajes: plantillasCSVListas
-      });
-      btn.textContent = "Confirmar e Importar Catálogo";
-      if (res.success) {
-        alert("✅ " + res.message);
+      const resumen = document.getElementById("resumen-plantilla-csv");
+      btn.disabled = true;
+
+      const TAMANO_LOTE = 500;
+      const total = plantillasCSVListas.length;
+      const totalLotes = Math.ceil(total / TAMANO_LOTE);
+
+      try {
+        for (let i = 0; i < total; i += TAMANO_LOTE) {
+          const loteActual = Math.floor(i / TAMANO_LOTE) + 1;
+          const bloque = plantillasCSVListas.slice(i, i + TAMANO_LOTE);
+
+          btn.textContent = `Subiendo lote ${loteActual} de ${totalLotes}...`;
+          resumen.innerHTML = `⏳ Guardando bloque <strong>${loteActual} de ${totalLotes}</strong> (${Math.min(i + TAMANO_LOTE, total)} de ${total} aprendizajes)...`;
+
+          const res = await apiCall({
+            action: "importarAprendizajesMasivo",
+            correoSolicitante: usuarioActual.correo,
+            aprendizajes: bloque
+          });
+
+          if (!res.success) {
+            alert(`Error en el lote ${loteActual}: ${res.message}`);
+            btn.textContent = "Reintentar Importación";
+            btn.disabled = false;
+            return;
+          }
+        }
+
+        alert(`✅ ¡Catálogo completo importado con éxito! (${total} aprendizajes procesados).`);
         cerrarModalImportarPlantilla();
         cargarPlantillas();
-      } else {
-        alert(res.message);
+      } catch (err) {
+        alert("Error de red durante la carga: " + err.message);
         btn.disabled = false;
+      } finally {
+        btn.textContent = "Confirmar e Importar Catálogo";
       }
     }
 
@@ -1994,6 +2195,8 @@
     }
     function cerrarModalHuella() { document.getElementById("modal-huella").classList.add("hidden"); }
     function cerrarSesion() {
+      localStorage.removeItem(SESSION_KEY);
+      usuarioActual = null;
       document.getElementById("dashboard-section").classList.add("hidden");
       document.getElementById("login-section").classList.remove("hidden");
       volverAEmail();
