@@ -25,8 +25,11 @@
         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Correo Electrónico</label>
         <input type="email" id="emailInput" placeholder="maestra@escuela.com"
                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-4">
-        <button onclick="solicitarCodigo()" id="btnSolicitar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all">
+        <button onclick="solicitarCodigo(false)" id="btnSolicitar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all">
           Continuar
+        </button>
+        <button onclick="solicitarCodigo(true)" id="btnSolicitarOTPDirecto" class="w-full mt-2.5 text-xs text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium py-1.5">
+          ¿Dispositivo nuevo? Enviar código por correo
         </button>
       </div>
 
@@ -57,8 +60,9 @@
       <div class="flex items-center gap-2 sm:gap-3">
         <span id="userNameDisplay" class="font-medium text-slate-600 dark:text-slate-300 text-xs sm:text-sm truncate max-w-[140px] sm:max-w-none"></span>
         <button onclick="abrirModalConfig()" title="Configuración"
-          class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+          class="relative p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
           ⚙
+          <span id="badgeHuellaPendiente" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full" title="Huella sin vincular en este dispositivo"></span>
         </button>
         <button onclick="cerrarSesion()" class="text-xs sm:text-sm text-red-500 hover:text-red-700 font-semibold">Salir</button>
       </div>
@@ -374,7 +378,7 @@
                 <th onclick="ordenarUsuarios('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Nombre ⇅</th>
                 <th onclick="ordenarUsuarios('correo')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Correo ⇅</th>
                 <th onclick="ordenarUsuarios('rol')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Rol ⇅</th>
-                <th class="px-4 py-3">Huella Digital</th>
+                <th class="px-4 py-3">Dispositivos con Huella</th>
                 <th class="px-4 py-3 text-right">Acción</th>
               </tr>
             </thead>
@@ -559,7 +563,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODALES (CONFIG, ALUMNO, CSV, APRENDIZAJE, HUELLA) -->
+  <!-- MODAL CONFIGURACIÓN (MODO OSCURO + HUELLA BIOMÉTRICA) -->
   <!-- ========================================== -->
   <div id="modal-config" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-sm w-full p-6">
@@ -567,22 +571,44 @@
         <h3 class="text-lg font-bold">Configuración</h3>
         <button onclick="cerrarModalConfig()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
       </div>
-      <div class="flex items-center justify-between py-3 border-y border-slate-100 dark:border-slate-800">
-        <div>
-          <p class="font-semibold text-sm">Modo Oscuro</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Reduce el brillo de la pantalla</p>
+
+      <div class="divide-y divide-slate-100 dark:divide-slate-800 border-y border-slate-100 dark:border-slate-800">
+        <!-- Interruptor Modo Oscuro -->
+        <div class="flex items-center justify-between py-3.5">
+          <div>
+            <p class="font-semibold text-sm">Modo Oscuro</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Reduce el brillo de la pantalla</p>
+          </div>
+          <button id="btnToggleDark" onclick="toggleDarkMode()"
+            class="w-12 h-6 rounded-full bg-slate-300 dark:bg-blue-600 p-1 transition-colors flex items-center">
+            <span class="w-4 h-4 rounded-full bg-white shadow transform transition-transform dark:translate-x-6"></span>
+          </button>
         </div>
-        <button id="btnToggleDark" onclick="toggleDarkMode()"
-          class="w-12 h-6 rounded-full bg-slate-300 dark:bg-blue-600 p-1 transition-colors flex items-center">
-          <span class="w-4 h-4 rounded-full bg-white shadow transform transition-transform dark:translate-x-6"></span>
-        </button>
+
+        <!-- Opción de Vincular Huella Digital -->
+        <div class="py-3.5">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="font-semibold text-sm">Huella Digital / FaceID</p>
+              <p id="estado-huella-config" class="text-xs text-slate-500 dark:text-slate-400">Verificando estado...</p>
+            </div>
+          </div>
+          <button onclick="vincularHuella('btnHuellaConfig')" id="btnHuellaConfig"
+            class="w-full mt-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all">
+            Vincular Huella en este Dispositivo
+          </button>
+        </div>
       </div>
+
       <button onclick="cerrarModalConfig()" class="w-full mt-5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-2 rounded-lg text-sm font-semibold">
         Listo
       </button>
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- MODALES (ALUMNO, CSV, APRENDIZAJE, HUELLA) -->
+  <!-- ========================================== -->
   <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-md w-full p-6">
       <h3 id="modal-alumno-titulo" class="text-xl font-bold mb-4">Nuevo Alumno</h3>
@@ -779,6 +805,7 @@
     </div>
   </div>
 
+  <!-- MODAL INVITACIÓN HUELLA DIGITAL -->
   <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-sm w-full p-6 text-center">
       <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -787,8 +814,8 @@
         </svg>
       </div>
       <h3 class="text-xl font-bold mb-2">Entra más rápido</h3>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Vincula tu huella digital o FaceID para tus próximos accesos.</p>
-      <button onclick="vincularHuella()" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3">
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Este dispositivo aún no tiene huella vinculada. Actívala ahora para entrar sin códigos por correo.</p>
+      <button onclick="vincularHuella('btnHuella')" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3">
         Vincular Huella Ahora
       </button>
       <button onclick="cerrarModalHuella()" class="w-full text-slate-500 dark:text-slate-400 text-sm py-2">
@@ -803,6 +830,7 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
     const SESSION_KEY = "montessori_sesion_v2";
+    const DEVICE_PASSKEY_PREFIX = "montessori_passkey_";
     let correoActual = "";
     let usuarioActual = null;
 
@@ -855,10 +883,41 @@
       const isDark = document.documentElement.classList.toggle("dark");
       localStorage.setItem("montessori_dark", isDark);
     }
-    function abrirModalConfig() { document.getElementById("modal-config").classList.remove("hidden"); }
+
+    function dispositivoTieneHuellaActiva(correo) {
+      if (!correo) return false;
+      const localKey = localStorage.getItem(DEVICE_PASSKEY_PREFIX + correo.toLowerCase().trim());
+      if (!localKey) return false;
+      if (usuarioActual && Array.isArray(usuarioActual.passkeyIds)) {
+        return usuarioActual.passkeyIds.includes(localKey);
+      }
+      return true;
+    }
+
+    function actualizarIndicadorHuellaUI() {
+      const activa = dispositivoTieneHuellaActiva(correoActual);
+      document.getElementById("badgeHuellaPendiente").classList.toggle("hidden", activa);
+
+      const estadoTxt = document.getElementById("estado-huella-config");
+      const btnCfg = document.getElementById("btnHuellaConfig");
+      if (activa) {
+        estadoTxt.innerHTML = `<span class="text-green-600 dark:text-green-400 font-semibold">✓ Activa en este dispositivo</span>`;
+        btnCfg.textContent = "Re-vincular Huella en este Dispositivo";
+        btnCfg.className = "w-full mt-1 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold py-2 px-3 rounded-lg text-xs transition-all";
+      } else {
+        estadoTxt.innerHTML = `<span class="text-amber-600 dark:text-amber-400 font-semibold">● Sin vincular en este equipo</span>`;
+        btnCfg.textContent = "Vincular Huella Ahora";
+        btnCfg.className = "w-full mt-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all";
+      }
+    }
+
+    function abrirModalConfig() {
+      actualizarIndicadorHuellaUI();
+      document.getElementById("modal-config").classList.remove("hidden");
+    }
     function cerrarModalConfig() { document.getElementById("modal-config").classList.add("hidden"); }
 
-    // --- RESTAURAR SESIÓN AL RECARGAR (EVITA QUE TE BOTE AL ACTUALIZAR) ---
+    // --- RESTAURAR SESIÓN AL RECARGAR ---
     window.addEventListener("DOMContentLoaded", () => {
       try {
         const guardada = localStorage.getItem(SESSION_KEY);
@@ -964,40 +1023,72 @@
     }
 
     // ==========================================
-    // AUTH & RBAC (ADMIN > DIRECTOR > MAESTRA)
+    // AUTH MULTI-DISPOSITIVO (OTP FALLBACK + HUELLA)
     // ==========================================
-    async function solicitarCodigo() {
-      const email = document.getElementById("emailInput").value.trim();
+    async function solicitarCodigo(forzarOTP = false) {
+      const email = document.getElementById("emailInput").value.trim().toLowerCase();
       if (!email || !email.includes("@")) return mostrarMensaje("Ingresa un correo válido.", "error");
       correoActual = email;
+
       const btn = document.getElementById("btnSolicitar");
-      btn.innerHTML = "Verificando..."; btn.disabled = true;
+      const btnOtp = document.getElementById("btnSolicitarOTPDirecto");
+      btn.innerHTML = "Verificando..."; btn.disabled = true; btnOtp.disabled = true;
       document.getElementById("statusMessage").classList.add("hidden");
 
       try {
-        const data = await apiCall({ action: "solicitarOTP", correo: correoActual });
+        const data = await apiCall({ action: "solicitarOTP", correo: correoActual, forzarOTP });
         if (data.success) {
-          if (data.requiereHuella) {
-            mostrarMensaje("Verificando identidad biométrica...", "success");
-            const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
-            const assertion = await navigator.credentials.get({
-              publicKey: {
-                challenge, rpId: window.location.hostname,
-                allowCredentials: [{ type: "public-key", id: base64urlToBuffer(data.passkeyId) }],
-                userVerification: "required", timeout: 60000
+          if (data.requiereHuella && !forzarOTP) {
+            mostrarMensaje("Verificando identidad biométrica en este dispositivo...", "success");
+            try {
+              const listaIds = (data.passkeyIds && data.passkeyIds.length) ? data.passkeyIds : [data.passkeyId];
+              const allowCredentials = listaIds.map(id => ({ type: "public-key", id: base64urlToBuffer(id) }));
+
+              const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
+              const assertion = await navigator.credentials.get({
+                publicKey: {
+                  challenge, rpId: window.location.hostname,
+                  allowCredentials,
+                  userVerification: "required", timeout: 45000
+                }
+              });
+
+              const rawIdB64 = bufferToBase64url(assertion.rawId);
+              const authData = await apiCall({ action: "validarHuella", correo: correoActual, passkeyId: rawIdB64 });
+              if (authData.success) {
+                localStorage.setItem(DEVICE_PASSKEY_PREFIX + correoActual, rawIdB64);
+                entrarAlPortal(authData.datosUsuario, false, "evaluaciones");
+              } else {
+                // Si la huella no coincidió, enviar código OTP automáticamente
+                await solicitarCodigo(true);
               }
-            });
-            const authData = await apiCall({ action: "validarHuella", correo: correoActual, passkeyId: bufferToBase64url(assertion.rawId) });
-            if (authData.success) entrarAlPortal(authData.datosUsuario, false, "evaluaciones");
-            else mostrarMensaje(authData.message, "error");
+            } catch (bioErr) {
+              // Dispositivo nuevo sin esa huella o cancelada -> enviar OTP automáticamente
+              mostrarMensaje("Dispositivo sin huella vinculada. Enviando código de verificación a tu correo...", "success");
+              const fallbackData = await apiCall({ action: "solicitarOTP", correo: correoActual, forzarOTP: true });
+              if (fallbackData.success) {
+                document.getElementById("step-email").classList.add("hidden");
+                document.getElementById("step-otp").classList.remove("hidden");
+                document.getElementById("displayEmail").textContent = correoActual;
+                mostrarMensaje("Código enviado a tu correo. Revisa tu bandeja.", "success");
+              } else {
+                mostrarMensaje(fallbackData.message, "error");
+              }
+            }
           } else {
             document.getElementById("step-email").classList.add("hidden");
             document.getElementById("step-otp").classList.remove("hidden");
             document.getElementById("displayEmail").textContent = correoActual;
+            mostrarMensaje("Código enviado a tu correo.", "success");
           }
-        } else mostrarMensaje(data.message, "error");
-      } catch (e) { mostrarMensaje("Error de conexión o biometría cancelada.", "error"); }
-      btn.innerHTML = "Continuar"; btn.disabled = false;
+        } else {
+          mostrarMensaje(data.message, "error");
+        }
+      } catch (e) {
+        mostrarMensaje("Error de conexión con el servidor.", "error");
+      }
+
+      btn.innerHTML = "Continuar"; btn.disabled = false; btnOtp.disabled = false;
     }
 
     async function validarCodigo() {
@@ -1008,14 +1099,22 @@
 
       try {
         const data = await apiCall({ action: "validarOTP", correo: correoActual, otp });
-        if (data.success) entrarAlPortal(data.datosUsuario, true, "evaluaciones");
-        else mostrarMensaje(data.message, "error");
-      } catch (e) { mostrarMensaje("Error de conexión.", "error"); }
+        if (data.success) {
+          // Siempre invitar a vincular huella si este dispositivo aún no la tiene activa
+          const invitarHuella = !dispositivoTieneHuellaActiva(correoActual);
+          entrarAlPortal(data.datosUsuario, invitarHuella, "evaluaciones");
+        } else {
+          mostrarMensaje(data.message, "error");
+        }
+      } catch (e) {
+        mostrarMensaje("Error de conexión.", "error");
+      }
       btn.innerHTML = "Verificar y Entrar"; btn.disabled = false;
     }
 
     function entrarAlPortal(datosUsuario, mostrarInvitacionHuella, tabInicial = "evaluaciones") {
       usuarioActual = datosUsuario;
+      correoActual = (datosUsuario.correo || correoActual).toLowerCase().trim();
       guardarSesionLocal(datosUsuario, tabInicial);
 
       document.getElementById("login-section").classList.add("hidden");
@@ -1036,7 +1135,13 @@
       document.getElementById("btnExportPlantillasAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("optRolAdmin").classList.toggle("hidden", !esAdmin);
 
-      if (mostrarInvitacionHuella) setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 500);
+      actualizarIndicadorHuellaUI();
+
+      // Si entró por código o no tiene huella vinculada en este equipo, mostrar invitación
+      if (mostrarInvitacionHuella || !dispositivoTieneHuellaActiva(correoActual)) {
+        setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 450);
+      }
+
       cambiarTab(tabInicial);
     }
 
@@ -1356,8 +1461,6 @@
         } else {
           fichasWrap.innerHTML = pagina.map(a => `
             <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl shadow-sm border ${a.evaluado ? 'border-green-300 dark:border-green-800 bg-green-50/20 dark:bg-green-950/10' : 'border-slate-200 dark:border-slate-800'}">
-              
-              <!-- Metadatos superiores responsivos: Periodo, Materia, Tema y Campo Formativo (Col 7) -->
               <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <span class="text-xs font-bold bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2.5 py-1 rounded-md">
@@ -1375,7 +1478,6 @@
                 </span>
               </div>
 
-              <!-- Texto protagonista: Aprendizaje Esperado (Columna 6 del CSV) -->
               <div class="bg-slate-50 dark:bg-slate-800/70 border-l-4 border-blue-600 p-3.5 sm:p-4 rounded-r-lg mb-4">
                 <span class="block text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
                   Aprendizaje Esperado
@@ -1385,7 +1487,6 @@
                 </p>
               </div>
 
-              <!-- Controles táctiles 100% responsivos para móvil, tablet y PC -->
               <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
                 <div class="grid grid-cols-4 sm:flex gap-1.5 sm:gap-2">
                   ${[1, 2, 3, 4].map(n => `
@@ -1758,7 +1859,7 @@
             <td class="px-4 py-3 font-medium">${u.nombre}</td>
             <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${u.correo}</td>
             <td class="px-4 py-3"><span class="text-xs font-bold px-2 py-0.5 rounded ${u.rol.toUpperCase() === 'ADMIN' ? 'bg-amber-100 text-amber-800' : u.rol.toUpperCase() === 'DIRECTOR' ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'}">${u.rol}</span></td>
-            <td class="px-4 py-3 text-xs">${u.tieneHuella ? '<span class="text-green-600 dark:text-green-400 font-semibold">✓ Vinculada</span>' : '<span class="text-slate-400">Pendiente</span>'}</td>
+            <td class="px-4 py-3 text-xs">${u.tieneHuella ? `<span class="text-green-600 dark:text-green-400 font-semibold">✓ Activa (${u.cantidadDispositivos || 1} disp.)</span>` : '<span class="text-slate-400">Pendiente</span>'}</td>
             <td class="px-4 py-3 text-right">
               <button onclick='cargarUsuarioEnForm(${JSON.stringify(u)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
             </td>
@@ -2169,12 +2270,18 @@
     }
 
     // ==========================================
-    // UTILIDADES HUELLA Y SESIÓN
+    // UTILIDADES HUELLA MULTI-DISPOSITIVO Y SESIÓN
     // ==========================================
-    async function vincularHuella() {
-      const btn = document.getElementById("btnHuella");
-      btn.innerHTML = "Activando sensor..."; btn.disabled = true;
+    async function vincularHuella(btnId = "btnHuella") {
+      const btn = document.getElementById(btnId);
+      const textoPrevio = btn ? btn.innerHTML : "Vincular Huella";
+      if (btn) { btn.innerHTML = "Activando sensor..."; btn.disabled = true; }
+
       try {
+        if (!window.PublicKeyCredential) {
+          alert("Este navegador o dispositivo no soporta huella digital / FaceID.");
+          return;
+        }
         const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
         const userId = new Uint8Array(16); window.crypto.getRandomValues(userId);
         const credential = await navigator.credentials.create({
@@ -2186,10 +2293,27 @@
             timeout: 60000, attestation: "none"
           }
         });
-        const data = await apiCall({ action: "registrarHuella", correo: correoActual, passkeyId: bufferToBase64url(credential.rawId) });
-        if (data.success) { alert("✅ ¡Huella registrada!"); cerrarModalHuella(); }
-      } catch (err) { alert("Registro cancelado o no soportado."); }
-      btn.innerHTML = "Vincular Huella Ahora"; btn.disabled = false;
+
+        const passkeyB64 = bufferToBase64url(credential.rawId);
+        const data = await apiCall({ action: "registrarHuella", correo: correoActual, passkeyId: passkeyB64 });
+
+        if (data.success) {
+          localStorage.setItem(DEVICE_PASSKEY_PREFIX + correoActual.toLowerCase().trim(), passkeyB64);
+          if (usuarioActual) {
+            usuarioActual.passkeyIds = data.passkeyIds || [passkeyB64];
+            guardarSesionLocal(usuarioActual, localStorage.getItem(SESSION_KEY) ? JSON.parse(localStorage.getItem(SESSION_KEY)).tabActiva : "evaluaciones");
+          }
+          actualizarIndicadorHuellaUI();
+          cerrarModalHuella();
+          alert("✅ ¡Huella vinculada con éxito en este dispositivo!");
+        } else {
+          alert(data.message);
+        }
+      } catch (err) {
+        alert("Registro cancelado o sensor no disponible en este navegador.");
+      } finally {
+        if (btn) { btn.innerHTML = textoPrevio; btn.disabled = false; }
+      }
     }
 
     function volverAEmail() {
