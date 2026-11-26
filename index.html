@@ -2134,7 +2134,7 @@
       ].join("\n"));
     }
 
-    function previsualizarPlantillaCSV(event) {
+   function previsualizarPlantillaCSV(event) {
       const file = event.target.files[0];
       if (!file) return;
       leerArchivoTextoInteligente(file, function(texto) {
@@ -2142,17 +2142,32 @@
         if (lineas.length < 2) return alert("Archivo vacío.");
 
         const separador = lineas[0].includes(";") ? ";" : ",";
-        const headers = parsearLineaCSV(lineas[0], separador).map(h => h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-        const idxId = headers.findIndex(h => h.includes("id"));
-        const idxAmb = headers.findIndex(h => h.includes("ambiente") || h.includes("nivel"));
-        const idxPer = headers.findIndex(h => h.includes("periodo"));
-        const idxMat = headers.findIndex(h => h.includes("materia"));
-        const idxTema = headers.findIndex(h => h.includes("tema"));
-        const idxAp = headers.findIndex(h => h.includes("aprendizaje"));
-        const idxCampo = headers.findIndex(h => h.includes("campo"));
+        const headers = parsearLineaCSV(lineas[0], separador).map(h =>
+          h.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        );
 
-        if (idxId === -1 || idxAmb === -1 || idxAp === -1) {
-          return alert("Faltan columnas obligatorias: ID_Aprendizaje, Ambiente, Aprendizaje_Esperado.");
+        // Búsqueda exacta sin colisiones entre ID_Aprendizaje y Aprendizaje_Esperado
+        let idxId = headers.findIndex(h => h === "id" || h === "id_aprendizaje" || h === "codigo");
+        let idxAmb = headers.findIndex(h => h === "ambiente" || h === "nivel" || h === "grado_montessori");
+        let idxPer = headers.findIndex(h => h === "periodo" || h === "trimestre");
+        let idxMat = headers.findIndex(h => h === "materia" || h === "asignatura");
+        let idxTema = headers.findIndex(h => h === "tema" || h === "subtema");
+        let idxAp = headers.findIndex(h =>
+          h !== "id_aprendizaje" && (h === "aprendizaje_esperado" || h === "aprendizaje" || h === "indicador" || h === "descripcion")
+        );
+        let idxCampo = headers.findIndex(h => h.includes("campo"));
+
+        // Respaldo posicional estándar (Cols 1 a 7: ID, Ambiente, Periodo, Materia, Tema, Aprendizaje, Campo)
+        if (idxId === -1 && headers.length >= 6) idxId = 0;
+        if (idxAmb === -1 && headers.length >= 6) idxAmb = 1;
+        if (idxPer === -1 && headers.length >= 6) idxPer = 2;
+        if (idxMat === -1 && headers.length >= 6) idxMat = 3;
+        if (idxTema === -1 && headers.length >= 6) idxTema = 4;
+        if (idxAp === -1 && headers.length >= 6) idxAp = 5;
+        if (idxCampo === -1 && headers.length >= 7) idxCampo = 6;
+
+        if (idxId === -1 || idxAmb === -1 || idxAp === -1 || idxId === idxAp) {
+          return alert("No se pudieron identificar correctamente las columnas ID_Aprendizaje y Aprendizaje_Esperado. Revisa los encabezados de tu CSV.");
         }
 
         plantillasCSVListas = [];
@@ -2170,16 +2185,16 @@
         }
 
         const resumen = document.getElementById("resumen-plantilla-csv");
-        resumen.innerHTML = `Se detectaron <strong>${plantillasCSVListas.length} aprendizajes</strong> listos para cargar al catálogo.`;
+        resumen.innerHTML = `Se detectaron <strong>${plantillasCSVListas.length} aprendizajes</strong>. Verifica en la tabla de abajo que la columna <strong>Aprendizaje Esperado</strong> muestre tu texto desglosado antes de confirmar:`;
         resumen.classList.remove("hidden");
 
         document.getElementById("tabla-preview-plantilla").innerHTML = plantillasCSVListas.slice(0, 50).map(r => `
           <tr>
-            <td class="px-3 py-1.5 font-mono font-bold">${r.id}</td>
+            <td class="px-3 py-1.5 font-mono font-bold text-slate-500">${r.id}</td>
             <td class="px-3 py-1.5">${r.ambiente}</td>
             <td class="px-3 py-1.5">${r.periodo}</td>
             <td class="px-3 py-1.5">${r.materia}</td>
-            <td class="px-3 py-1.5">${r.aprendizaje}</td>
+            <td class="px-3 py-1.5 font-semibold text-slate-900 dark:text-white">${r.aprendizaje}</td>
           </tr>
         `).join('');
         document.getElementById("preview-plantilla-container").classList.remove("hidden");
