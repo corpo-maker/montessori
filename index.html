@@ -246,17 +246,20 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 2: PASE DE LISTA DIARIO (ASISTENCIAS_V2) -->
+    <!-- PESTAÑA 2: PASE DE LISTA + IMPORTADOR RELOJ CHECADOR -->
     <!-- ========================================== -->
     <main id="vista-asistencias" class="hidden p-4 sm:p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
         <div>
-          <h3 class="text-xl sm:text-2xl font-bold">Pase de Lista Diario</h3>
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Registra asistencias, retardos y faltas por Ambiente Montessori (enlazado a boletas y tutores)</p>
+          <h3 class="text-xl sm:text-2xl font-bold">Pase de Lista y Reloj Checador</h3>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Importa reportes mensuales del reloj (tolerancia 08:20 AM) o registra el pase diario por grupo</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button id="btnExportAsisAdmin" onclick="exportarAsistenciasCSV()" class="hidden text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-semibold">
             ↓ Descargar Historial (Admin)
+          </button>
+          <button id="btnImportarReloj" onclick="abrirModalImportarReloj()" class="hidden text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg font-semibold shadow-sm">
+            ↑ Importar Reporte Reloj (CSV)
           </button>
           <button onclick="marcarTodosPresentes()" class="text-xs bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-2 rounded-lg font-semibold">
             ✓ Marcar Grupo Presente
@@ -319,7 +322,7 @@
               <th onclick="ordenarAsistencias('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno / Tutores ⇅</th>
               <th onclick="ordenarAsistencias('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente ⇅</th>
               <th class="px-4 py-3">Estatus del Día</th>
-              <th class="px-4 py-3">Observaciones</th>
+              <th class="px-4 py-3">Observaciones / Hora Reloj</th>
               <th class="px-4 py-3 text-center">Acumulado</th>
             </tr>
           </thead>
@@ -336,18 +339,18 @@
       <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
         <div>
           <h3 class="text-xl sm:text-2xl font-bold">Matrícula Escolar</h3>
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">El Ambiente Montessori y sus maestras se asignan automáticamente según el Grado SEP</p>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Incluye datos de Padre y Madre para envío automático de Boletas SEP</p>
         </div>
         <div class="flex flex-wrap gap-2">
           <button id="btnExportMatriculaAdmin" onclick="exportarMatriculaCSV()" class="hidden text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-semibold">↓ Exportar CSV (Admin)</button>
           <button onclick="cargarMatricula()" class="text-xs bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-2 rounded-lg font-semibold">↻ Actualizar</button>
-          <button onclick="abrirModalImportar()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold">↑ Importar CSV</button>
+          <button onclick="abrirModalImportar()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold">↑ Importar Matrícula CSV</button>
           <button onclick="abrirModalAlumno()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">+ Nuevo Alumno</button>
         </div>
       </div>
 
       <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4 flex flex-wrap items-center gap-3">
-        <input type="text" id="buscador-matricula" oninput="resetPagMatricula()" placeholder="Buscar por ID o nombre..."
+        <input type="text" id="buscador-matricula" oninput="resetPagMatricula()" placeholder="Buscar por ID, alumno, padre o madre..."
           class="w-full sm:flex-grow sm:min-w-[220px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
         <select id="filtro-amb-matricula" onchange="resetPagMatricula()" class="w-full sm:w-auto border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
           <option value="TODOS">Todos los Ambientes</option>
@@ -374,9 +377,9 @@
           <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
             <tr>
               <th onclick="ordenarMatricula('id')" class="px-4 py-3 cursor-pointer hover:text-blue-600">ID ⇅</th>
-              <th onclick="ordenarMatricula('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno / Tutores (Boletas) ⇅</th>
+              <th onclick="ordenarMatricula('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno / Padres y Tutores ⇅</th>
               <th onclick="ordenarMatricula('grado')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Grado SEP ⇅</th>
-              <th onclick="ordenarMatricula('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente Auto ⇅</th>
+              <th onclick="ordenarMatricula('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente ⇅</th>
               <th class="px-4 py-3">Maestras del Grupo</th>
               <th onclick="ordenarMatricula('estatus')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Estatus ⇅</th>
               <th class="px-4 py-3 text-right">Acción</th>
@@ -415,7 +418,6 @@
         </button>
       </div>
 
-      <!-- SUB-VISTA 1: PERSONAL (PAGINADA) -->
       <section id="subvista-personal">
         <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
           <h4 class="text-sm font-bold mb-3">Registrar o actualizar correo de acceso</h4>
@@ -464,7 +466,6 @@
         <div id="pag-controls-usuarios" class="mt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
       </section>
 
-      <!-- SUB-VISTA 2: AMBIENTES (PAGINADA) -->
       <section id="subvista-ambientes" class="hidden">
         <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
           <h4 class="text-sm font-bold mb-3">Vincular maestra a un Ambiente Montessori (Co-docencia)</h4>
@@ -523,7 +524,6 @@
         <div id="pag-controls-asignaciones" class="mt-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
       </section>
 
-      <!-- SUB-VISTA 3: GRADOS SEP (PAGINADA) -->
       <section id="subvista-grados" class="hidden">
         <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
           <h4 class="text-sm font-bold mb-3">Configurar regla Grado SEP → Ambiente Montessori</h4>
@@ -574,7 +574,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 5: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10) -->
+    <!-- PESTAÑA 5: PLANTILLA DE APRENDIZAJES -->
     <!-- ========================================== -->
     <main id="vista-plantillas" class="hidden p-4 sm:p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
@@ -681,15 +681,24 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODALES (ALUMNO MULTI-TUTOR, CSV, APRENDIZAJE, HUELLA) -->
+  <!-- MODAL ALUMNO (CON PADRE, MADRE Y CORREOS) -->
   <!-- ========================================== -->
   <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-md w-full p-6">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-lg w-full p-6 max-h-[92vh] overflow-y-auto">
       <h3 id="modal-alumno-titulo" class="text-xl font-bold mb-4">Nuevo Alumno</h3>
       <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">ID Alumno *</label>
-          <input type="text" id="al-id" placeholder="Ej. 205" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">ID Alumno *</label>
+            <input type="text" id="al-id" placeholder="Ej. 205" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div class="col-span-2">
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Estatus</label>
+            <select id="al-estatus" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+              <option value="vigente">Vigente</option>
+              <option value="baja">Baja</option>
+            </select>
+          </div>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Nombre Completo *</label>
@@ -712,17 +721,20 @@
             </select>
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Estatus</label>
-          <select id="al-estatus" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
-            <option value="vigente">Vigente</option>
-            <option value="baja">Baja</option>
-          </select>
+        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Nombre del Padre</label>
+            <input type="text" id="al-padre" placeholder="Nombre completo" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Nombre de la Madre</label>
+            <input type="text" id="al-mama" placeholder="Nombre completo" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-xs">
+          </div>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Correos de Tutores (Entrega de Boletas)</label>
-          <input type="text" id="al-tutor" placeholder="mama@gmail.com, papa@gmail.com" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
-          <p class="text-[11px] text-slate-400 mt-1">Puedes agregar varios correos separados por coma (,)</p>
+          <input type="text" id="al-tutor" placeholder="padre@gmail.com, madre@gmail.com" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+          <p class="text-[11px] text-slate-400 mt-1">Puedes capturar ambos correos separados por coma (,)</p>
         </div>
       </div>
       <div class="flex justify-end gap-2 mt-6">
@@ -732,12 +744,15 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- MODAL IMPORTACIÓN MATRÍCULA CON DETECTOR DE INCONSISTENCIAS -->
+  <!-- ========================================== -->
   <div id="modal-importar" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-2xl w-full p-6 max-h-[90vh] flex flex-col">
-      <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-4xl w-full p-6 max-h-[92vh] flex flex-col">
+      <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
         <div>
-          <h3 class="text-xl font-bold">Importación Masiva de Matrícula</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Columnas: <strong>ID_Alumno, Nombre_Completo, Grado_SEP, Estatus, Correo_Tutor</strong> (acepta múltiples correos separados por coma)</p>
+          <h3 class="text-xl font-bold">Importación de Matrícula (Layout Completo)</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Detecta automáticamente <strong>ID, NOMBRE, Grado SEP, MONTESSORI, NOMBRE PADRE, CORREO, NOMBRE MAMA, CORREO.1</strong></p>
         </div>
         <button onclick="descargarPlantillaCSV()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold px-3 py-1.5 rounded-lg">
           ↓ Descargar plantilla CSV
@@ -745,37 +760,112 @@
       </div>
 
       <input type="file" id="archivo-csv-alumnos" accept=".csv" onchange="previsualizarCSV(event)"
-        class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-4 text-sm bg-slate-50 dark:bg-slate-800 mb-4 cursor-pointer">
+        class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-sm bg-slate-50 dark:bg-slate-800 mb-3 cursor-pointer">
 
-      <div id="resumen-csv" class="hidden text-xs font-semibold mb-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-200"></div>
+      <!-- PANEL DE INCONSISTENCIAS Y ALERTA PARA ORIGEN DEL DATO -->
+      <div id="panel-inconsistencias-matricula" class="hidden mb-3 border border-amber-300 dark:border-amber-700 bg-amber-50/90 dark:bg-amber-950/50 rounded-xl p-3.5">
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+          <div class="text-xs font-bold text-amber-800 dark:text-amber-200">
+            ⚠️ Inconsistencias detectadas en el archivo de origen (corrige aquí antes de importar y actualiza tu Excel maestro):
+          </div>
+          <button onclick="descargarAlertaOrigenMatricula()" class="text-[11px] bg-amber-600 hover:bg-amber-700 text-white font-bold px-2.5 py-1 rounded">
+            ↓ Descargar Alerta para Origen (.csv)
+          </button>
+        </div>
+        <div id="lista-inconsistencias-matricula" class="max-h-36 overflow-y-auto space-y-1.5 text-xs"></div>
+      </div>
 
-      <div id="preview-csv-container" class="hidden overflow-y-auto border border-slate-200 dark:border-slate-800 rounded-xl mb-4 flex-grow">
+      <div id="resumen-csv" class="hidden text-xs font-semibold mb-2 p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-200"></div>
+
+      <div id="preview-csv-container" class="hidden overflow-y-auto border border-slate-200 dark:border-slate-800 rounded-xl mb-3 flex-grow">
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-100 dark:bg-slate-800 uppercase sticky top-0">
             <tr>
               <th class="px-3 py-2">ID</th>
-              <th class="px-3 py-2">Nombre</th>
-              <th class="px-3 py-2">Grado SEP</th>
-              <th class="px-3 py-2">Ambiente Auto</th>
-              <th class="px-3 py-2">Tutores</th>
+              <th class="px-3 py-2">Alumno</th>
+              <th class="px-3 py-2">Grado / Amb.</th>
+              <th class="px-3 py-2">Padre y Madre</th>
+              <th class="px-3 py-2">Correos Boleta</th>
             </tr>
           </thead>
           <tbody id="tabla-preview-csv" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
         </table>
       </div>
 
-      <div id="resultado-importacion" class="hidden text-xs p-3 rounded-lg mb-4"></div>
+      <div id="resultado-importacion" class="hidden text-xs p-3 rounded-lg mb-3"></div>
 
       <div class="flex justify-end gap-2 mt-auto">
         <button onclick="cerrarModalImportar()" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cerrar</button>
         <button onclick="ejecutarImportacionCSV()" id="btnEjecutarCSV" disabled
           class="px-4 py-2 text-sm bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 hover:bg-emerald-700 text-white font-semibold rounded-lg">
-          Confirmar e Importar
+          Confirmar e Importar Matrícula
         </button>
       </div>
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- MODAL IMPORTACIÓN RELOJ CHECADOR (TOLERANCIA 08:20 + INCONSISTENCIAS) -->
+  <!-- ========================================== -->
+  <div id="modal-importar-reloj" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-4xl w-full p-6 max-h-[92vh] flex flex-col">
+      <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+        <div>
+          <h3 class="text-xl font-bold">Importar Reporte de Reloj Checador</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Cruza automáticamente por nombre contra Matrícula y clasifica Asistencia, Retardo y Falta según hora de entrada</p>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+          <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Tolerancia Retardo:</label>
+          <input type="time" id="hora-tolerancia-reloj" value="08:20" onchange="reprocesarRelojConTolerancia()"
+            class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded px-2 py-0.5 text-xs font-bold">
+        </div>
+      </div>
+
+      <input type="file" id="archivo-csv-reloj" accept=".csv" onchange="previsualizarRelojCSV(event)"
+        class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-sm bg-slate-50 dark:bg-slate-800 mb-3 cursor-pointer">
+
+      <!-- PANEL DE INCONSISTENCIAS DE CRUCE (RELOJ vs MATRÍCULA) -->
+      <div id="panel-inconsistencias-reloj" class="hidden mb-3 border border-amber-300 dark:border-amber-700 bg-amber-50/90 dark:bg-amber-950/50 rounded-xl p-3.5">
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+          <div class="text-xs font-bold text-amber-800 dark:text-amber-200">
+            ⚠️ Diferencias de nombre entre Reloj Checador y Matrícula (vincula el alumno correcto aquí y descarga la alerta para corregirlo en el reloj):
+          </div>
+          <button onclick="descargarAlertaOrigenReloj()" class="text-[11px] bg-amber-600 hover:bg-amber-700 text-white font-bold px-2.5 py-1 rounded">
+            ↓ Descargar Alerta para Reloj (.csv)
+          </button>
+        </div>
+        <div id="lista-inconsistencias-reloj" class="max-h-44 overflow-y-auto space-y-2 text-xs"></div>
+      </div>
+
+      <div id="resumen-reloj-csv" class="hidden text-xs font-semibold mb-2 p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-200"></div>
+
+      <div id="preview-reloj-container" class="hidden overflow-y-auto border border-slate-200 dark:border-slate-800 rounded-xl mb-3 flex-grow">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-100 dark:bg-slate-800 uppercase sticky top-0">
+            <tr>
+              <th class="px-3 py-2">ID</th>
+              <th class="px-3 py-2">Alumno (Matrícula)</th>
+              <th class="px-3 py-2">Grupo</th>
+              <th class="px-3 py-2 text-center text-green-600">Asist.</th>
+              <th class="px-3 py-2 text-center text-amber-600">Retardos</th>
+              <th class="px-3 py-2 text-center text-red-600">Faltas</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-preview-reloj" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-auto">
+        <button onclick="cerrarModalImportarReloj()" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">Cerrar</button>
+        <button onclick="ejecutarImportacionReloj()" id="btnEjecutarRelojCSV" disabled
+          class="px-4 py-2 text-sm bg-indigo-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 hover:bg-indigo-700 text-white font-semibold rounded-lg">
+          Confirmar e Importar Asistencias
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES APRENDIZAJE Y HUELLA -->
   <div id="modal-aprendizaje" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-lg w-full p-6">
       <h3 id="modal-ap-titulo" class="text-xl font-bold mb-4">Nuevo Aprendizaje Esperado</h3>
@@ -878,7 +968,6 @@
     </div>
   </div>
 
-  <!-- MODAL INVITACIÓN HUELLA DIGITAL -->
   <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-sm w-full p-6 text-center">
       <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -898,7 +987,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCRIPTS Y LÓGICA -->
+  <!-- SCRIPTS Y LÓGICA (PARTE 2 DE 2) -->
   <!-- ========================================== -->
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
@@ -923,10 +1012,14 @@
     let pagDetalle = 1;
     let sortDetalle = { col: 'orden', asc: true };
 
-    // Estado Asistencias
+    // Estado Asistencias & Reloj Checador
     let asistenciasCache = [];
     let pagAsistencias = 1;
     let sortAsistencias = { col: 'nombre', asc: true };
+    let relojParsedRows = [];
+    let relojDateCols = [];
+    let relojRegistrosListos = [];
+    let relojInconsistencias = [];
 
     // Estado Matrícula
     let matriculaCache = [];
@@ -934,6 +1027,7 @@
     let pagMatricula = 1;
     let sortMatricula = { col: 'id', asc: true };
     let registrosCSVListos = [];
+    let matriculaInconsistencias = [];
 
     // Estado Maestras y Ambientes
     let usuariosCache = [];
@@ -997,7 +1091,6 @@
 
     // --- RESTAURAR SESIÓN AL RECARGAR ---
     window.addEventListener("DOMContentLoaded", () => {
-      // Inicializar fecha de hoy en formato local YYYY-MM-DD
       const hoy = new Date();
       const yyyy = hoy.getFullYear();
       const mm = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -1078,6 +1171,20 @@
       const a = document.createElement("a");
       a.href = url; a.download = nombreArchivo; a.click();
       URL.revokeObjectURL(url);
+    }
+
+    function escaparCSV(val) {
+      const str = (val === null || val === undefined) ? "" : String(val);
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+
+    function normalizarTextoClave(str) {
+      return (str || "").toString()
+        .toUpperCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^A-Z0-9\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
     }
 
     function compararValores(a, b, asc) {
@@ -1211,6 +1318,7 @@
       document.getElementById("tab-matricula").classList.toggle("hidden", !esDirectivo);
       document.getElementById("tab-maestras").classList.toggle("hidden", !esDirectivo);
       document.getElementById("tab-plantillas").classList.toggle("hidden", !esDirectivo);
+      document.getElementById("btnImportarReloj").classList.toggle("hidden", !esDirectivo);
 
       document.getElementById("btnExportEvalAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("btnExportAsisAdmin").classList.toggle("hidden", !esAdmin);
@@ -1661,7 +1769,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 2: PASE DE LISTA DIARIO (ASISTENCIAS_V2)
+    // PESTAÑA 2: PASE DE LISTA DIARIO + IMPORTADOR RELOJ CHECADOR
     // ==========================================
     async function cargarAsistenciasDia() {
       const tbody = document.getElementById("tbody-asistencias");
@@ -1707,9 +1815,7 @@
     function marcarTodosPresentes() {
       const amb = document.getElementById("filtro-amb-asistencia").value;
       asistenciasCache.forEach(a => {
-        if (amb === "TODOS" || a.ambiente === amb) {
-          a.estatus = "Asistencia";
-        }
+        if (amb === "TODOS" || a.ambiente === amb) a.estatus = "Asistencia";
       });
       renderAsistenciasDia();
     }
@@ -1725,7 +1831,6 @@
         return true;
       });
 
-      // Resumen estadístico de la selección actual
       const totA = filtrados.filter(x => x.estatus === "Asistencia").length;
       const totR = filtrados.filter(x => x.estatus === "Retardo").length;
       const totF = filtrados.filter(x => x.estatus === "Falta").length;
@@ -1795,7 +1900,7 @@
               <td class="px-4 py-3">
                 <input type="text" value="${a.observaciones || ''}" oninput="actualizarObsAsistenciaLocal('${a.id}', this.value)"
                   placeholder="Nota (opcional)"
-                  class="w-full min-w-[140px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-400">
+                  class="w-full min-w-[150px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-400">
               </td>
               <td class="px-4 py-3 text-center whitespace-nowrap text-xs">
                 <span class="text-green-600 font-bold" title="Asistencias">${a.acumulado.Asistencia}A</span> /
@@ -1844,6 +1949,312 @@
       }
     }
 
+    // --- IMPORTADOR RELOJ CHECADOR (CON CRUCE DIFUSO Y DETECTOR DE INCONSISTENCIAS) ---
+    function abrirModalImportarReloj() {
+      relojParsedRows = [];
+      relojDateCols = [];
+      relojRegistrosListos = [];
+      relojInconsistencias = [];
+      document.getElementById("archivo-csv-reloj").value = "";
+      document.getElementById("panel-inconsistencias-reloj").classList.add("hidden");
+      document.getElementById("resumen-reloj-csv").classList.add("hidden");
+      document.getElementById("preview-reloj-container").classList.add("hidden");
+      document.getElementById("btnEjecutarRelojCSV").disabled = true;
+      document.getElementById("modal-importar-reloj").classList.remove("hidden");
+    }
+    function cerrarModalImportarReloj() { document.getElementById("modal-importar-reloj").classList.add("hidden"); }
+
+    function buscarCoincidenciaAlumno(nombreReloj, listaAlumnos) {
+      const claveReloj = normalizarTextoClave(nombreReloj);
+      // 1. Coincidencia exacta normalizada (quita acentos y espacios dobles)
+      const exacta = listaAlumnos.find(al => normalizarTextoClave(al.nombre) === claveReloj);
+      if (exacta) return { tipo: "EXACTA", alumno: exacta };
+
+      // 2. Coincidencia por tokens (ej. 2 apellidos + primer nombre, o pequeñas diferencias de letras)
+      const tokensReloj = claveReloj.split(" ").filter(Boolean);
+      let mejorCandidato = null;
+      let mejorScore = 0;
+
+      listaAlumnos.forEach(al => {
+        const tokensMat = normalizarTextoClave(al.nombre).split(" ").filter(Boolean);
+        // Si comparten al menos los 2 apellidos o >= 3 tokens
+        let coincidencias = 0;
+        tokensReloj.forEach(tr => {
+          if (tokensMat.some(tm => tm === tr || (tr.length >= 5 && tm.startsWith(tr.slice(0, 5))))) {
+            coincidencias++;
+          }
+        });
+        const score = coincidencias / Math.max(tokensReloj.length, tokensMat.length);
+        if (coincidencias >= 2 && score > mejorScore) {
+          mejorScore = score;
+          mejorCandidato = al;
+        }
+      });
+
+      if (mejorCandidato && mejorScore >= 0.5) {
+        return { tipo: "SUGERIDA", alumno: mejorCandidato };
+      }
+      return { tipo: "NO_ENCONTRADO", alumno: null };
+    }
+
+    function previsualizarRelojCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      leerArchivoTextoInteligente(file, function(texto) {
+        const lineas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
+        if (lineas.length < 2) return alert("El archivo del reloj está vacío.");
+
+        const separador = lineas[0].includes(";") ? ";" : ",";
+        const headers = parsearLineaCSV(lineas[0], separador);
+
+        const idxAp = headers.findIndex(h => h.toLowerCase().trim() === "apellidos");
+        const idxNom = headers.findIndex(h => h.toLowerCase().trim() === "nombre");
+        const idxGrp = headers.findIndex(h => h.toLowerCase().trim() === "grupo");
+
+        if (idxAp === -1 || idxNom === -1) {
+          return alert("El archivo debe contener las columnas 'Apellidos' y 'Nombre'.");
+        }
+
+        // Detectar columnas de fecha DD-MM-YYYY (cada fecha tiene entrada en colIndex y salida en colIndex + 1)
+        relojDateCols = [];
+        headers.forEach((h, idx) => {
+          const m = h.trim().match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
+          if (m) {
+            relojDateCols.push({
+              colEntrada: idx,
+              colSalida: idx + 1,
+              fechaOriginal: h.trim(),
+              fechaISO: `${m[3]}-${m[2]}-${m[1]}`
+            });
+          }
+        });
+
+        if (relojDateCols.length === 0) {
+          return alert("No se detectaron columnas de fechas con formato DD-MM-YYYY.");
+        }
+
+        relojParsedRows = [];
+        relojInconsistencias = [];
+
+        for (let i = 1; i < lineas.length; i++) {
+          const cols = parsearLineaCSV(lineas[i], separador);
+          const ap = (cols[idxAp] || "").trim();
+          const nom = (cols[idxNom] || "").trim();
+          const grp = idxGrp !== -1 ? (cols[idxGrp] || "").trim() : "";
+          if (!ap && !nom) continue;
+
+          const nombreCompletoReloj = `${ap} ${nom}`.replace(/\s+/g, " ").trim().toUpperCase();
+          const match = buscarCoincidenciaAlumno(nombreCompletoReloj, asistenciasCache);
+
+          const filaObj = {
+            filaExcel: i + 1,
+            nombreReloj: nombreCompletoReloj,
+            grupoReloj: grp,
+            idAlumnoAsignado: match.alumno ? match.alumno.id : "",
+            nombreMatricula: match.alumno ? match.alumno.nombre : "",
+            tipoMatch: match.tipo,
+            cols: cols
+          };
+          relojParsedRows.push(filaObj);
+
+          if (match.tipo !== "EXACTA") {
+            relojInconsistencias.push(filaObj);
+          }
+        }
+
+        renderPanelInconsistenciasReloj();
+        reprocesarRelojConTolerancia();
+      });
+    }
+
+    function renderPanelInconsistenciasReloj() {
+      const panel = document.getElementById("panel-inconsistencias-reloj");
+      const lista = document.getElementById("lista-inconsistencias-reloj");
+      if (relojInconsistencias.length === 0) {
+        panel.classList.add("hidden");
+        return;
+      }
+
+      panel.classList.remove("hidden");
+      const opcionesAlumnos = `<option value="">-- Omitir (No está en Matrícula) --</option>` +
+        asistenciasCache
+          .slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+          .map(al => `<option value="${al.id}">${al.nombre} (ID: ${al.id} • ${al.ambiente})</option>`)
+          .join('');
+
+      lista.innerHTML = relojInconsistencias.map((inc, idx) => `
+        <div class="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-amber-200 dark:border-amber-800 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="font-bold text-slate-800 dark:text-white">Fila ${inc.filaExcel}: ${inc.nombreReloj}</span>
+            <span class="ml-1.5 text-[11px] text-slate-500">(${inc.grupoReloj})</span>
+            <span class="block text-[11px] ${inc.tipoMatch === 'SUGERIDA' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}">
+              ${inc.tipoMatch === 'SUGERIDA' ? '⚡ Coincidencia sugerida automáticamente (verifica):' : '❌ No encontrado en Matrícula vigente:'}
+            </span>
+          </div>
+          <select onchange="cambiarAsignacionReloj(${idx}, this.value)"
+            class="border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded px-2 py-1 text-xs font-semibold max-w-xs">
+            ${opcionesAlumnos}
+          </select>
+        </div>
+      `).join('');
+
+      // Preseleccionar las sugerencias detectadas
+      const selects = lista.querySelectorAll("select");
+      relojInconsistencias.forEach((inc, idx) => {
+        if (inc.idAlumnoAsignado && selects[idx]) {
+          selects[idx].value = inc.idAlumnoAsignado;
+        }
+      });
+    }
+
+    function cambiarAsignacionReloj(idxInc, nuevoIdAlumno) {
+      const inc = relojInconsistencias[idxInc];
+      if (!inc) return;
+      inc.idAlumnoAsignado = nuevoIdAlumno;
+      const al = asistenciasCache.find(x => x.id === nuevoIdAlumno);
+      inc.nombreMatricula = al ? al.nombre : "";
+      reprocesarRelojConTolerancia();
+    }
+
+    function parsearMinutosHora(horaStr) {
+      if (!horaStr) return null;
+      const s = horaStr.toString().trim();
+      if (!s || s === "0:00" || s === "00:00" || !s.includes(":")) return null;
+      const partes = s.split(":");
+      const h = parseInt(partes[0], 10);
+      const m = parseInt(partes[1], 10);
+      if (isNaN(h) || isNaN(m)) return null;
+      return h * 60 + m;
+    }
+
+    function reprocesarRelojConTolerancia() {
+      if (relojParsedRows.length === 0) return;
+
+      const tolStr = document.getElementById("hora-tolerancia-reloj").value || "08:20";
+      const minTolerancia = parsearMinutosHora(tolStr) || (8 * 60 + 20);
+
+      relojRegistrosListos = [];
+      let resumenPorAlumno = [];
+
+      relojParsedRows.forEach(row => {
+        if (!row.idAlumnoAsignado) return;
+        let cAsist = 0, cRet = 0, cFalta = 0;
+
+        relojDateCols.forEach(dc => {
+          const entRaw = (row.cols[dc.colEntrada] || "").trim();
+          const salRaw = (row.cols[dc.colSalida] || "").trim();
+          const minEnt = parsearMinutosHora(entRaw);
+
+          let estatus = "Falta";
+          let obs = "Sin registro en reloj";
+
+          if (minEnt !== null && minEnt > 0) {
+            if (minEnt <= minTolerancia) {
+              estatus = "Asistencia";
+              cAsist++;
+            } else {
+              estatus = "Retardo";
+              cRet++;
+            }
+            obs = `Reloj: ${entRaw}${salRaw && salRaw !== '0:00' ? ' - ' + salRaw : ''}`;
+          } else {
+            cFalta++;
+          }
+
+          relojRegistrosListos.push({
+            idAlumno: row.idAlumnoAsignado,
+            fecha: dc.fechaISO,
+            estatus: estatus,
+            observaciones: obs
+          });
+        });
+
+        resumenPorAlumno.push({
+          id: row.idAlumnoAsignado,
+          nombre: row.nombreMatricula || row.nombreReloj,
+          grupo: row.grupoReloj,
+          asist: cAsist,
+          ret: cRet,
+          falta: cFalta
+        });
+      });
+
+      const resumenDiv = document.getElementById("resumen-reloj-csv");
+      resumenDiv.innerHTML = `Se procesaron <strong>${resumenPorAlumno.length} alumnos</strong> × <strong>${relojDateCols.length} días</strong> = <strong>${relojRegistrosListos.length} registros diarios</strong> (Tolerancia: <strong>${tolStr}</strong>).`;
+      resumenDiv.classList.remove("hidden");
+
+      document.getElementById("tabla-preview-reloj").innerHTML = resumenPorAlumno.slice(0, 60).map(r => `
+        <tr>
+          <td class="px-3 py-1.5 font-bold">${r.id}</td>
+          <td class="px-3 py-1.5 font-medium">${r.nombre}</td>
+          <td class="px-3 py-1.5 text-xs">${r.grupo}</td>
+          <td class="px-3 py-1.5 text-center font-bold text-green-600">${r.asist}</td>
+          <td class="px-3 py-1.5 text-center font-bold text-amber-600">${r.ret}</td>
+          <td class="px-3 py-1.5 text-center font-bold text-red-600">${r.falta}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById("preview-reloj-container").classList.remove("hidden");
+      document.getElementById("btnEjecutarRelojCSV").disabled = relojRegistrosListos.length === 0;
+    }
+
+    function descargarAlertaOrigenReloj() {
+      const filas = ["Fila_Reloj,Nombre_En_Reloj,Grupo_Reloj,Tipo_Inconsistencia,Nombre_Oficial_Matricula,ID_Alumno_Vinculado,Accion_Recomendada_Origen"];
+      relojInconsistencias.forEach(inc => {
+        const accion = inc.idAlumnoAsignado
+          ? `Actualizar nombre en sistema de reloj a: ${inc.nombreMatricula}`
+          : "Alumno no figura en Matrícula vigente; verificar si es baja o dar de alta";
+        filas.push([inc.filaExcel, inc.nombreReloj, inc.grupoReloj, inc.tipoMatch, inc.nombreMatricula || "SIN VINCULAR", inc.idAlumnoAsignado || "-", accion].map(escaparCSV).join(","));
+      });
+      descargarCSVTexto("Alerta_Origen_Reloj_Checador.csv", filas.join("\n"));
+    }
+
+    async function ejecutarImportacionReloj() {
+      const btn = document.getElementById("btnEjecutarRelojCSV");
+      const resumenDiv = document.getElementById("resumen-reloj-csv");
+      btn.disabled = true;
+
+      const TAMANO_LOTE = 600;
+      const total = relojRegistrosListos.length;
+      const totalLotes = Math.ceil(total / TAMANO_LOTE);
+
+      try {
+        for (let i = 0; i < total; i += TAMANO_LOTE) {
+          const loteActual = Math.floor(i / TAMANO_LOTE) + 1;
+          const bloque = relojRegistrosListos.slice(i, i + TAMANO_LOTE);
+
+          btn.textContent = `Subiendo lote ${loteActual} de ${totalLotes}...`;
+          resumenDiv.innerHTML = `⏳ Guardando asistencias: lote <strong>${loteActual} de ${totalLotes}</strong>...`;
+
+          const res = await apiCall({
+            action: "importarAsistenciasReloj",
+            correoSolicitante: usuarioActual.correo,
+            registros: bloque
+          });
+
+          if (!res.success) {
+            alert(`Error en lote ${loteActual}: ${res.message}`);
+            btn.disabled = false;
+            return;
+          }
+        }
+
+        // Posicionar el calendario en la última fecha importada para que el usuario vea el resultado inmediato
+        if (relojDateCols.length > 0) {
+          document.getElementById("fecha-asistencia").value = relojDateCols[relojDateCols.length - 1].fechaISO;
+        }
+        alert(`✅ ¡Reporte de reloj checador importado con éxito! (${total} registros diarios procesados).`);
+        cerrarModalImportarReloj();
+        cargarAsistenciasDia();
+      } catch (err) {
+        alert("Error de red al importar asistencias: " + err.message);
+        btn.disabled = false;
+      } finally {
+        btn.textContent = "Confirmar e Importar Asistencias";
+      }
+    }
+
     async function exportarAsistenciasCSV() {
       const btn = document.getElementById("btnExportAsisAdmin");
       btn.textContent = "Generando..."; btn.disabled = true;
@@ -1859,7 +2270,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 3: MATRÍCULA (CON MÚLTIPLES TUTORES)
+    // PESTAÑA 3: MATRÍCULA (LAYOUT NUEVO PADRE/MADRE + INCONSISTENCIAS)
     // ==========================================
     async function cargarMatricula() {
       const tbody = document.getElementById("tabla-matricula");
@@ -1889,7 +2300,10 @@
 
       let filtrados = matriculaCache.filter(al => {
         if (amb !== "TODOS" && al.ambiente !== amb) return false;
-        if (texto && !al.nombre.toLowerCase().includes(texto) && !al.id.toLowerCase().includes(texto) && !(al.correoTutor || "").toLowerCase().includes(texto)) return false;
+        if (texto && !al.nombre.toLowerCase().includes(texto) && !al.id.toLowerCase().includes(texto) &&
+            !(al.correoTutor || "").toLowerCase().includes(texto) &&
+            !(al.nombrePadre || "").toLowerCase().includes(texto) &&
+            !(al.nombreMama || "").toLowerCase().includes(texto)) return false;
         return true;
       });
 
@@ -1909,11 +2323,16 @@
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <td class="px-4 py-3 font-bold">${al.id}</td>
               <td class="px-4 py-3 font-medium">
-                <div>${al.nombre}</div>
+                <div class="font-bold text-slate-900 dark:text-white">${al.nombre}</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  ${al.nombrePadre ? `<span>👨 ${al.nombrePadre}</span>` : ''}
+                  ${al.nombrePadre && al.nombreMama ? ' • ' : ''}
+                  ${al.nombreMama ? `<span>👩 ${al.nombreMama}</span>` : ''}
+                </div>
                 <div class="flex flex-wrap gap-1 mt-1">
                   ${tutores.length
                     ? tutores.map(t => `<span class="text-[11px] bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded">✉ ${t}</span>`).join('')
-                    : '<span class="text-xs text-slate-400">Sin correo tutor</span>'}
+                    : '<span class="text-[11px] text-amber-600 font-semibold">⚠️ Sin correo de tutor</span>'}
                 </div>
               </td>
               <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">${al.grado}</td>
@@ -1953,6 +2372,8 @@
       }
 
       document.getElementById("al-estatus").value = al ? al.estatus : "vigente";
+      document.getElementById("al-padre").value = al ? (al.nombrePadre || "") : "";
+      document.getElementById("al-mama").value = al ? (al.nombreMama || "") : "";
       document.getElementById("al-tutor").value = al ? (al.correoTutor || "") : "";
       document.getElementById("modal-alumno").classList.remove("hidden");
     }
@@ -1976,6 +2397,8 @@
         grado: document.getElementById("al-grado").value,
         ambiente: document.getElementById("al-ambiente-preview").value,
         estatus: document.getElementById("al-estatus").value,
+        nombrePadre: document.getElementById("al-padre").value,
+        nombreMama: document.getElementById("al-mama").value,
         correoTutor: document.getElementById("al-tutor").value
       });
       btn.textContent = "Guardar"; btn.disabled = false;
@@ -1983,10 +2406,12 @@
       else alert(res.message);
     }
 
-    // --- CSV ALUMNOS ---
+    // --- CSV MATRÍCULA (SOPORTA NUEVO LAYOUT + DETECTOR VISUAL DE INCONSISTENCIAS) ---
     function abrirModalImportar() {
       registrosCSVListos = [];
+      matriculaInconsistencias = [];
       document.getElementById("archivo-csv-alumnos").value = "";
+      document.getElementById("panel-inconsistencias-matricula").classList.add("hidden");
       document.getElementById("resumen-csv").classList.add("hidden");
       document.getElementById("preview-csv-container").classList.add("hidden");
       document.getElementById("resultado-importacion").classList.add("hidden");
@@ -1997,9 +2422,8 @@
 
     function descargarPlantillaCSV() {
       descargarCSVTexto("Plantilla_Matricula_Montessori.csv", [
-        "ID_Alumno,Nombre_Completo,Grado_SEP,Estatus,Correo_Tutor",
-        "101,EJEMPLO ALUMNO UNO,1 PRIMARIA,vigente,\"tutor1@gmail.com, tutor2@gmail.com\"",
-        "102,EJEMPLO ALUMNO DOS,4 PRIMARIA,vigente,tutor3@gmail.com"
+        "status,ID,NOMBRE,Grado SEP,MONTESSORI,NOMBRE PADRE,CORREO,NOMBRE MAMA,CORREO.1",
+        "vigente,101,EJEMPLO ALUMNO UNO,1 PRIMARIA,TALLER 1,Juan Perez,papa@gmail.com,Maria Lopez,mama@gmail.com"
       ].join("\n"));
     }
 
@@ -2024,47 +2448,163 @@
         if (lineas.length < 2) return alert("El archivo CSV está vacío.");
 
         const separador = lineas[0].includes(";") ? ";" : ",";
-        const headers = parsearLineaCSV(lineas[0], separador).map(h => h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+        const headers = parsearLineaCSV(lineas[0], separador).map(h =>
+          h.toLowerCase().replace(/\s+/g, " ").trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        );
+
         const idxId = headers.findIndex(h => h === "id" || h.includes("id_alumno"));
-        const idxNom = headers.findIndex(h => h.includes("nombre"));
+        const idxNom = headers.findIndex(h => h === "nombre" || h.includes("nombre_completo") || h.includes("alumno"));
         const idxGrado = headers.findIndex(h => h.includes("grado"));
+        const idxAmb = headers.findIndex(h => h.includes("montessori") || h === "ambiente");
         const idxEst = headers.findIndex(h => h.includes("estatus") || h === "status");
-        const idxTutor = headers.findIndex(h => h.includes("tutor") || h.includes("correo"));
+        const idxPadre = headers.findIndex(h => h.includes("padre"));
+        const idxMama = headers.findIndex(h => h.includes("mama"));
+
+        // Detectar todas las columnas de correo (CORREO, CORREO .1, Correo_Tutor, etc.)
+        const indicesCorreos = [];
+        headers.forEach((h, i) => {
+          if (h.startsWith("correo") || h.includes("tutor")) indicesCorreos.push(i);
+        });
 
         if (idxId === -1 || idxNom === -1 || idxGrado === -1) {
-          return alert("Faltan columnas obligatorias: ID_Alumno, Nombre_Completo y Grado_SEP.");
+          return alert("Faltan columnas obligatorias: ID, NOMBRE y Grado SEP.");
         }
 
         registrosCSVListos = [];
+        matriculaInconsistencias = [];
+        const idsVistos = new Set();
+
         for (let i = 1; i < lineas.length; i++) {
           const cols = parsearLineaCSV(lineas[i], separador);
-          const id = (cols[idxId] || "").trim();
-          const nombre = (cols[idxNom] || "").trim().toUpperCase();
+          let idRaw = (cols[idxId] || "").trim().replace(/\.0$/, "");
+          const nombre = (cols[idxNom] || "").trim().replace(/\s+/g, " ").toUpperCase();
           const grado = (cols[idxGrado] || "").trim().toUpperCase();
-          const estatus = idxEst !== -1 && cols[idxEst] ? cols[idxEst].trim().toLowerCase() : "vigente";
-          const correoTutor = idxTutor !== -1 && cols[idxTutor] ? cols[idxTutor].trim().toLowerCase() : "";
-          if (!id && !nombre) continue;
 
+          // Ignorar filas totalmente vacías al final del Excel
+          if (!idRaw && !nombre && !grado) continue;
+
+          const estatus = idxEst !== -1 && cols[idxEst] ? cols[idxEst].trim().toLowerCase() : "vigente";
+          const nombrePadre = idxPadre !== -1 ? (cols[idxPadre] || "").trim() : "";
+          const nombreMama = idxMama !== -1 ? (cols[idxMama] || "").trim() : "";
+
+          const correosUnicos = [];
+          indicesCorreos.forEach(ic => {
+            const val = (cols[ic] || "").trim().toLowerCase();
+            val.split(/[,;]+/).map(x => x.trim()).filter(x => x.includes("@")).forEach(c => {
+              if (!correosUnicos.includes(c)) correosUnicos.push(c);
+            });
+          });
+
+          const ambCsv = idxAmb !== -1 ? (cols[idxAmb] || "").trim().toUpperCase() : "";
           const regla = reglasGradosCache.find(r => r.grado === grado);
-          registrosCSVListos.push({ id, nombre, grado, ambiente: regla ? regla.ambiente : "SIN REGLA", estatus, correoTutor });
+          const ambiente = ambCsv || (regla ? regla.ambiente : "SIN REGLA");
+
+          const regObj = {
+            filaExcel: i + 1,
+            id: idRaw,
+            nombre,
+            grado,
+            ambiente,
+            estatus,
+            nombrePadre,
+            nombreMama,
+            correoTutor: correosUnicos.join(", ")
+          };
+
+          // Detectar inconsistencias: ID duplicado o sin correo de tutor
+          if (!idRaw || idsVistos.has(idRaw)) {
+            matriculaInconsistencias.push({
+              tipo: "ID_DUPLICADO",
+              mensaje: `ID "${idRaw || 'VACÍO'}" duplicado o faltante`,
+              registro: regObj
+            });
+          } else {
+            idsVistos.add(idRaw);
+          }
+
+          if (correosUnicos.length === 0) {
+            matriculaInconsistencias.push({
+              tipo: "SIN_CORREO",
+              mensaje: "Sin correo de padre/madre para envío de boletas",
+              registro: regObj
+            });
+          }
+
+          registrosCSVListos.push(regObj);
         }
 
-        const resumen = document.getElementById("resumen-csv");
-        resumen.innerHTML = `Se detectaron <strong>${registrosCSVListos.length} alumnos</strong> listos para importar.`;
-        resumen.classList.remove("hidden");
-
-        document.getElementById("tabla-preview-csv").innerHTML = registrosCSVListos.slice(0, 50).map(r => `
-          <tr>
-            <td class="px-3 py-1.5 font-bold">${r.id}</td>
-            <td class="px-3 py-1.5">${r.nombre}</td>
-            <td class="px-3 py-1.5">${r.grado}</td>
-            <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">${r.ambiente}</span></td>
-            <td class="px-3 py-1.5">${r.correoTutor || '-'}</td>
-          </tr>
-        `).join('');
-        document.getElementById("preview-csv-container").classList.remove("hidden");
-        document.getElementById("btnEjecutarCSV").disabled = registrosCSVListos.length === 0;
+        renderInconsistenciasMatricula();
+        renderTablaPreviewMatricula();
       });
+    }
+
+    function renderInconsistenciasMatricula() {
+      const panel = document.getElementById("panel-inconsistencias-matricula");
+      const lista = document.getElementById("lista-inconsistencias-matricula");
+      if (matriculaInconsistencias.length === 0) {
+        panel.classList.add("hidden");
+        return;
+      }
+      panel.classList.remove("hidden");
+      lista.innerHTML = matriculaInconsistencias.map((inc, idx) => `
+        <div class="bg-white dark:bg-slate-900 p-2 rounded-lg border border-amber-200 dark:border-amber-800 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="font-bold">Fila ${inc.registro.filaExcel}: ${inc.registro.nombre}</span>
+            <span class="ml-1.5 text-amber-700 dark:text-amber-300 font-semibold">(${inc.mensaje})</span>
+          </div>
+          ${inc.tipo === "ID_DUPLICADO" ? `
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px]">Nuevo ID:</span>
+              <input type="text" value="${inc.registro.id}" onchange="corregirIdMatricula(${idx}, this.value)"
+                class="w-20 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded px-2 py-0.5 text-xs font-bold">
+            </div>
+          ` : `
+            <div class="flex items-center gap-1.5">
+              <input type="email" placeholder="Agregar correo tutor..." onchange="corregirCorreoMatricula(${idx}, this.value)"
+                class="w-48 border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded px-2 py-0.5 text-xs">
+            </div>
+          `}
+        </div>
+      `).join('');
+    }
+
+    function corregirIdMatricula(idxInc, nuevoId) {
+      matriculaInconsistencias[idxInc].registro.id = nuevoId.trim();
+      renderTablaPreviewMatricula();
+    }
+
+    function corregirCorreoMatricula(idxInc, nuevoCorreo) {
+      matriculaInconsistencias[idxInc].registro.correoTutor = nuevoCorreo.trim().toLowerCase();
+      renderTablaPreviewMatricula();
+    }
+
+    function renderTablaPreviewMatricula() {
+      const resumen = document.getElementById("resumen-csv");
+      resumen.innerHTML = `Se detectaron <strong>${registrosCSVListos.length} alumnos</strong> listos para importar con sus datos familiares.`;
+      resumen.classList.remove("hidden");
+
+      document.getElementById("tabla-preview-csv").innerHTML = registrosCSVListos.slice(0, 60).map(r => `
+        <tr>
+          <td class="px-3 py-1.5 font-bold">${r.id}</td>
+          <td class="px-3 py-1.5 font-medium">${r.nombre}</td>
+          <td class="px-3 py-1.5">${r.grado} <span class="px-1.5 py-0.5 rounded font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 ml-1">${r.ambiente}</span></td>
+          <td class="px-3 py-1.5 text-[11px]">${[r.nombrePadre, r.nombreMama].filter(Boolean).join(" / ") || '-'}</td>
+          <td class="px-3 py-1.5 text-[11px]">${r.correoTutor || '<span class="text-amber-600">Pendiente</span>'}</td>
+        </tr>
+      `).join('');
+      document.getElementById("preview-csv-container").classList.remove("hidden");
+      document.getElementById("btnEjecutarCSV").disabled = registrosCSVListos.length === 0;
+    }
+
+    function descargarAlertaOrigenMatricula() {
+      const filas = ["Fila_Excel,ID_Actual,Alumno,Grado_SEP,Inconsistencia,Accion_Recomendada_Origen"];
+      matriculaInconsistencias.forEach(inc => {
+        const acc = inc.tipo === "ID_DUPLICADO"
+          ? `Asignar ID único en Excel maestro (valor corregido en sistema: ${inc.registro.id})`
+          : `Capturar correo de Padre o Madre en Excel maestro (${inc.registro.correoTutor || 'pendiente'})`;
+        filas.push([inc.registro.filaExcel, inc.registro.id, inc.registro.nombre, inc.registro.grado, inc.mensaje, acc].map(escaparCSV).join(","));
+      });
+      descargarCSVTexto("Alerta_Origen_Matricula.csv", filas.join("\n"));
     }
 
     async function ejecutarImportacionCSV() {
@@ -2075,15 +2615,15 @@
         correoSolicitante: usuarioActual.correo,
         alumnos: registrosCSVListos
       });
-      btn.textContent = "Confirmar e Importar";
+      btn.textContent = "Confirmar e Importar Matrícula";
       const box = document.getElementById("resultado-importacion");
       box.classList.remove("hidden");
       if (res.success) {
-        box.className = "text-xs p-3 rounded-lg mb-4 bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800";
+        box.className = "text-xs p-3 rounded-lg mb-3 bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800";
         box.innerHTML = `<strong>✅ ${res.message}</strong>`;
         cargarMatricula();
       } else {
-        box.className = "text-xs p-3 rounded-lg mb-4 bg-red-50 text-red-700";
+        box.className = "text-xs p-3 rounded-lg mb-3 bg-red-50 text-red-700";
         box.textContent = res.message;
         btn.disabled = false;
       }
@@ -2531,16 +3071,11 @@
     // ==========================================
     // DESCARGAS EXCLUSIVAS ROL ADMIN
     // ==========================================
-    function escaparCSV(val) {
-      const str = (val === null || val === undefined) ? "" : String(val);
-      return `"${str.replace(/"/g, '""')}"`;
-    }
-
     function exportarMatriculaCSV() {
       if (matriculaCache.length === 0) return alert("No hay datos cargados.");
-      const filas = ["ID_Alumno,Nombre_Completo,Grado_SEP,Ambiente,Estatus,Correo_Tutor,Maestras"];
+      const filas = ["ID_Alumno,Nombre_Completo,Grado_SEP,Ambiente,Estatus,Nombre_Padre,Nombre_Mama,Correos_Tutores,Maestras"];
       matriculaCache.forEach(a => {
-        filas.push([a.id, a.nombre, a.grado, a.ambiente, a.estatus, a.correoTutor, a.maestras.join(" / ")].map(escaparCSV).join(","));
+        filas.push([a.id, a.nombre, a.grado, a.ambiente, a.estatus, a.nombrePadre, a.nombreMama, a.correoTutor, a.maestras.join(" / ")].map(escaparCSV).join(","));
       });
       descargarCSVTexto("Respaldo_Matricula_Admin.csv", filas.join("\n"));
     }
@@ -2632,3 +3167,4 @@
   </script>
 </body>
 </html>
+<!-- FIN PARTE 1 - PEGAR PARTE 2 DEBAJO -->
