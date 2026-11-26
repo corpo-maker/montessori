@@ -87,13 +87,13 @@
     </nav>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 1: EVALUACIONES (FICHAS/TABLA + DETALLE) -->
+    <!-- PESTAÑA 1A: LISTA DE ALUMNOS (FICHAS / TABLA) -->
     <!-- ========================================== -->
     <main id="vista-alumnos" class="p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
         <div>
           <h3 class="text-2xl font-bold">Alumnos Asignados</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Consulta el avance por trimestre o haz clic en cualquier materia para evaluar</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Filtra por Grado Montessori o Trimestre para ver el avance limpio por materia</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <div class="inline-flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900">
@@ -107,10 +107,11 @@
         </div>
       </div>
 
-      <!-- Barra de filtros + Paginación Alumnos -->
+      <!-- Barra de filtros: Buscador + Grado Montessori + Periodo + Paginado (10 por defecto) -->
       <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5 flex flex-wrap items-center gap-3">
         <input type="text" id="buscador-alumnos" oninput="resetPagAlumnos()" placeholder="Buscar alumno o ID..."
-          class="flex-grow min-w-[200px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+          class="flex-grow min-w-[180px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        
         <select id="filtro-amb-alumnos" onchange="resetPagAlumnos()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 font-semibold">
           <option value="TODOS">Todos los Grados Montessori</option>
           <option value="TALLER 1">TALLER 1</option>
@@ -120,11 +121,19 @@
           <option value="CNB">CNB</option>
           <option value="CI">CI</option>
         </select>
+
+        <select id="filtro-per-alumnos" onchange="renderAlumnos()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 font-semibold text-blue-700 dark:text-blue-300">
+          <option value="1ER" selected>1ER Trimestre</option>
+          <option value="2DO">2DO Trimestre</option>
+          <option value="3ER">3ER Trimestre</option>
+          <option value="TODOS">Todos los Trimestres</option>
+        </select>
+
         <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
           <span>Mostrar:</span>
           <select id="pag-size-alumnos" onchange="resetPagAlumnos()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
-            <option value="10">10</option>
-            <option value="25" selected>25</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
@@ -141,9 +150,9 @@
             <tr>
               <th onclick="ordenarAlumnos('id')" class="px-4 py-3 cursor-pointer hover:text-blue-600">ID ⇅</th>
               <th onclick="ordenarAlumnos('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno ⇅</th>
-              <th onclick="ordenarAlumnos('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente ⇅</th>
-              <th class="px-4 py-3">Avance por Trimestre</th>
-              <th onclick="ordenarAlumnos('progreso')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Total ⇅</th>
+              <th onclick="ordenarAlumnos('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Grado Montessori ⇅</th>
+              <th class="px-4 py-3">Avance por Materia</th>
+              <th onclick="ordenarAlumnos('progreso')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Global ⇅</th>
               <th class="px-4 py-3 text-right">Acción</th>
             </tr>
           </thead>
@@ -156,51 +165,88 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- VISTA DETALLE DEL ALUMNO (PESTAÑAS POR MATERIA) -->
+    <!-- PESTAÑA 1B: EVALUADOR DEL ALUMNO (FICHAS / TABLA + PAGINADO + FILTROS) -->
     <!-- ========================================== -->
-    <main id="vista-evaluador" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full">
-      <button onclick="volverAAlumnos()" class="mb-4 text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold">← Volver a Alumnos</button>
+    <main id="vista-evaluador" class="hidden p-6 flex-grow max-w-7xl mx-auto w-full">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <button onclick="volverAAlumnos()" class="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold">← Volver a Alumnos</button>
+        <div class="inline-flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900">
+          <button id="btnEvalModoFicha" onclick="cambiarModoDetalle('ficha')" class="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white">⊞ Fichas</button>
+          <button id="btnEvalModoTabla" onclick="cambiarModoDetalle('tabla')" class="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">☰ Tabla</button>
+        </div>
+      </div>
 
-      <!-- Cabecera Alumno + Selector Trimestre -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-4">
+      <!-- Cabecera Alumno + Filtros Unificados -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5">
         <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
-            <h3 id="eval-alumno-nombre" class="text-xl font-bold"></h3>
+            <h3 id="eval-alumno-nombre" class="text-xl font-bold text-slate-900 dark:text-white"></h3>
             <p id="eval-alumno-meta" class="text-sm text-slate-500 dark:text-slate-400"></p>
           </div>
-          <div class="flex gap-1.5" id="pills-periodo">
+          <!-- Selector de Periodo / Trimestre -->
+          <div class="flex flex-wrap gap-1.5" id="pills-periodo">
             <button onclick="seleccionarPeriodoEval('1ER')" data-per="1ER" class="per-pill px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white">1ER Trimestre</button>
             <button onclick="seleccionarPeriodoEval('2DO')" data-per="2DO" class="per-pill px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">2DO Trimestre</button>
             <button onclick="seleccionarPeriodoEval('3ER')" data-per="3ER" class="per-pill px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">3ER Trimestre</button>
+            <button onclick="seleccionarPeriodoEval('TODOS')" data-per="TODOS" class="per-pill px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Todos</button>
           </div>
         </div>
 
         <!-- Pestañas Horizontales por Materia -->
-        <div id="tabs-materias-eval" class="flex gap-2 overflow-x-auto pt-3 border-t border-slate-100 dark:border-slate-800"></div>
+        <div id="tabs-materias-eval" class="flex gap-2 overflow-x-auto py-3 border-y border-slate-100 dark:border-slate-800"></div>
+
+        <!-- Barra de Filtros de Estado, Buscador y Paginación -->
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Estatus:</span>
+            <button onclick="seleccionarEstadoEval('PENDIENTE')" data-est="PENDIENTE" class="est-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-white">Por Evaluar</button>
+            <button onclick="seleccionarEstadoEval('EVALUADO')" data-est="EVALUADO" class="est-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Validado / Evaluado</button>
+            <button onclick="seleccionarEstadoEval('TODOS')" data-est="TODOS" class="est-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Todos</button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 flex-grow md:flex-grow-0">
+            <input type="text" id="buscador-detalle" oninput="resetPagDetalle()" placeholder="Buscar tema o aprendizaje..."
+              class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]">
+            <div class="flex items-center gap-1.5 text-xs text-slate-500">
+              <span>Mostrar:</span>
+              <select id="pag-size-detalle" onchange="resetPagDetalle()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- BLOQUE 1: PENDIENTES POR EVALUAR (EN ORDEN) -->
-      <section class="mb-8">
-        <div class="flex justify-between items-center mb-3">
-          <h4 class="text-base font-bold flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-            Por Evaluar (<span id="count-pendientes">0</span>)
-          </h4>
-          <span class="text-xs text-slate-500 dark:text-slate-400">1: Presentado • 2: En práctica • 3: Explica proceso • 4: Explica y reflexiona</span>
-        </div>
-        <div id="lista-pendientes" class="space-y-3"></div>
-      </section>
+      <!-- Leyenda Escala Montessori -->
+      <div class="mb-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-1">
+        <span id="resumen-filtro-detalle" class="font-semibold"></span>
+        <span><strong>Escala:</strong> 1: Enseñado/Presentado • 2: En práctica • 3: Explica proceso • 4: Explica y reflexiona</span>
+      </div>
 
-      <!-- BLOQUE 2: YA EVALUADOS (SEGUNDO ORDEN - EDITABLES) -->
-      <section class="border-t border-slate-200 dark:border-slate-800 pt-6">
-        <button onclick="toggleEvaluadosSection()" class="w-full flex justify-between items-center bg-slate-100 dark:bg-slate-900 px-4 py-3 rounded-xl text-left hover:bg-slate-200/70 dark:hover:bg-slate-800 transition-colors">
-          <span class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-            <span class="text-green-600">✓</span> Ya Evaluados en esta materia (<span id="count-evaluados">0</span>) — <span class="font-normal text-xs text-slate-500">Clic para ver o editar</span>
-          </span>
-          <span id="chevron-evaluados" class="text-xs text-slate-500">▼</span>
-        </button>
-        <div id="lista-evaluados" class="hidden mt-3 space-y-2.5"></div>
-      </section>
+      <!-- MODO FICHAS DETALLE -->
+      <div id="detalle-fichas-wrap" class="space-y-3"></div>
+
+      <!-- MODO TABLA DETALLE -->
+      <div id="detalle-tabla-wrap" class="hidden bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
+            <tr>
+              <th onclick="ordenarDetalle('periodo')" class="px-3 py-3 cursor-pointer hover:text-blue-600">Per. ⇅</th>
+              <th onclick="ordenarDetalle('materia')" class="px-3 py-3 cursor-pointer hover:text-blue-600">Materia / Tema ⇅</th>
+              <th onclick="ordenarDetalle('aprendizaje')" class="px-3 py-3 cursor-pointer hover:text-blue-600">Aprendizaje Esperado ⇅</th>
+              <th onclick="ordenarDetalle('campo')" class="px-3 py-3 cursor-pointer hover:text-blue-600">Campo Formativo ⇅</th>
+              <th class="px-3 py-3">Calificación (1-4) y Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-detalle" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+        </table>
+      </div>
+
+      <!-- Paginación Detalle -->
+      <div id="pag-controls-detalle" class="mt-4 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
     </main>
 
     <!-- ========================================== -->
@@ -235,8 +281,8 @@
         <div class="flex items-center gap-1.5 text-xs text-slate-500">
           <span>Mostrar:</span>
           <select id="pag-size-matricula" onchange="resetPagMatricula()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
-            <option value="10">10</option>
-            <option value="25" selected>25</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
@@ -403,7 +449,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA) -->
+    <!-- PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10) -->
     <!-- ========================================== -->
     <main id="vista-plantillas" class="hidden p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
@@ -440,8 +486,8 @@
         <div class="flex items-center gap-1.5 text-xs text-slate-500">
           <span>Mostrar:</span>
           <select id="pag-size-plantillas" onchange="resetPagPlantillas()" class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200">
-            <option value="10">10</option>
-            <option value="25" selected>25</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
@@ -714,16 +760,21 @@
     let correoActual = "";
     let usuarioActual = null;
 
-    // Estado Evaluaciones
+    // Estado Alumnos
     let alumnosCache = [];
     let pagAlumnos = 1;
     let sortAlumnos = { col: 'nombre', asc: true };
     let modoAlumnos = 'ficha';
+
+    // Estado Evaluador Detalle
     let alumnoSeleccionado = null;
     let aprendizajesActuales = [];
     let periodoEvalActivo = "1ER";
-    let materiaEvalActiva = "";
-    let mostrarEvaluados = false;
+    let materiaEvalActiva = "TODAS";
+    let estadoEvalActivo = "PENDIENTE";
+    let modoDetalle = 'ficha';
+    let pagDetalle = 1;
+    let sortDetalle = { col: 'orden', asc: true };
 
     // Estado Matrícula
     let matriculaCache = [];
@@ -782,7 +833,6 @@
       return await response.json();
     }
 
-    // Lector CSV tolerante a UTF-8 y Windows-1252 (acentos y ñ intactos)
     function leerArchivoTextoInteligente(file, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -817,20 +867,16 @@
     function renderControlesPaginacion(containerId, totalItems, pagActual, pageSize, fnCambiarPag) {
       const cont = document.getElementById(containerId);
       const totalPags = Math.max(1, Math.ceil(totalItems / pageSize));
-      if (totalItems <= 10 && totalPags === 1) {
-        cont.innerHTML = `<span>Total: <strong>${totalItems}</strong> registros</span>`;
-        return;
-      }
       const inicio = totalItems === 0 ? 0 : (pagActual - 1) * pageSize + 1;
       const fin = Math.min(pagActual * pageSize, totalItems);
       cont.innerHTML = `
         <span>Mostrando <strong>${inicio}–${fin}</strong> de <strong>${totalItems}</strong></span>
         <div class="flex items-center gap-1.5">
-          <button onclick="${fnCambiarPag}(1)" ${pagActual === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40">«</button>
-          <button onclick="${fnCambiarPag}(${pagActual - 1})" ${pagActual === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40">‹ Ant</button>
+          <button onclick="${fnCambiarPag}(1)" ${pagActual === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">«</button>
+          <button onclick="${fnCambiarPag}(${pagActual - 1})" ${pagActual === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">‹ Ant</button>
           <span class="px-2 font-bold">Pág. ${pagActual} de ${totalPags}</span>
-          <button onclick="${fnCambiarPag}(${pagActual + 1})" ${pagActual >= totalPags ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40">Sig ›</button>
-          <button onclick="${fnCambiarPag}(${totalPags})" ${pagActual >= totalPags ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40">»</button>
+          <button onclick="${fnCambiarPag}(${pagActual + 1})" ${pagActual >= totalPags ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">Sig ›</button>
+          <button onclick="${fnCambiarPag}(${totalPags})" ${pagActual >= totalPags ? 'disabled' : ''} class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800">»</button>
         </div>
       `;
     }
@@ -901,7 +947,6 @@
       document.getElementById("tab-maestras").classList.toggle("hidden", !esDirectivo);
       document.getElementById("tab-plantillas").classList.toggle("hidden", !esDirectivo);
 
-      // Privilegios exclusivos Admin
       document.getElementById("btnExportEvalAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("btnExportMatriculaAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("btnExportPlantillasAdmin").classList.toggle("hidden", !esAdmin);
@@ -942,7 +987,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 1: ALUMNOS (FICHAS / TABLA + RESUMEN TRIMESTRAL)
+    // PESTAÑA 1A: ALUMNOS (FICHAS / TABLA LIMPIA)
     // ==========================================
     async function cargarAlumnos() {
       document.getElementById("grid-alumnos").innerHTML = `<p class="text-slate-500 col-span-3">Consultando base de datos...</p>`;
@@ -975,23 +1020,21 @@
       renderAlumnos();
     }
 
-    function renderResumenTrimestralHTML(al) {
-      const trimestres = ["1ER", "2DO", "3ER"];
+    function renderResumenTrimestralHTML(al, perFiltro) {
+      const trimestres = perFiltro === "TODOS" ? ["1ER", "2DO", "3ER"] : [perFiltro];
       const res = al.resumenTrimestres || {};
       return trimestres.map(per => {
         const materias = res[per] || [];
         if (materias.length === 0) return "";
         return `
           <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${per} Trimestre</span>
-            </div>
-            <div class="flex flex-wrap gap-1">
+            ${perFiltro === "TODOS" ? `<span class="block text-[10px] font-bold uppercase text-slate-400 mb-1">${per} Trimestre</span>` : ''}
+            <div class="flex flex-wrap gap-1.5">
               ${materias.map(m => `
                 <button onclick="event.stopPropagation(); abrirEvaluadorConFiltro('${al.id}', '${per}', '${m.materia.replace(/'/g, "\\'")}')"
-                  title="${m.materia}: ${m.evaluados}/${m.total}"
-                  class="text-[10px] px-1.5 py-0.5 rounded font-semibold border transition-all hover:scale-105 ${m.porcentaje === 100 ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-300 dark:border-green-800' : m.porcentaje > 0 ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'}">
-                  ${m.materia.slice(0, 6)}: <strong>${m.porcentaje}%</strong>
+                  title="${m.materia}: ${m.evaluados} de ${m.total}"
+                  class="text-[11px] px-2 py-0.5 rounded font-semibold border transition-all hover:scale-105 ${m.porcentaje === 100 ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-300 dark:border-green-800' : m.porcentaje > 0 ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}">
+                  ${m.materia.slice(0, 7)}: <strong>${m.porcentaje}%</strong>
                 </button>
               `).join('')}
             </div>
@@ -1003,6 +1046,7 @@
     function renderAlumnos() {
       const texto = (document.getElementById("buscador-alumnos").value || "").toLowerCase();
       const amb = document.getElementById("filtro-amb-alumnos").value;
+      const perFiltro = document.getElementById("filtro-per-alumnos").value;
       const pageSize = Number(document.getElementById("pag-size-alumnos").value);
 
       let filtrados = alumnosCache.filter(al => {
@@ -1019,6 +1063,7 @@
 
       const grid = document.getElementById("grid-alumnos");
       const tablaWrap = document.getElementById("tabla-alumnos-wrap");
+      const perAbrir = perFiltro === "TODOS" ? "1ER" : perFiltro;
 
       if (modoAlumnos === 'ficha') {
         grid.classList.remove("hidden");
@@ -1027,7 +1072,7 @@
           grid.innerHTML = `<p class="text-slate-500 col-span-3">No hay alumnos con estos filtros.</p>`;
         } else {
           grid.innerHTML = pagina.map(al => `
-            <div onclick="abrirEvaluadorConFiltro('${al.id}', '1ER', '')"
+            <div onclick="abrirEvaluadorConFiltro('${al.id}', '${perAbrir}', 'TODAS')"
               class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between">
               <div>
                 <div class="flex justify-between items-start mb-2">
@@ -1039,9 +1084,9 @@
                 <div class="bg-slate-100 dark:bg-slate-800 rounded-full h-2 w-full overflow-hidden">
                   <div class="bg-green-500 h-2 rounded-full transition-all" style="width: ${al.progreso}%"></div>
                 </div>
-                <p class="text-[11px] text-right mt-1 text-slate-500 dark:text-slate-400 font-semibold">${al.evaluados}/${al.total} (${al.progreso}%)</p>
+                <p class="text-[11px] text-right mt-1 text-slate-500 dark:text-slate-400 font-semibold">${al.evaluados}/${al.total} Global (${al.progreso}%)</p>
               </div>
-              <div>${renderResumenTrimestralHTML(al)}</div>
+              <div>${renderResumenTrimestralHTML(al, perFiltro)}</div>
             </div>
           `).join('');
         }
@@ -1053,14 +1098,14 @@
           tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">Sin resultados.</td></tr>`;
         } else {
           tbody.innerHTML = pagina.map(al => `
-            <tr onclick="abrirEvaluadorConFiltro('${al.id}', '1ER', '')" class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
+            <tr onclick="abrirEvaluadorConFiltro('${al.id}', '${perAbrir}', 'TODAS')" class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer">
               <td class="px-4 py-3 font-bold">${al.id}</td>
               <td class="px-4 py-3 font-medium">
                 <div>${al.nombre}</div>
                 <div class="text-xs text-slate-400">${al.grado}</div>
               </td>
               <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">${al.ambiente}</span></td>
-              <td class="px-4 py-3 max-w-md">${renderResumenTrimestralHTML(al)}</td>
+              <td class="px-4 py-3 max-w-md">${renderResumenTrimestralHTML(al, perFiltro)}</td>
               <td class="px-4 py-3 font-bold text-xs">${al.progreso}%</td>
               <td class="px-4 py-3 text-right">
                 <button class="text-blue-600 dark:text-blue-400 font-semibold text-xs hover:underline">Evaluar →</button>
@@ -1074,22 +1119,23 @@
     }
 
     // ==========================================
-    // EVALUADOR DETALLE (PESTAÑAS POR MATERIA + PENDIENTES VS EVALUADOS)
+    // PESTAÑA 1B: EVALUADOR DETALLE (FICHAS/TABLA + PAGINACIÓN + FILTROS)
     // ==========================================
     async function abrirEvaluadorConFiltro(idAlumno, periodoInicial, materiaInicial) {
       const alumno = alumnosCache.find(x => x.id === idAlumno);
       if (!alumno) return;
       alumnoSeleccionado = alumno;
       periodoEvalActivo = periodoInicial || "1ER";
-      materiaEvalActiva = materiaInicial || "";
-      mostrarEvaluados = false;
+      materiaEvalActiva = materiaInicial || "TODAS";
+      estadoEvalActivo = "PENDIENTE";
+      pagDetalle = 1;
 
       document.getElementById("vista-alumnos").classList.add("hidden");
       document.getElementById("vista-evaluador").classList.remove("hidden");
       document.getElementById("eval-alumno-nombre").textContent = alumno.nombre;
       document.getElementById("eval-alumno-meta").textContent = `${alumno.ambiente} • ${alumno.grado} • ID: ${alumno.id}`;
-      document.getElementById("lista-pendientes").innerHTML = `<p class="text-slate-500 text-sm">Cargando aprendizajes...</p>`;
-      document.getElementById("lista-evaluados").classList.add("hidden");
+      document.getElementById("buscador-detalle").value = "";
+      document.getElementById("detalle-fichas-wrap").innerHTML = `<p class="text-slate-500 text-sm">Cargando aprendizajes...</p>`;
 
       const data = await apiCall({ action: "obtenerDetalleAlumno", idAlumno: alumno.id, ambiente: alumno.ambiente });
       if (data.success) {
@@ -1098,8 +1144,20 @@
       }
     }
 
+    function cambiarModoDetalle(modo) {
+      modoDetalle = modo;
+      document.getElementById("btnEvalModoFicha").className = modo === 'ficha'
+        ? "px-3 py-1.5 text-xs font-bold bg-blue-600 text-white"
+        : "px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300";
+      document.getElementById("btnEvalModoTabla").className = modo === 'tabla'
+        ? "px-3 py-1.5 text-xs font-bold bg-blue-600 text-white"
+        : "px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300";
+      renderDetallePaginado();
+    }
+
     function seleccionarPeriodoEval(periodo) {
       periodoEvalActivo = periodo;
+      pagDetalle = 1;
       document.querySelectorAll(".per-pill").forEach(btn => {
         const activo = btn.getAttribute("data-per") === periodo;
         btn.className = activo
@@ -1107,31 +1165,55 @@
           : "per-pill px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
       });
 
-      const delPeriodo = aprendizajesActuales.filter(a => a.periodo === periodoEvalActivo);
+      const delPeriodo = periodo === "TODOS"
+        ? aprendizajesActuales
+        : aprendizajesActuales.filter(a => a.periodo === periodo);
       const materias = [...new Set(delPeriodo.map(a => a.materia))];
-      if (!materias.includes(materiaEvalActiva)) {
-        materiaEvalActiva = materias[0] || "";
+      if (materiaEvalActiva !== "TODAS" && !materias.includes(materiaEvalActiva)) {
+        materiaEvalActiva = "TODAS";
       }
 
       renderTabsMaterias(delPeriodo, materias);
-      renderAprendizajesMateria();
+      renderDetallePaginado();
     }
 
     function seleccionarMateriaEval(materia) {
       materiaEvalActiva = materia;
-      const delPeriodo = aprendizajesActuales.filter(a => a.periodo === periodoEvalActivo);
+      pagDetalle = 1;
+      const delPeriodo = periodoEvalActivo === "TODOS"
+        ? aprendizajesActuales
+        : aprendizajesActuales.filter(a => a.periodo === periodoEvalActivo);
       const materias = [...new Set(delPeriodo.map(a => a.materia))];
       renderTabsMaterias(delPeriodo, materias);
-      renderAprendizajesMateria();
+      renderDetallePaginado();
+    }
+
+    function seleccionarEstadoEval(estado) {
+      estadoEvalActivo = estado;
+      pagDetalle = 1;
+      document.querySelectorAll(".est-pill").forEach(btn => {
+        const est = btn.getAttribute("data-est");
+        const activo = est === estado;
+        let activeColor = est === 'PENDIENTE' ? 'bg-amber-500 text-white' : est === 'EVALUADO' ? 'bg-green-600 text-white' : 'bg-blue-600 text-white';
+        btn.className = activo
+          ? `est-pill px-3 py-1.5 rounded-lg text-xs font-bold ${activeColor}`
+          : "est-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+      });
+      renderDetallePaginado();
     }
 
     function renderTabsMaterias(delPeriodo, materias) {
       const cont = document.getElementById("tabs-materias-eval");
-      if (materias.length === 0) {
-        cont.innerHTML = `<span class="text-xs text-slate-400">Sin materias en este trimestre.</span>`;
-        return;
-      }
-      cont.innerHTML = materias.map(m => {
+      const evTotal = delPeriodo.filter(x => x.evaluado).length;
+      const btnTodas = `
+        <button onclick="seleccionarMateriaEval('TODAS')"
+          class="px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${materiaEvalActiva === 'TODAS' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
+          <span>Todas las Materias</span>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] ${materiaEvalActiva === 'TODAS' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700'}">${evTotal}/${delPeriodo.length}</span>
+        </button>
+      `;
+
+      cont.innerHTML = btnTodas + materias.map(m => {
         const itemsMat = delPeriodo.filter(x => x.materia === m);
         const evMat = itemsMat.filter(x => x.evaluado).length;
         const activa = m === materiaEvalActiva;
@@ -1140,58 +1222,123 @@
           <button onclick="seleccionarMateriaEval('${mEsc}')"
             class="px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${activa ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}">
             <span>${m}</span>
-            <span class="px-1.5 py-0.5 rounded-full text-[10px] ${activa ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">${evMat}/${itemsMat.length}</span>
+            <span class="px-1.5 py-0.5 rounded-full text-[10px] ${activa ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700'}">${evMat}/${itemsMat.length}</span>
           </button>
         `;
       }).join('');
     }
 
-    function toggleEvaluadosSection() {
-      mostrarEvaluados = !mostrarEvaluados;
-      document.getElementById("lista-evaluados").classList.toggle("hidden", !mostrarEvaluados);
-      document.getElementById("chevron-evaluados").textContent = mostrarEvaluados ? "▲" : "▼";
+    function resetPagDetalle() { pagDetalle = 1; renderDetallePaginado(); }
+    function irPagDetalle(p) { pagDetalle = p; renderDetallePaginado(); }
+    function ordenarDetalle(col) {
+      if (sortDetalle.col === col) sortDetalle.asc = !sortDetalle.asc;
+      else { sortDetalle.col = col; sortDetalle.asc = true; }
+      renderDetallePaginado();
     }
 
-    function renderAprendizajesMateria() {
-      const items = aprendizajesActuales
-        .filter(a => a.periodo === periodoEvalActivo && a.materia === materiaEvalActiva)
-        .sort((a, b) => a.orden - b.orden);
+    function renderDetallePaginado() {
+      const texto = (document.getElementById("buscador-detalle").value || "").toLowerCase();
+      const pageSize = Number(document.getElementById("pag-size-detalle").value);
 
-      const pendientes = items.filter(a => !a.evaluado);
-      const evaluados = items.filter(a => a.evaluado);
+      let filtrados = aprendizajesActuales.filter(a => {
+        if (periodoEvalActivo !== "TODOS" && a.periodo !== periodoEvalActivo) return false;
+        if (materiaEvalActiva !== "TODAS" && a.materia !== materiaEvalActiva) return false;
+        if (estadoEvalActivo === "PENDIENTE" && a.evaluado) return false;
+        if (estadoEvalActivo === "EVALUADO" && !a.evaluado) return false;
+        if (texto && !(a.aprendizaje || "").toLowerCase().includes(texto) && !(a.tema || "").toLowerCase().includes(texto) && !(a.campo || "").toLowerCase().includes(texto)) return false;
+        return true;
+      });
 
-      document.getElementById("count-pendientes").textContent = pendientes.length;
-      document.getElementById("count-evaluados").textContent = evaluados.length;
+      filtrados.sort((a, b) => compararValores(a[sortDetalle.col], b[sortDetalle.col], sortDetalle.asc));
 
-      const renderTarjeta = (a, esEvaluado) => `
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border ${esEvaluado ? 'border-green-200 dark:border-green-900/60 bg-green-50/20 dark:bg-green-950/10' : 'border-slate-200 dark:border-slate-800'}">
-          <div class="flex flex-wrap justify-between gap-2 mb-1">
-            <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">${a.tema}</span>
-            <span class="text-[10px] font-mono text-slate-400">${a.idAprendizaje}</span>
-          </div>
-          <p class="text-sm font-medium mb-3">${a.aprendizaje}</p>
-          <div class="flex flex-wrap items-center gap-2">
-            ${[1, 2, 3, 4].map(n => `
-              <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
-                class="px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'}">
-                ${n}
-              </button>
-            `).join('')}
-            <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones (opcional)"
-              class="flex-grow min-w-[180px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-400">
-          </div>
-        </div>
-      `;
+      const totalPags = Math.max(1, Math.ceil(filtrados.length / pageSize));
+      if (pagDetalle > totalPags) pagDetalle = totalPags;
+      const pagina = filtrados.slice((pagDetalle - 1) * pageSize, pagDetalle * pageSize);
 
-      const contPend = document.getElementById("lista-pendientes");
-      contPend.innerHTML = pendientes.length === 0
-        ? `<div class="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 p-5 rounded-xl text-sm font-semibold text-center">🎉 ¡Todos los aprendizajes de ${materiaEvalActiva} (${periodoEvalActivo}) están evaluados!</div>`
-        : pendientes.map(a => renderTarjeta(a, false)).join('');
+      document.getElementById("resumen-filtro-detalle").textContent =
+        `${filtrados.length} aprendizajes encontrados (${estadoEvalActivo === 'PENDIENTE' ? 'Por Evaluar' : estadoEvalActivo === 'EVALUADO' ? 'Validados / Evaluados' : 'Todos'})`;
 
-      const contEval = document.getElementById("lista-evaluados");
-      contEval.innerHTML = evaluados.length === 0
-        ? `<p class="text-xs text-slate-400 p-3">Aún no hay aprendizajes evaluados en esta materia.</p>`
-        : evaluados.map(a => renderTarjeta(a, true)).join('');
+      const fichasWrap = document.getElementById("detalle-fichas-wrap");
+      const tablaWrap = document.getElementById("detalle-tabla-wrap");
+
+      if (modoDetalle === 'ficha') {
+        fichasWrap.classList.remove("hidden");
+        tablaWrap.classList.add("hidden");
+
+        if (pagina.length === 0) {
+          fichasWrap.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-xl text-center text-sm text-slate-500">No hay aprendizajes con los filtros seleccionados.</div>`;
+        } else {
+          fichasWrap.innerHTML = pagina.map(a => `
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border ${a.evaluado ? 'border-green-300 dark:border-green-800 bg-green-50/20 dark:bg-green-950/10' : 'border-slate-200 dark:border-slate-800'}">
+              <!-- Etiquetas superiores bien legibles: Trimestre, Materia, Tema y Campo Formativo -->
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs font-bold bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2.5 py-1 rounded-md">${a.periodo} • ${a.materia}</span>
+                  <span class="text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 rounded-md border border-indigo-200/70 dark:border-indigo-800">
+                    Tema: ${a.tema || 'General'}
+                  </span>
+                  <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md">
+                    Campo: ${a.campo || 'Sin campo'}
+                  </span>
+                </div>
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${a.evaluado ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'}">
+                  ${a.evaluado ? '✓ Validado / Evaluado' : '● Por Evaluar'}
+                </span>
+              </div>
+
+              <!-- Aprendizaje Esperado protagonista -->
+              <p class="text-base font-bold text-slate-900 dark:text-white leading-relaxed mb-4">
+                ${a.aprendizaje}
+              </p>
+
+              <!-- Controles de calificación 1-4 y Observaciones -->
+              <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                ${[1, 2, 3, 4].map(n => `
+                  <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
+                    class="px-4 py-2 rounded-lg text-xs font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'}">
+                    ${n}
+                  </button>
+                `).join('')}
+                <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones del docente (opcional)"
+                  class="flex-grow min-w-[220px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-400">
+              </div>
+            </div>
+          `).join('');
+        }
+      } else {
+        fichasWrap.classList.add("hidden");
+        tablaWrap.classList.remove("hidden");
+        const tbody = document.getElementById("tbody-detalle");
+        if (pagina.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">No hay aprendizajes con estos filtros.</td></tr>`;
+        } else {
+          tbody.innerHTML = pagina.map(a => `
+            <tr class="${a.evaluado ? 'bg-green-50/30 dark:bg-green-950/10' : ''} hover:bg-slate-50 dark:hover:bg-slate-800/40">
+              <td class="px-3 py-3 font-bold text-xs whitespace-nowrap">${a.periodo}</td>
+              <td class="px-3 py-3">
+                <div class="font-bold text-xs text-blue-700 dark:text-blue-300">${a.materia}</div>
+                <div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-0.5">${a.tema || 'General'}</div>
+              </td>
+              <td class="px-3 py-3 font-bold text-sm text-slate-900 dark:text-white max-w-md">${a.aprendizaje}</td>
+              <td class="px-3 py-3 text-xs font-medium text-slate-600 dark:text-slate-300">${a.campo || '-'}</td>
+              <td class="px-3 py-3">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  ${[1, 2, 3, 4].map(n => `
+                    <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
+                      class="px-2.5 py-1 rounded text-xs font-bold border ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700'}">
+                      ${n}
+                    </button>
+                  `).join('')}
+                  <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Obs."
+                    class="w-32 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded px-2 py-1 text-xs">
+                </div>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      renderControlesPaginacion("pag-controls-detalle", filtrados.length, pagDetalle, pageSize, "irPagDetalle");
     }
 
     async function calificar(idAprendizaje, puntaje, btn) {
@@ -1211,10 +1358,12 @@
       if (res.success) {
         const item = aprendizajesActuales.find(x => x.idAprendizaje === idAprendizaje);
         if (item) { item.evaluado = true; item.puntaje = puntaje; item.observaciones = obs; }
-        const delPeriodo = aprendizajesActuales.filter(a => a.periodo === periodoEvalActivo);
+        const delPeriodo = periodoEvalActivo === "TODOS"
+          ? aprendizajesActuales
+          : aprendizajesActuales.filter(a => a.periodo === periodoEvalActivo);
         const materias = [...new Set(delPeriodo.map(a => a.materia))];
         renderTabsMaterias(delPeriodo, materias);
-        renderAprendizajesMateria();
+        renderDetallePaginado();
       } else {
         alert("Error al guardar: " + res.message);
         btn.innerHTML = textoOriginal; btn.disabled = false;
@@ -1228,7 +1377,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 2: MATRÍCULA (PAGINADA Y ORDENABLE)
+    // PESTAÑA 2: MATRÍCULA (PAGINADA EN 10 Y ORDENABLE)
     // ==========================================
     async function cargarMatricula() {
       const tbody = document.getElementById("tabla-matricula");
@@ -1582,7 +1731,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA)
+    // PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10)
     // ==========================================
     async function cargarPlantillas() {
       const tbody = document.getElementById("tabla-plantillas");
@@ -1638,7 +1787,7 @@
               <div class="font-bold text-xs">${p.materia}</div>
               <div class="text-xs text-slate-500 dark:text-slate-400">${p.tema}</div>
             </td>
-            <td class="px-4 py-2.5 text-xs max-w-md">${p.aprendizaje}</td>
+            <td class="px-4 py-2.5 text-xs max-w-md font-medium">${p.aprendizaje}</td>
             <td class="px-4 py-2.5 text-xs text-slate-500 dark:text-slate-400">${p.campo}</td>
             <td class="px-4 py-2.5 text-right">
               <button onclick='abrirModalAprendizaje(${JSON.stringify(p)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
