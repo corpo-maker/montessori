@@ -8,7 +8,9 @@
 </head>
 <body class="bg-slate-50 font-sans text-slate-800">
 
+  <!-- ========================================== -->
   <!-- LOGIN -->
+  <!-- ========================================== -->
   <div id="login-section" class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
       <div class="text-center mb-8">
@@ -18,7 +20,7 @@
 
       <div id="step-email">
         <label class="block text-sm font-semibold text-slate-700 mb-2">Correo Electrónico</label>
-        <input type="email" id="emailInput" placeholder="maestra@escuela.com" 
+        <input type="email" id="emailInput" placeholder="maestra@escuela.com"
                class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4">
         <button onclick="solicitarCodigo()" id="btnSolicitar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all">
           Continuar
@@ -27,7 +29,7 @@
 
       <div id="step-otp" class="hidden">
         <p class="text-sm text-slate-600 mb-4 text-center">Código de 6 dígitos enviado a <br><strong id="displayEmail"></strong></p>
-        <input type="text" id="otpInput" maxlength="6" placeholder="123456" 
+        <input type="text" id="otpInput" maxlength="6" placeholder="123456"
                class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4 text-center tracking-widest text-lg font-bold">
         <button onclick="validarCodigo()" id="btnValidar" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all">
           Verificar y Entrar
@@ -39,12 +41,14 @@
     </div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- ========================================== -->
+  <!-- DASHBOARD PRINCIPAL -->
+  <!-- ========================================== -->
   <div id="dashboard-section" class="hidden min-h-screen flex flex-col">
-    <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-      <div>
+    <header class="bg-white shadow-sm px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-20">
+      <div class="flex items-center gap-3">
         <h2 class="text-xl font-bold text-blue-700">Sistema Montessori</h2>
-        <span id="userRoleBadge" class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold"></span>
+        <span id="userRoleBadge" class="text-xs bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full font-semibold"></span>
       </div>
       <div class="flex items-center gap-4">
         <span id="userNameDisplay" class="font-medium text-slate-600 text-sm"></span>
@@ -52,7 +56,27 @@
       </div>
     </header>
 
-    <!-- VISTA A: LISTA DE ALUMNOS -->
+    <!-- BARRA DE PESTAÑAS (RBAC) -->
+    <nav class="bg-white border-b border-slate-200 px-6">
+      <div class="max-w-6xl mx-auto flex gap-2 overflow-x-auto">
+        <button id="tab-evaluaciones" onclick="cambiarTab('evaluaciones')"
+          class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">
+          Evaluaciones
+        </button>
+        <button id="tab-matricula" onclick="cambiarTab('matricula')"
+          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">
+          Matrícula
+        </button>
+        <button id="tab-maestras" onclick="cambiarTab('maestras')"
+          class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">
+          Maestras y Asignaciones
+        </button>
+      </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 1: EVALUACIONES (ALUMNOS + EVALUADOR) -->
+    <!-- ========================================== -->
     <main id="vista-alumnos" class="p-6 flex-grow max-w-6xl mx-auto w-full">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold">Alumnos Asignados</h3>
@@ -63,10 +87,8 @@
       </div>
     </main>
 
-    <!-- VISTA B: EVALUADOR DE ALUMNO -->
     <main id="vista-evaluador" class="hidden p-6 flex-grow max-w-5xl mx-auto w-full">
       <button onclick="volverAAlumnos()" class="mb-4 text-sm text-blue-600 hover:underline font-semibold">← Volver a Alumnos</button>
-      
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div>
           <h3 id="eval-alumno-nombre" class="text-xl font-bold text-slate-800"></h3>
@@ -89,14 +111,226 @@
           </select>
         </div>
       </div>
-
       <div id="lista-aprendizajes" class="space-y-4"></div>
     </main>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 2: MATRÍCULA (SOLO DIRECTOR) -->
+    <!-- ========================================== -->
+    <main id="vista-matricula" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div>
+          <h3 class="text-2xl font-bold">Matrícula Escolar</h3>
+          <p class="text-sm text-slate-500">Alta y edición individual de alumnos</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="cargarMatricula()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+          <button onclick="abrirModalAlumno()" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">+ Nuevo Alumno</button>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex flex-wrap gap-3">
+        <input type="text" id="buscador-matricula" oninput="renderMatricula()" placeholder="Buscar por ID o nombre..."
+          class="flex-grow min-w-[220px] border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="filtro-amb-matricula" onchange="renderMatricula()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+          <option value="TODOS">Todos los Ambientes</option>
+          <option value="TALLER 1">TALLER 1</option>
+          <option value="TALLER 2">TALLER 2</option>
+          <option value="TALLER 3">TALLER 3</option>
+          <option value="CNA">CNA</option>
+          <option value="CNB">CNB</option>
+          <option value="CI">CI</option>
+        </select>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-3">ID</th>
+              <th class="px-4 py-3">Alumno</th>
+              <th class="px-4 py-3">Grado SEP</th>
+              <th class="px-4 py-3">Ambiente</th>
+              <th class="px-4 py-3">Maestras Asignadas</th>
+              <th class="px-4 py-3">Estatus</th>
+              <th class="px-4 py-3 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-matricula" class="divide-y divide-slate-200">
+            <tr><td colspan="7" class="px-4 py-6 text-center text-slate-500">Cargando matrícula...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 3: MAESTRAS Y ASIGNACIONES (SOLO DIRECTOR) -->
+    <!-- ========================================== -->
+    <main id="vista-maestras" class="hidden p-6 flex-grow max-w-6xl mx-auto w-full space-y-8">
+      <!-- BLOQUE A: USUARIOS -->
+      <section>
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+          <div>
+            <h3 class="text-2xl font-bold">Personal y Usuarios</h3>
+            <p class="text-sm text-slate-500">Alta de maestras y directivos con acceso al portal</p>
+          </div>
+          <button onclick="cargarMaestras()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-4">
+          <h4 class="font-bold text-sm text-slate-700 mb-3">Registrar o actualizar usuario</h4>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <input type="email" id="usr-correo" placeholder="correo@gmail.com" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <input type="text" id="usr-nombre" placeholder="Nombre completo" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <select id="usr-rol" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+              <option value="Maestra">Maestra</option>
+              <option value="Director">Director</option>
+            </select>
+            <button onclick="guardarUsuario()" id="btnGuardarUsr" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 text-sm">
+              Guardar Usuario
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+              <tr>
+                <th class="px-4 py-3">Nombre</th>
+                <th class="px-4 py-3">Correo</th>
+                <th class="px-4 py-3">Rol</th>
+                <th class="px-4 py-3">Huella Digital</th>
+                <th class="px-4 py-3 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-usuarios" class="divide-y divide-slate-200"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BLOQUE B: ASIGNACIONES DE CO-DOCENCIA -->
+      <section>
+        <div class="mb-4">
+          <h3 class="text-xl font-bold">Asignación de Maestras a Alumnos (Co-docencia)</h3>
+          <p class="text-sm text-slate-500">Asigna un ambiente completo de un clic o agrega alumnos de forma individual</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <!-- Asignar Ambiente Completo -->
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h4 class="font-bold text-sm text-blue-700 mb-3">Asignar Ambiente Completo</h4>
+            <div class="space-y-3">
+              <select id="asig-amb-docente" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50"></select>
+              <select id="asig-amb-nombre" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+                <option value="TALLER 1">TALLER 1</option>
+                <option value="TALLER 2">TALLER 2</option>
+                <option value="TALLER 3">TALLER 3</option>
+                <option value="CNA">CNA</option>
+                <option value="CNB">CNB</option>
+                <option value="CI">CI</option>
+              </select>
+              <button onclick="asignarAmbiente()" id="btnAsigAmb" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg text-sm">
+                Asignar Todos los Alumnos del Ambiente
+              </button>
+            </div>
+          </div>
+
+          <!-- Asignar Alumno Individual -->
+          <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h4 class="font-bold text-sm text-emerald-700 mb-3">Asignar Alumno Individual</h4>
+            <div class="space-y-3">
+              <select id="asig-ind-docente" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50"></select>
+              <select id="asig-ind-alumno" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50"></select>
+              <button onclick="asignarIndividual()" id="btnAsigInd" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg text-sm">
+                Asignar Alumno
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+          <div class="p-3 border-b border-slate-200 flex flex-wrap justify-between items-center gap-2">
+            <span class="text-sm font-bold text-slate-700">Asignaciones Activas</span>
+            <select id="filtro-asig-docente" onchange="renderAsignaciones()" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-slate-50">
+              <option value="TODOS">Todas las Maestras</option>
+            </select>
+          </div>
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+              <tr>
+                <th class="px-4 py-3">Maestra</th>
+                <th class="px-4 py-3">Alumno</th>
+                <th class="px-4 py-3">Ambiente</th>
+                <th class="px-4 py-3">Ciclo</th>
+                <th class="px-4 py-3 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-asignaciones" class="divide-y divide-slate-200"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL ALTA / EDICIÓN ALUMNO -->
+  <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+      <h3 id="modal-alumno-titulo" class="text-xl font-bold text-slate-800 mb-4">Nuevo Alumno</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">ID Alumno *</label>
+          <input type="text" id="al-id" placeholder="Ej. 205" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Nombre Completo *</label>
+          <input type="text" id="al-nombre" placeholder="APELLIDOS NOMBRE(S)" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Grado SEP</label>
+            <input type="text" id="al-grado" placeholder="Ej. 4 PRIMARIA" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Ambiente *</label>
+            <select id="al-ambiente" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+              <option value="TALLER 1">TALLER 1</option>
+              <option value="TALLER 2">TALLER 2</option>
+              <option value="TALLER 3">TALLER 3</option>
+              <option value="CNA">CNA</option>
+              <option value="CNB">CNB</option>
+              <option value="CI">CI</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Estatus</label>
+            <select id="al-estatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50">
+              <option value="vigente">Vigente</option>
+              <option value="baja">Baja</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Correo del Tutor</label>
+            <input type="email" id="al-tutor" placeholder="tutor@gmail.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="cerrarModalAlumno()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+        <button onclick="guardarAlumno()" id="btnGuardarAlumno" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg">Guardar</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL HUELLA -->
   <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
+      <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+        </svg>
+      </div>
       <h3 class="text-xl font-bold text-slate-800 mb-2">Entra más rápido</h3>
       <p class="text-sm text-slate-500 mb-6">Vincula tu huella digital o FaceID para tus próximos accesos.</p>
       <button onclick="vincularHuella()" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3">Vincular Huella Ahora</button>
@@ -110,6 +344,8 @@
     let usuarioActual = null;
     let alumnoSeleccionado = null;
     let aprendizajesActuales = [];
+    let matriculaCache = [];
+    let asignacionesCache = [];
 
     function bufferToBase64url(buffer) {
       const bytes = new Uint8Array(buffer);
@@ -143,6 +379,9 @@
       return await response.json();
     }
 
+    // ==========================================
+    // AUTH & BIOMETRÍA
+    // ==========================================
     async function solicitarCodigo() {
       const email = document.getElementById("emailInput").value.trim();
       if (!email || !email.includes("@")) return mostrarMensaje("Ingresa un correo válido.", "error");
@@ -196,10 +435,48 @@
       document.getElementById("dashboard-section").classList.remove("hidden");
       document.getElementById("userNameDisplay").textContent = datosUsuario.nombre;
       document.getElementById("userRoleBadge").textContent = datosUsuario.rol;
+
+      // RBAC: Mostrar pestañas administrativas solo a Director
+      const esDirector = (datosUsuario.rol || "").toUpperCase() === "DIRECTOR";
+      document.getElementById("tab-matricula").classList.toggle("hidden", !esDirector);
+      document.getElementById("tab-maestras").classList.toggle("hidden", !esDirector);
+
       if (mostrarInvitacionHuella) setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 500);
-      cargarAlumnos();
+      cambiarTab("evaluaciones");
     }
 
+    function cambiarTab(tab) {
+      // Ocultar todas las vistas
+      ["vista-alumnos", "vista-evaluador", "vista-matricula", "vista-maestras"].forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+      });
+      // Resetear estilos de pestañas
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("border-blue-600", "text-blue-600");
+        btn.classList.add("border-transparent", "text-slate-500");
+      });
+
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.add("border-blue-600", "text-blue-600");
+        activeBtn.classList.remove("border-transparent", "text-slate-500");
+      }
+
+      if (tab === "evaluaciones") {
+        document.getElementById("vista-alumnos").classList.remove("hidden");
+        cargarAlumnos();
+      } else if (tab === "matricula") {
+        document.getElementById("vista-matricula").classList.remove("hidden");
+        cargarMatricula();
+      } else if (tab === "maestras") {
+        document.getElementById("vista-maestras").classList.remove("hidden");
+        cargarMaestras();
+      }
+    }
+
+    // ==========================================
+    // PESTAÑA 1: EVALUACIONES
+    // ==========================================
     async function cargarAlumnos() {
       const grid = document.getElementById("grid-alumnos");
       grid.innerHTML = `<p class="text-slate-500 col-span-3">Consultando base de datos...</p>`;
@@ -238,8 +515,7 @@
       if (data.success) {
         aprendizajesActuales = data.aprendizajes;
         const materias = [...new Set(aprendizajesActuales.map(a => a.materia))];
-        const selMat = document.getElementById("filtro-materia");
-        selMat.innerHTML = `<option value="TODAS">Todas las Materias</option>` + materias.map(m => `<option value="${m}">${m}</option>`).join('');
+        document.getElementById("filtro-materia").innerHTML = `<option value="TODAS">Todas las Materias</option>` + materias.map(m => `<option value="${m}">${m}</option>`).join('');
         renderAprendizajes();
       }
     }
@@ -271,15 +547,14 @@
           </div>
           <p class="text-xs text-slate-500 font-semibold">${a.tema}</p>
           <p class="text-sm font-medium text-slate-800 mb-4">${a.aprendizaje}</p>
-          
           <div class="flex flex-wrap items-center gap-2">
             ${[1, 2, 3, 4].map(n => `
-              <button onclick="calificar('${a.idAprendizaje}', ${n}, this)" 
+              <button onclick="calificar('${a.idAprendizaje}', ${n}, this)"
                 class="px-3.5 py-1.5 rounded-lg text-sm font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'}">
                 ${n}
               </button>
             `).join('')}
-            <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones (opcional)" 
+            <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones (opcional)"
               class="flex-grow min-w-[200px] border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-400">
           </div>
         </div>
@@ -316,6 +591,227 @@
       cargarAlumnos();
     }
 
+    // ==========================================
+    // PESTAÑA 2: MATRÍCULA (SOLO DIRECTOR)
+    // ==========================================
+    async function cargarMatricula() {
+      const tbody = document.getElementById("tabla-matricula");
+      tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-slate-500">Cargando matrícula...</td></tr>`;
+      const data = await apiCall({ action: "listarMatricula", correoSolicitante: usuarioActual.correo });
+      if (data.success) {
+        matriculaCache = data.alumnos;
+        renderMatricula();
+      } else {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-red-500">${data.message}</td></tr>`;
+      }
+    }
+
+    function renderMatricula() {
+      const texto = (document.getElementById("buscador-matricula").value || "").toLowerCase();
+      const amb = document.getElementById("filtro-amb-matricula").value;
+
+      const filtrados = matriculaCache.filter(al => {
+        if (amb !== "TODOS" && al.ambiente !== amb) return false;
+        if (texto && !al.nombre.toLowerCase().includes(texto) && !al.id.toLowerCase().includes(texto)) return false;
+        return true;
+      });
+
+      const tbody = document.getElementById("tabla-matricula");
+      if (filtrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-slate-500">Sin resultados.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map(al => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-bold text-slate-700">${al.id}</td>
+          <td class="px-4 py-3 font-medium">
+            <div>${al.nombre}</div>
+            <div class="text-xs text-slate-400">${al.correoTutor || 'Sin correo tutor'}</div>
+          </td>
+          <td class="px-4 py-3 text-slate-600">${al.grado}</td>
+          <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded">${al.ambiente}</span></td>
+          <td class="px-4 py-3">
+            ${al.maestras.length ? al.maestras.map(m => `<span class="inline-block text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded mr-1 mb-1">${m}</span>`).join('') : '<span class="text-xs text-amber-600">Sin asignar</span>'}
+          </td>
+          <td class="px-4 py-3">
+            <span class="text-xs font-bold px-2 py-0.5 rounded-full ${al.estatus === 'vigente' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${al.estatus}</span>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <button onclick='abrirModalAlumno(${JSON.stringify(al)})' class="text-blue-600 hover:underline font-semibold text-xs">Editar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function abrirModalAlumno(al = null) {
+      document.getElementById("modal-alumno-titulo").textContent = al ? "Editar Alumno" : "Nuevo Alumno";
+      document.getElementById("al-id").value = al ? al.id : "";
+      document.getElementById("al-id").disabled = !!al;
+      document.getElementById("al-nombre").value = al ? al.nombre : "";
+      document.getElementById("al-grado").value = al ? al.grado : "";
+      document.getElementById("al-ambiente").value = al ? al.ambiente : "TALLER 1";
+      document.getElementById("al-estatus").value = al ? al.estatus : "vigente";
+      document.getElementById("al-tutor").value = al ? al.correoTutor : "";
+      document.getElementById("modal-alumno").classList.remove("hidden");
+    }
+
+    function cerrarModalAlumno() { document.getElementById("modal-alumno").classList.add("hidden"); }
+
+    async function guardarAlumno() {
+      const btn = document.getElementById("btnGuardarAlumno");
+      btn.textContent = "Guardando..."; btn.disabled = true;
+
+      const res = await apiCall({
+        action: "guardarAlumno",
+        correoSolicitante: usuarioActual.correo,
+        id: document.getElementById("al-id").value,
+        nombre: document.getElementById("al-nombre").value,
+        grado: document.getElementById("al-grado").value,
+        ambiente: document.getElementById("al-ambiente").value,
+        estatus: document.getElementById("al-estatus").value,
+        correoTutor: document.getElementById("al-tutor").value
+      });
+
+      btn.textContent = "Guardar"; btn.disabled = false;
+      if (res.success) {
+        cerrarModalAlumno();
+        cargarMatricula();
+      } else alert(res.message);
+    }
+
+    // ==========================================
+    // PESTAÑA 3: MAESTRAS Y ASIGNACIONES (SOLO DIRECTOR)
+    // ==========================================
+    async function cargarMaestras() {
+      const data = await apiCall({ action: "listarMaestrasYAsignaciones", correoSolicitante: usuarioActual.correo });
+      if (!data.success) return alert(data.message);
+
+      // 1. Tabla Usuarios
+      document.getElementById("tabla-usuarios").innerHTML = data.usuarios.map(u => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-medium">${u.nombre}</td>
+          <td class="px-4 py-3 text-slate-600">${u.correo}</td>
+          <td class="px-4 py-3"><span class="text-xs font-bold px-2 py-0.5 rounded ${u.rol.toUpperCase() === 'DIRECTOR' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">${u.rol}</span></td>
+          <td class="px-4 py-3 text-xs">${u.tieneHuella ? '<span class="text-green-600 font-semibold">✓ Vinculada</span>' : '<span class="text-slate-400">Pendiente</span>'}</td>
+          <td class="px-4 py-3 text-right">
+            <button onclick='cargarUsuarioEnForm(${JSON.stringify(u)})' class="text-blue-600 hover:underline font-semibold text-xs">Editar</button>
+          </td>
+        </tr>
+      `).join('');
+
+      // 2. Poblar selectores de maestras y alumnos
+      const opcionesDocentes = data.usuarios.map(u => `<option value="${u.correo}">${u.nombre} (${u.correo})</option>`).join('');
+      document.getElementById("asig-amb-docente").innerHTML = opcionesDocentes;
+      document.getElementById("asig-ind-docente").innerHTML = opcionesDocentes;
+      document.getElementById("filtro-asig-docente").innerHTML = `<option value="TODOS">Todas las Maestras</option>` + opcionesDocentes;
+
+      document.getElementById("asig-ind-alumno").innerHTML = data.alumnos.map(a =>
+        `<option value="${a.id}">${a.nombre} (${a.ambiente} • ID ${a.id})</option>`
+      ).join('');
+
+      asignacionesCache = data.asignaciones;
+      renderAsignaciones();
+    }
+
+    function cargarUsuarioEnForm(u) {
+      document.getElementById("usr-correo").value = u.correo;
+      document.getElementById("usr-nombre").value = u.nombre;
+      document.getElementById("usr-rol").value = u.rol;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function guardarUsuario() {
+      const btn = document.getElementById("btnGuardarUsr");
+      btn.textContent = "Guardando..."; btn.disabled = true;
+
+      const res = await apiCall({
+        action: "guardarUsuario",
+        correoSolicitante: usuarioActual.correo,
+        correo: document.getElementById("usr-correo").value,
+        nombre: document.getElementById("usr-nombre").value,
+        rol: document.getElementById("usr-rol").value
+      });
+
+      btn.textContent = "Guardar Usuario"; btn.disabled = false;
+      if (res.success) {
+        document.getElementById("usr-correo").value = "";
+        document.getElementById("usr-nombre").value = "";
+        cargarMaestras();
+      } else alert(res.message);
+    }
+
+    async function asignarAmbiente() {
+      const btn = document.getElementById("btnAsigAmb");
+      btn.textContent = "Asignando..."; btn.disabled = true;
+
+      const res = await apiCall({
+        action: "asignarAmbienteADocente",
+        correoSolicitante: usuarioActual.correo,
+        correoDocente: document.getElementById("asig-amb-docente").value,
+        ambiente: document.getElementById("asig-amb-nombre").value,
+        ciclo: "2026-2027"
+      });
+
+      btn.textContent = "Asignar Todos los Alumnos del Ambiente"; btn.disabled = false;
+      alert(res.message);
+      if (res.success) cargarMaestras();
+    }
+
+    async function asignarIndividual() {
+      const btn = document.getElementById("btnAsigInd");
+      btn.textContent = "Asignando..."; btn.disabled = true;
+
+      const res = await apiCall({
+        action: "guardarAsignacion",
+        correoSolicitante: usuarioActual.correo,
+        correoDocente: document.getElementById("asig-ind-docente").value,
+        idAlumno: document.getElementById("asig-ind-alumno").value,
+        ciclo: "2026-2027"
+      });
+
+      btn.textContent = "Asignar Alumno"; btn.disabled = false;
+      if (res.success) cargarMaestras();
+      else alert(res.message);
+    }
+
+    function renderAsignaciones() {
+      const filtro = document.getElementById("filtro-asig-docente").value;
+      const lista = asignacionesCache.filter(a => filtro === "TODOS" || a.correoDocente === filtro);
+      const tbody = document.getElementById("tabla-asignaciones");
+
+      if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">Sin asignaciones activas.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = lista.map(a => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-medium">${a.nombreDocente}<div class="text-xs text-slate-400">${a.correoDocente}</div></td>
+          <td class="px-4 py-3">${a.nombreAlumno} <span class="text-xs text-slate-400">(ID ${a.idAlumno})</span></td>
+          <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded">${a.ambiente}</span></td>
+          <td class="px-4 py-3 text-slate-500 text-xs">${a.ciclo}</td>
+          <td class="px-4 py-3 text-right">
+            <button onclick="quitarAsignacion('${a.idAsignacion}')" class="text-red-500 hover:underline font-semibold text-xs">Quitar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function quitarAsignacion(idAsignacion) {
+      if (!confirm("¿Quitar esta asignación?")) return;
+      const res = await apiCall({
+        action: "desactivarAsignacion",
+        correoSolicitante: usuarioActual.correo,
+        idAsignacion: idAsignacion
+      });
+      if (res.success) cargarMaestras();
+      else alert(res.message);
+    }
+
+    // ==========================================
+    // UTILIDADES HUELLA Y SESIÓN
+    // ==========================================
     async function vincularHuella() {
       const btn = document.getElementById("btnHuella");
       btn.innerHTML = "Activando sensor..."; btn.disabled = true;
