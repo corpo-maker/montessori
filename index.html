@@ -18,7 +18,7 @@
     <div class="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-lg border border-transparent dark:border-slate-800 max-w-md w-full">
       <div class="text-center mb-8">
         <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Portal Docente</h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Ingresa para gestionar tus evaluaciones</p>
+        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Ingresa para gestionar tus evaluaciones y asistencias</p>
       </div>
 
       <div id="step-email">
@@ -75,6 +75,10 @@
           class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 whitespace-nowrap">
           Evaluaciones
         </button>
+        <button id="tab-asistencias" onclick="cambiarTab('asistencias')"
+          class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white whitespace-nowrap">
+          Asistencias
+        </button>
         <button id="tab-matricula" onclick="cambiarTab('matricula')"
           class="tab-btn hidden px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white whitespace-nowrap">
           Matrícula
@@ -111,7 +115,6 @@
         </div>
       </div>
 
-      <!-- Barra de filtros: Buscador + Grado Montessori + Periodo + Paginado (10 por defecto) -->
       <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5 flex flex-wrap items-center gap-3">
         <input type="text" id="buscador-alumnos" oninput="resetPagAlumnos()" placeholder="Buscar alumno o ID..."
           class="w-full sm:flex-grow sm:min-w-[180px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
@@ -144,10 +147,8 @@
         </div>
       </div>
 
-      <!-- Contenedor Modo Ficha -->
       <div id="grid-alumnos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
 
-      <!-- Contenedor Modo Tabla -->
       <div id="tabla-alumnos-wrap" class="hidden bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
@@ -164,12 +165,11 @@
         </table>
       </div>
 
-      <!-- Controles de Paginación Alumnos -->
       <div id="pag-controls-alumnos" class="mt-4 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 1B: EVALUADOR DEL ALUMNO (APRENDIZAJE ESPERADO + CAMPO FORMATIVO) -->
+    <!-- PESTAÑA 1B: EVALUADOR DEL ALUMNO -->
     <!-- ========================================== -->
     <main id="vista-evaluador" class="hidden p-4 sm:p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
@@ -180,14 +180,12 @@
         </div>
       </div>
 
-      <!-- Cabecera Alumno + Filtros Unificados -->
       <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5">
         <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h3 id="eval-alumno-nombre" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"></h3>
             <p id="eval-alumno-meta" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400"></p>
           </div>
-          <!-- Selector de Periodo / Trimestre -->
           <div class="flex flex-wrap gap-1.5" id="pills-periodo">
             <button onclick="seleccionarPeriodoEval('1ER')" data-per="1ER" class="per-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs font-bold bg-blue-600 text-white">1ER Trimestre</button>
             <button onclick="seleccionarPeriodoEval('2DO')" data-per="2DO" class="per-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">2DO Trimestre</button>
@@ -196,10 +194,8 @@
           </div>
         </div>
 
-        <!-- Pestañas Horizontales por Materia -->
         <div id="tabs-materias-eval" class="flex gap-2 overflow-x-auto py-3 border-y border-slate-100 dark:border-slate-800"></div>
 
-        <!-- Barra de Filtros de Estado, Buscador y Paginación -->
         <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Estatus:</span>
@@ -224,16 +220,13 @@
         </div>
       </div>
 
-      <!-- Leyenda Escala Montessori -->
       <div class="mb-3 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-1">
         <span id="resumen-filtro-detalle" class="font-semibold"></span>
         <span><strong>Escala:</strong> 1: Enseñado/Presentado • 2: En práctica • 3: Explica proceso • 4: Explica y reflexiona</span>
       </div>
 
-      <!-- MODO FICHAS DETALLE -->
       <div id="detalle-fichas-wrap" class="space-y-3"></div>
 
-      <!-- MODO TABLA DETALLE -->
       <div id="detalle-tabla-wrap" class="hidden bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
@@ -249,12 +242,95 @@
         </table>
       </div>
 
-      <!-- Paginación Detalle -->
       <div id="pag-controls-detalle" class="mt-4 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 2: MATRÍCULA (ADMIN / DIRECTOR) -->
+    <!-- PESTAÑA 2: PASE DE LISTA DIARIO (ASISTENCIAS_V2) -->
+    <!-- ========================================== -->
+    <main id="vista-asistencias" class="hidden p-4 sm:p-6 flex-grow max-w-7xl mx-auto w-full">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
+        <div>
+          <h3 class="text-xl sm:text-2xl font-bold">Pase de Lista Diario</h3>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Registra asistencias, retardos y faltas por Ambiente Montessori (enlazado a boletas y tutores)</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnExportAsisAdmin" onclick="exportarAsistenciasCSV()" class="hidden text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg font-semibold">
+            ↓ Descargar Historial (Admin)
+          </button>
+          <button onclick="marcarTodosPresentes()" class="text-xs bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-2 rounded-lg font-semibold">
+            ✓ Marcar Grupo Presente
+          </button>
+          <button onclick="guardarPaseDeLista()" id="btnGuardarAsistencias" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-sm">
+            💾 Guardar Pase de Lista
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros: Fecha + Grado Montessori + Buscador + Paginación -->
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5 flex flex-wrap items-center gap-3">
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Fecha</label>
+          <input type="date" id="fecha-asistencia" onchange="cargarAsistenciasDia()"
+            class="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-sm font-semibold">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Grado Montessori</label>
+          <select id="filtro-amb-asistencia" onchange="resetPagAsistencias()"
+            class="border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-800 font-semibold">
+            <option value="TODOS">Todos los Asignados</option>
+            <option value="TALLER 1">TALLER 1</option>
+            <option value="TALLER 2">TALLER 2</option>
+            <option value="TALLER 3">TALLER 3</option>
+            <option value="CNA">CNA</option>
+            <option value="CNB">CNB</option>
+            <option value="CI">CI</option>
+          </select>
+        </div>
+
+        <div class="flex-grow min-w-[200px]">
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Buscar Alumno</label>
+          <input type="text" id="buscador-asistencia" oninput="resetPagAsistencias()" placeholder="Nombre o ID del niño..."
+            class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Mostrar</label>
+          <select id="pag-size-asistencia" onchange="resetPagAsistencias()"
+            class="border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 text-sm bg-slate-50 dark:bg-slate-800 font-bold">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Resumen rápido del día -->
+      <div id="resumen-asistencias-dia" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"></div>
+
+      <!-- Tabla Responsiva de Pase de Lista -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
+            <tr>
+              <th onclick="ordenarAsistencias('id')" class="px-4 py-3 cursor-pointer hover:text-blue-600">ID ⇅</th>
+              <th onclick="ordenarAsistencias('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno / Tutores ⇅</th>
+              <th onclick="ordenarAsistencias('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente ⇅</th>
+              <th class="px-4 py-3">Estatus del Día</th>
+              <th class="px-4 py-3">Observaciones</th>
+              <th class="px-4 py-3 text-center">Acumulado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-asistencias" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+        </table>
+      </div>
+      <div id="pag-controls-asistencias" class="mt-4 flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400"></div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- PESTAÑA 3: MATRÍCULA (ADMIN / DIRECTOR) -->
     <!-- ========================================== -->
     <main id="vista-matricula" class="hidden p-4 sm:p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
@@ -298,7 +374,7 @@
           <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
             <tr>
               <th onclick="ordenarMatricula('id')" class="px-4 py-3 cursor-pointer hover:text-blue-600">ID ⇅</th>
-              <th onclick="ordenarMatricula('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno ⇅</th>
+              <th onclick="ordenarMatricula('nombre')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Alumno / Tutores (Boletas) ⇅</th>
               <th onclick="ordenarMatricula('grado')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Grado SEP ⇅</th>
               <th onclick="ordenarMatricula('ambiente')" class="px-4 py-3 cursor-pointer hover:text-blue-600">Ambiente Auto ⇅</th>
               <th class="px-4 py-3">Maestras del Grupo</th>
@@ -313,7 +389,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 3: MAESTRAS Y AMBIENTES (CON PAGINACIÓN EN LOS 3 SUBMÓDULOS) -->
+    <!-- PESTAÑA 4: MAESTRAS Y AMBIENTES (CON PAGINACIÓN EN LOS 3 SUBMÓDULOS) -->
     <!-- ========================================== -->
     <main id="vista-maestras" class="hidden p-4 sm:p-6 flex-grow max-w-6xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
@@ -498,7 +574,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10) -->
+    <!-- PESTAÑA 5: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10) -->
     <!-- ========================================== -->
     <main id="vista-plantillas" class="hidden p-4 sm:p-6 flex-grow max-w-7xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
@@ -573,7 +649,6 @@
       </div>
 
       <div class="divide-y divide-slate-100 dark:divide-slate-800 border-y border-slate-100 dark:border-slate-800">
-        <!-- Interruptor Modo Oscuro -->
         <div class="flex items-center justify-between py-3.5">
           <div>
             <p class="font-semibold text-sm">Modo Oscuro</p>
@@ -585,7 +660,6 @@
           </button>
         </div>
 
-        <!-- Opción de Vincular Huella Digital -->
         <div class="py-3.5">
           <div class="flex items-center justify-between mb-2">
             <div>
@@ -607,7 +681,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODALES (ALUMNO, CSV, APRENDIZAJE, HUELLA) -->
+  <!-- MODALES (ALUMNO MULTI-TUTOR, CSV, APRENDIZAJE, HUELLA) -->
   <!-- ========================================== -->
   <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-transparent dark:border-slate-800 max-w-md w-full p-6">
@@ -638,18 +712,17 @@
             </select>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Estatus</label>
-            <select id="al-estatus" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
-              <option value="vigente">Vigente</option>
-              <option value="baja">Baja</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Correo del Tutor</label>
-            <input type="email" id="al-tutor" placeholder="tutor@gmail.com" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
-          </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Estatus</label>
+          <select id="al-estatus" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800">
+            <option value="vigente">Vigente</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Correos de Tutores (Entrega de Boletas)</label>
+          <input type="text" id="al-tutor" placeholder="mama@gmail.com, papa@gmail.com" class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm">
+          <p class="text-[11px] text-slate-400 mt-1">Puedes agregar varios correos separados por coma (,)</p>
         </div>
       </div>
       <div class="flex justify-end gap-2 mt-6">
@@ -664,7 +737,7 @@
       <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
         <div>
           <h3 class="text-xl font-bold">Importación Masiva de Matrícula</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Columnas: <strong>ID_Alumno, Nombre_Completo, Grado_SEP, Estatus, Correo_Tutor</strong></p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Columnas: <strong>ID_Alumno, Nombre_Completo, Grado_SEP, Estatus, Correo_Tutor</strong> (acepta múltiples correos separados por coma)</p>
         </div>
         <button onclick="descargarPlantillaCSV()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold px-3 py-1.5 rounded-lg">
           ↓ Descargar plantilla CSV
@@ -684,7 +757,7 @@
               <th class="px-3 py-2">Nombre</th>
               <th class="px-3 py-2">Grado SEP</th>
               <th class="px-3 py-2">Ambiente Auto</th>
-              <th class="px-3 py-2">Estatus</th>
+              <th class="px-3 py-2">Tutores</th>
             </tr>
           </thead>
           <tbody id="tabla-preview-csv" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
@@ -850,6 +923,11 @@
     let pagDetalle = 1;
     let sortDetalle = { col: 'orden', asc: true };
 
+    // Estado Asistencias
+    let asistenciasCache = [];
+    let pagAsistencias = 1;
+    let sortAsistencias = { col: 'nombre', asc: true };
+
     // Estado Matrícula
     let matriculaCache = [];
     let reglasGradosCache = [];
@@ -857,7 +935,7 @@
     let sortMatricula = { col: 'id', asc: true };
     let registrosCSVListos = [];
 
-    // Estado Maestras y Ambientes (3 Submódulos Paginados)
+    // Estado Maestras y Ambientes
     let usuariosCache = [];
     let pagUsuarios = 1;
     let sortUsuarios = { col: 'nombre', asc: true };
@@ -919,6 +997,13 @@
 
     // --- RESTAURAR SESIÓN AL RECARGAR ---
     window.addEventListener("DOMContentLoaded", () => {
+      // Inicializar fecha de hoy en formato local YYYY-MM-DD
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dd = String(hoy.getDate()).padStart(2, '0');
+      document.getElementById("fecha-asistencia").value = `${yyyy}-${mm}-${dd}`;
+
       try {
         const guardada = localStorage.getItem(SESSION_KEY);
         if (guardada) {
@@ -1059,11 +1144,9 @@
                 localStorage.setItem(DEVICE_PASSKEY_PREFIX + correoActual, rawIdB64);
                 entrarAlPortal(authData.datosUsuario, false, "evaluaciones");
               } else {
-                // Si la huella no coincidió, enviar código OTP automáticamente
                 await solicitarCodigo(true);
               }
             } catch (bioErr) {
-              // Dispositivo nuevo sin esa huella o cancelada -> enviar OTP automáticamente
               mostrarMensaje("Dispositivo sin huella vinculada. Enviando código de verificación a tu correo...", "success");
               const fallbackData = await apiCall({ action: "solicitarOTP", correo: correoActual, forzarOTP: true });
               if (fallbackData.success) {
@@ -1100,7 +1183,6 @@
       try {
         const data = await apiCall({ action: "validarOTP", correo: correoActual, otp });
         if (data.success) {
-          // Siempre invitar a vincular huella si este dispositivo aún no la tiene activa
           const invitarHuella = !dispositivoTieneHuellaActiva(correoActual);
           entrarAlPortal(data.datosUsuario, invitarHuella, "evaluaciones");
         } else {
@@ -1131,13 +1213,13 @@
       document.getElementById("tab-plantillas").classList.toggle("hidden", !esDirectivo);
 
       document.getElementById("btnExportEvalAdmin").classList.toggle("hidden", !esAdmin);
+      document.getElementById("btnExportAsisAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("btnExportMatriculaAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("btnExportPlantillasAdmin").classList.toggle("hidden", !esAdmin);
       document.getElementById("optRolAdmin").classList.toggle("hidden", !esAdmin);
 
       actualizarIndicadorHuellaUI();
 
-      // Si entró por código o no tiene huella vinculada en este equipo, mostrar invitación
       if (mostrarInvitacionHuella || !dispositivoTieneHuellaActiva(correoActual)) {
         setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 450);
       }
@@ -1148,7 +1230,7 @@
     function cambiarTab(tab) {
       if (usuarioActual) guardarSesionLocal(usuarioActual, tab);
 
-      ["vista-alumnos", "vista-evaluador", "vista-matricula", "vista-maestras", "vista-plantillas"].forEach(id => {
+      ["vista-alumnos", "vista-evaluador", "vista-asistencias", "vista-matricula", "vista-maestras", "vista-plantillas"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
       });
       document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -1165,6 +1247,9 @@
       if (tab === "evaluaciones") {
         document.getElementById("vista-alumnos").classList.remove("hidden");
         cargarAlumnos();
+      } else if (tab === "asistencias") {
+        document.getElementById("vista-asistencias").classList.remove("hidden");
+        cargarAsistenciasDia();
       } else if (tab === "matricula") {
         document.getElementById("vista-matricula").classList.remove("hidden");
         cargarMatricula();
@@ -1310,7 +1395,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 1B: EVALUADOR DETALLE (APRENDIZAJE ESPERADO COL 6 Y CAMPO COL 7)
+    // PESTAÑA 1B: EVALUADOR DETALLE
     // ==========================================
     async function abrirEvaluadorConFiltro(idAlumno, periodoInicial, materiaInicial) {
       const alumno = alumnosCache.find(x => x.id === idAlumno);
@@ -1576,7 +1661,205 @@
     }
 
     // ==========================================
-    // PESTAÑA 2: MATRÍCULA (PAGINADA EN 10 Y ORDENABLE)
+    // PESTAÑA 2: PASE DE LISTA DIARIO (ASISTENCIAS_V2)
+    // ==========================================
+    async function cargarAsistenciasDia() {
+      const tbody = document.getElementById("tbody-asistencias");
+      tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">Cargando lista de asistencia...</td></tr>`;
+      const fecha = document.getElementById("fecha-asistencia").value;
+
+      const data = await apiCall({
+        action: "obtenerAsistenciasDia",
+        fecha: fecha,
+        correo: usuarioActual.correo,
+        rol: usuarioActual.rol
+      });
+
+      if (data.success) {
+        asistenciasCache = data.alumnos || [];
+        renderAsistenciasDia();
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-red-500">${data.message}</td></tr>`;
+      }
+    }
+
+    function resetPagAsistencias() { pagAsistencias = 1; renderAsistenciasDia(); }
+    function irPagAsistencias(p) { pagAsistencias = p; renderAsistenciasDia(); }
+    function ordenarAsistencias(col) {
+      if (sortAsistencias.col === col) sortAsistencias.asc = !sortAsistencias.asc;
+      else { sortAsistencias.col = col; sortAsistencias.asc = true; }
+      renderAsistenciasDia();
+    }
+
+    function cambiarEstatusAsistenciaLocal(idAlumno, nuevoEstatus) {
+      const item = asistenciasCache.find(x => x.id === idAlumno);
+      if (item) {
+        item.estatus = nuevoEstatus;
+        renderAsistenciasDia();
+      }
+    }
+
+    function actualizarObsAsistenciaLocal(idAlumno, texto) {
+      const item = asistenciasCache.find(x => x.id === idAlumno);
+      if (item) item.observaciones = texto;
+    }
+
+    function marcarTodosPresentes() {
+      const amb = document.getElementById("filtro-amb-asistencia").value;
+      asistenciasCache.forEach(a => {
+        if (amb === "TODOS" || a.ambiente === amb) {
+          a.estatus = "Asistencia";
+        }
+      });
+      renderAsistenciasDia();
+    }
+
+    function renderAsistenciasDia() {
+      const amb = document.getElementById("filtro-amb-asistencia").value;
+      const txt = (document.getElementById("buscador-asistencia").value || "").toLowerCase();
+      const pageSize = Number(document.getElementById("pag-size-asistencia").value);
+
+      let filtrados = asistenciasCache.filter(a => {
+        if (amb !== "TODOS" && a.ambiente !== amb) return false;
+        if (txt && !a.nombre.toLowerCase().includes(txt) && !a.id.toLowerCase().includes(txt)) return false;
+        return true;
+      });
+
+      // Resumen estadístico de la selección actual
+      const totA = filtrados.filter(x => x.estatus === "Asistencia").length;
+      const totR = filtrados.filter(x => x.estatus === "Retardo").length;
+      const totF = filtrados.filter(x => x.estatus === "Falta").length;
+      const totJ = filtrados.filter(x => x.estatus === "Justificada").length;
+
+      document.getElementById("resumen-asistencias-dia").innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500">Asistencias</span>
+          <span class="text-lg font-extrabold text-green-600 dark:text-green-400">${totA}</span>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500">Retardos</span>
+          <span class="text-lg font-extrabold text-amber-600 dark:text-amber-400">${totR}</span>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500">Faltas</span>
+          <span class="text-lg font-extrabold text-red-600 dark:text-red-400">${totF}</span>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500">Justificadas</span>
+          <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400">${totJ}</span>
+        </div>
+      `;
+
+      filtrados.sort((a, b) => compararValores(a[sortAsistencias.col], b[sortAsistencias.col], sortAsistencias.asc));
+
+      const totalPags = Math.max(1, Math.ceil(filtrados.length / pageSize));
+      if (pagAsistencias > totalPags) pagAsistencias = totalPags;
+      const pagina = filtrados.slice((pagAsistencias - 1) * pageSize, pagAsistencias * pageSize);
+
+      const opciones = [
+        { val: "Asistencia", label: "✓ Asistencia", active: "bg-green-600 text-white border-green-600" },
+        { val: "Retardo", label: "⏰ Retardo", active: "bg-amber-500 text-white border-amber-500" },
+        { val: "Falta", label: "✕ Falta", active: "bg-red-600 text-white border-red-600" },
+        { val: "Justificada", label: "📄 Justificada", active: "bg-blue-600 text-white border-blue-600" }
+      ];
+
+      const tbody = document.getElementById("tbody-asistencias");
+      if (pagina.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">No hay alumnos con estos filtros.</td></tr>`;
+      } else {
+        tbody.innerHTML = pagina.map(a => {
+          const mostrarTutores = (a.estatus === "Falta" || a.estatus === "Retardo") && a.correosTutores && a.correosTutores.length > 0;
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+              <td class="px-4 py-3 font-bold">${a.id}</td>
+              <td class="px-4 py-3">
+                <div class="font-bold text-slate-800 dark:text-white">${a.nombre}</div>
+                <div class="text-xs text-slate-400">${a.grado} ${a.registrado ? '<span class="text-green-600 dark:text-green-400 font-semibold ml-1">• Guardado</span>' : ''}</div>
+                ${mostrarTutores ? `
+                  <div class="mt-1 flex flex-wrap gap-1">
+                    ${a.correosTutores.map(c => `<a href="mailto:${c}?subject=Aviso%20de%20Asistencia%20-%20${encodeURIComponent(a.nombre)}" class="text-[10px] bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded hover:underline">✉ ${c}</a>`).join('')}
+                  </div>
+                ` : ''}
+              </td>
+              <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">${a.ambiente}</span></td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-1.5">
+                  ${opciones.map(op => `
+                    <button onclick="cambiarEstatusAsistenciaLocal('${a.id}', '${op.val}')"
+                      class="px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${a.estatus === op.val ? op.active : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'}">
+                      ${op.label}
+                    </button>
+                  `).join('')}
+                </div>
+              </td>
+              <td class="px-4 py-3">
+                <input type="text" value="${a.observaciones || ''}" oninput="actualizarObsAsistenciaLocal('${a.id}', this.value)"
+                  placeholder="Nota (opcional)"
+                  class="w-full min-w-[140px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-400">
+              </td>
+              <td class="px-4 py-3 text-center whitespace-nowrap text-xs">
+                <span class="text-green-600 font-bold" title="Asistencias">${a.acumulado.Asistencia}A</span> /
+                <span class="text-amber-600 font-bold" title="Retardos">${a.acumulado.Retardo}R</span> /
+                <span class="text-red-600 font-bold" title="Faltas">${a.acumulado.Falta}F</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      renderControlesPaginacion("pag-controls-asistencias", filtrados.length, pagAsistencias, pageSize, "irPagAsistencias");
+    }
+
+    async function guardarPaseDeLista() {
+      const amb = document.getElementById("filtro-amb-asistencia").value;
+      const fecha = document.getElementById("fecha-asistencia").value;
+      if (!fecha) return alert("Selecciona una fecha válida.");
+
+      const aGuardar = asistenciasCache
+        .filter(a => amb === "TODOS" || a.ambiente === amb)
+        .map(a => ({ idAlumno: a.id, estatus: a.estatus, observaciones: a.observaciones }));
+
+      if (aGuardar.length === 0) return alert("No hay alumnos en pantalla para guardar.");
+
+      const btn = document.getElementById("btnGuardarAsistencias");
+      btn.textContent = "Guardando..."; btn.disabled = true;
+
+      try {
+        const res = await apiCall({
+          action: "guardarAsistenciasMasivo",
+          fecha: fecha,
+          correoDocente: usuarioActual.correo,
+          registros: aGuardar
+        });
+        if (res.success) {
+          alert("✅ " + res.message);
+          cargarAsistenciasDia();
+        } else {
+          alert(res.message);
+        }
+      } catch (e) {
+        alert("Error de conexión al guardar asistencias.");
+      } finally {
+        btn.textContent = "💾 Guardar Pase de Lista"; btn.disabled = false;
+      }
+    }
+
+    async function exportarAsistenciasCSV() {
+      const btn = document.getElementById("btnExportAsisAdmin");
+      btn.textContent = "Generando..."; btn.disabled = true;
+      const res = await apiCall({ action: "exportarAsistenciasAdmin", correoSolicitante: usuarioActual.correo });
+      btn.textContent = "↓ Descargar Historial (Admin)"; btn.disabled = false;
+      if (!res.success) return alert(res.message);
+
+      const filas = ["ID_Asistencia,Fecha,ID_Alumno,Correo_Docente,Estatus,Observaciones"];
+      res.registros.forEach(r => {
+        filas.push([r.idAsistencia, r.fecha, r.idAlumno, r.correoDocente, r.estatus, r.observaciones].map(escaparCSV).join(","));
+      });
+      descargarCSVTexto("Respaldo_Asistencias_Admin.csv", filas.join("\n"));
+    }
+
+    // ==========================================
+    // PESTAÑA 3: MATRÍCULA (CON MÚLTIPLES TUTORES)
     // ==========================================
     async function cargarMatricula() {
       const tbody = document.getElementById("tabla-matricula");
@@ -1606,7 +1889,7 @@
 
       let filtrados = matriculaCache.filter(al => {
         if (amb !== "TODOS" && al.ambiente !== amb) return false;
-        if (texto && !al.nombre.toLowerCase().includes(texto) && !al.id.toLowerCase().includes(texto)) return false;
+        if (texto && !al.nombre.toLowerCase().includes(texto) && !al.id.toLowerCase().includes(texto) && !(al.correoTutor || "").toLowerCase().includes(texto)) return false;
         return true;
       });
 
@@ -1620,26 +1903,33 @@
       if (pagina.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-slate-500">Sin resultados.</td></tr>`;
       } else {
-        tbody.innerHTML = pagina.map(al => `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-            <td class="px-4 py-3 font-bold">${al.id}</td>
-            <td class="px-4 py-3 font-medium">
-              <div>${al.nombre}</div>
-              <div class="text-xs text-slate-400">${al.correoTutor || 'Sin correo tutor'}</div>
-            </td>
-            <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">${al.grado}</td>
-            <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">${al.ambiente}</span></td>
-            <td class="px-4 py-3">
-              ${al.maestras.length ? al.maestras.map(m => `<span class="inline-block text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded mr-1 mb-1">${m}</span>`).join('') : '<span class="text-xs text-amber-600">Sin docentes</span>'}
-            </td>
-            <td class="px-4 py-3">
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${al.estatus === 'vigente' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 text-red-700'}">${al.estatus}</span>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <button onclick='abrirModalAlumno(${JSON.stringify(al)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
-            </td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = pagina.map(al => {
+          const tutores = al.correosTutores || [];
+          return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+              <td class="px-4 py-3 font-bold">${al.id}</td>
+              <td class="px-4 py-3 font-medium">
+                <div>${al.nombre}</div>
+                <div class="flex flex-wrap gap-1 mt-1">
+                  ${tutores.length
+                    ? tutores.map(t => `<span class="text-[11px] bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded">✉ ${t}</span>`).join('')
+                    : '<span class="text-xs text-slate-400">Sin correo tutor</span>'}
+                </div>
+              </td>
+              <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-medium">${al.grado}</td>
+              <td class="px-4 py-3"><span class="text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">${al.ambiente}</span></td>
+              <td class="px-4 py-3">
+                ${al.maestras.length ? al.maestras.map(m => `<span class="inline-block text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded mr-1 mb-1">${m}</span>`).join('') : '<span class="text-xs text-amber-600">Sin docentes</span>'}
+              </td>
+              <td class="px-4 py-3">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-full ${al.estatus === 'vigente' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-100 text-red-700'}">${al.estatus}</span>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <button onclick='abrirModalAlumno(${JSON.stringify(al)})' class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs">Editar</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
       }
       renderControlesPaginacion("pag-controls-matricula", filtrados.length, pagMatricula, pageSize, "irPagMatricula");
     }
@@ -1663,7 +1953,7 @@
       }
 
       document.getElementById("al-estatus").value = al ? al.estatus : "vigente";
-      document.getElementById("al-tutor").value = al ? al.correoTutor : "";
+      document.getElementById("al-tutor").value = al ? (al.correoTutor || "") : "";
       document.getElementById("modal-alumno").classList.remove("hidden");
     }
 
@@ -1708,8 +1998,8 @@
     function descargarPlantillaCSV() {
       descargarCSVTexto("Plantilla_Matricula_Montessori.csv", [
         "ID_Alumno,Nombre_Completo,Grado_SEP,Estatus,Correo_Tutor",
-        "101,EJEMPLO ALUMNO UNO,1 PRIMARIA,vigente,tutor1@gmail.com",
-        "102,EJEMPLO ALUMNO DOS,4 PRIMARIA,vigente,tutor2@gmail.com"
+        "101,EJEMPLO ALUMNO UNO,1 PRIMARIA,vigente,\"tutor1@gmail.com, tutor2@gmail.com\"",
+        "102,EJEMPLO ALUMNO DOS,4 PRIMARIA,vigente,tutor3@gmail.com"
       ].join("\n"));
     }
 
@@ -1769,7 +2059,7 @@
             <td class="px-3 py-1.5">${r.nombre}</td>
             <td class="px-3 py-1.5">${r.grado}</td>
             <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">${r.ambiente}</span></td>
-            <td class="px-3 py-1.5">${r.estatus}</td>
+            <td class="px-3 py-1.5">${r.correoTutor || '-'}</td>
           </tr>
         `).join('');
         document.getElementById("preview-csv-container").classList.remove("hidden");
@@ -1800,7 +2090,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 3: MAESTRAS Y AMBIENTES (3 SUB-PESTAÑAS PAGINADAS)
+    // PESTAÑA 4: MAESTRAS Y AMBIENTES (3 SUB-PESTAÑAS PAGINADAS)
     // ==========================================
     function cambiarSubTabMaestras(sub) {
       ["personal", "ambientes", "grados"].forEach(s => {
@@ -1830,7 +2120,6 @@
       renderReglasPaginado();
     }
 
-    // --- Submódulo 1: Personal ---
     function resetPagUsuarios() { pagUsuarios = 1; renderUsuariosPaginado(); }
     function irPagUsuarios(p) { pagUsuarios = p; renderUsuariosPaginado(); }
     function ordenarUsuarios(col) {
@@ -1869,7 +2158,6 @@
       renderControlesPaginacion("pag-controls-usuarios", filtrados.length, pagUsuarios, pageSize, "irPagUsuarios");
     }
 
-    // --- Submódulo 2: Ambientes ---
     function resetPagAsignaciones() { pagAsignaciones = 1; renderAsignacionesPaginado(); }
     function irPagAsignaciones(p) { pagAsignaciones = p; renderAsignacionesPaginado(); }
     function ordenarAsignaciones(col) {
@@ -1908,7 +2196,6 @@
       renderControlesPaginacion("pag-controls-asignaciones", filtrados.length, pagAsignaciones, pageSize, "irPagAsignaciones");
     }
 
-    // --- Submódulo 3: Grados SEP ---
     function resetPagReglas() { pagReglas = 1; renderReglasPaginado(); }
     function irPagReglas(p) { pagReglas = p; renderReglasPaginado(); }
     function ordenarReglas(col) {
@@ -2015,7 +2302,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 4: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10 + CARGA POR LOTES)
+    // PESTAÑA 5: PLANTILLA DE APRENDIZAJES (PAGINADA EN 10 + CARGA POR LOTES)
     // ==========================================
     async function cargarPlantillas() {
       const tbody = document.getElementById("tabla-plantillas");
@@ -2115,7 +2402,6 @@
       else alert(res.message);
     }
 
-    // --- CSV PLANTILLA APRENDIZAJES (CARGA POR LOTES DE 500) ---
     function abrirModalImportarPlantilla() {
       plantillasCSVListas = [];
       document.getElementById("archivo-csv-plantilla").value = "";
@@ -2134,7 +2420,7 @@
       ].join("\n"));
     }
 
-   function previsualizarPlantillaCSV(event) {
+    function previsualizarPlantillaCSV(event) {
       const file = event.target.files[0];
       if (!file) return;
       leerArchivoTextoInteligente(file, function(texto) {
@@ -2146,7 +2432,6 @@
           h.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         );
 
-        // Búsqueda exacta sin colisiones entre ID_Aprendizaje y Aprendizaje_Esperado
         let idxId = headers.findIndex(h => h === "id" || h === "id_aprendizaje" || h === "codigo");
         let idxAmb = headers.findIndex(h => h === "ambiente" || h === "nivel" || h === "grado_montessori");
         let idxPer = headers.findIndex(h => h === "periodo" || h === "trimestre");
@@ -2157,7 +2442,6 @@
         );
         let idxCampo = headers.findIndex(h => h.includes("campo"));
 
-        // Respaldo posicional estándar (Cols 1 a 7: ID, Ambiente, Periodo, Materia, Tema, Aprendizaje, Campo)
         if (idxId === -1 && headers.length >= 6) idxId = 0;
         if (idxAmb === -1 && headers.length >= 6) idxAmb = 1;
         if (idxPer === -1 && headers.length >= 6) idxPer = 2;
@@ -2167,7 +2451,7 @@
         if (idxCampo === -1 && headers.length >= 7) idxCampo = 6;
 
         if (idxId === -1 || idxAmb === -1 || idxAp === -1 || idxId === idxAp) {
-          return alert("No se pudieron identificar correctamente las columnas ID_Aprendizaje y Aprendizaje_Esperado. Revisa los encabezados de tu CSV.");
+          return alert("No se pudieron identificar correctamente las columnas ID_Aprendizaje y Aprendizaje_Esperado.");
         }
 
         plantillasCSVListas = [];
@@ -2185,7 +2469,7 @@
         }
 
         const resumen = document.getElementById("resumen-plantilla-csv");
-        resumen.innerHTML = `Se detectaron <strong>${plantillasCSVListas.length} aprendizajes</strong>. Verifica en la tabla de abajo que la columna <strong>Aprendizaje Esperado</strong> muestre tu texto desglosado antes de confirmar:`;
+        resumen.innerHTML = `Se detectaron <strong>${plantillasCSVListas.length} aprendizajes</strong> listos para cargar al catálogo.`;
         resumen.classList.remove("hidden");
 
         document.getElementById("tabla-preview-plantilla").innerHTML = plantillasCSVListas.slice(0, 50).map(r => `
@@ -2194,7 +2478,7 @@
             <td class="px-3 py-1.5">${r.ambiente}</td>
             <td class="px-3 py-1.5">${r.periodo}</td>
             <td class="px-3 py-1.5">${r.materia}</td>
-            <td class="px-3 py-1.5 font-semibold text-slate-900 dark:text-white">${r.aprendizaje}</td>
+            <td class="px-3 py-1.5 font-semibold">${r.aprendizaje}</td>
           </tr>
         `).join('');
         document.getElementById("preview-plantilla-container").classList.remove("hidden");
