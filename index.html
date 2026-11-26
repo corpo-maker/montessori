@@ -124,8 +124,9 @@
           <h3 class="text-2xl font-bold">Matrícula Escolar</h3>
           <p class="text-sm text-slate-500">El Ambiente Montessori y sus maestras se asignan automáticamente según el Grado SEP</p>
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button onclick="cargarMatricula()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">↻ Actualizar</button>
+          <button onclick="abrirModalImportar()" class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold">↑ Importar CSV</button>
           <button onclick="abrirModalAlumno()" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">+ Nuevo Alumno</button>
         </div>
       </div>
@@ -296,7 +297,9 @@
     </main>
   </div>
 
-  <!-- MODAL ALTA / EDICIÓN ALUMNO -->
+  <!-- ========================================== -->
+  <!-- MODAL ALTA / EDICIÓN ALUMNO INDIVIDUAL -->
+  <!-- ========================================== -->
   <div id="modal-alumno" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
       <h3 id="modal-alumno-titulo" class="text-xl font-bold text-slate-800 mb-4">Nuevo Alumno</h3>
@@ -340,7 +343,56 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- MODAL IMPORTACIÓN MASIVA CSV -->
+  <!-- ========================================== -->
+  <div id="modal-importar" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] flex flex-col">
+      <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-slate-800">Importación Masiva de Matrícula</h3>
+          <p class="text-xs text-slate-500 mt-1">Sube un archivo CSV con columnas: <strong>ID_Alumno, Nombre_Completo, Grado_SEP, Estatus, Correo_Tutor</strong></p>
+        </div>
+        <button onclick="descargarPlantillaCSV()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded-lg">
+          ↓ Descargar plantilla CSV
+        </button>
+      </div>
+
+      <input type="file" id="archivo-csv-alumnos" accept=".csv" onchange="previsualizarCSV(event)"
+        class="w-full border border-dashed border-slate-300 rounded-xl p-4 text-sm bg-slate-50 mb-4 cursor-pointer">
+
+      <div id="resumen-csv" class="hidden text-xs font-semibold mb-3 p-3 rounded-lg bg-blue-50 text-blue-800"></div>
+
+      <div id="preview-csv-container" class="hidden overflow-y-auto border border-slate-200 rounded-xl mb-4 flex-grow">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-100 text-slate-600 uppercase sticky top-0">
+            <tr>
+              <th class="px-3 py-2">ID</th>
+              <th class="px-3 py-2">Nombre</th>
+              <th class="px-3 py-2">Grado SEP</th>
+              <th class="px-3 py-2">Ambiente Auto</th>
+              <th class="px-3 py-2">Estatus</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-preview-csv" class="divide-y divide-slate-200"></tbody>
+        </table>
+      </div>
+
+      <div id="resultado-importacion" class="hidden text-xs p-3 rounded-lg mb-4"></div>
+
+      <div class="flex justify-end gap-2 mt-auto">
+        <button onclick="cerrarModalImportar()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cerrar</button>
+        <button onclick="ejecutarImportacionCSV()" id="btnEjecutarCSV" disabled
+          class="px-4 py-2 text-sm bg-emerald-600 disabled:bg-slate-300 hover:bg-emerald-700 text-white font-semibold rounded-lg">
+          Confirmar e Importar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
   <!-- MODAL HUELLA DIGITAL -->
+  <!-- ========================================== -->
   <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all">
       <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -370,6 +422,7 @@
     let aprendizajesActuales = [];
     let matriculaCache = [];
     let reglasGradosCache = [];
+    let registrosCSVListos = [];
 
     function bufferToBase64url(buffer) {
       const bytes = new Uint8Array(buffer);
@@ -614,7 +667,7 @@
     }
 
     // ==========================================
-    // PESTAÑA 2: MATRÍCULA
+    // PESTAÑA 2: MATRÍCULA E IMPORTACIÓN MASIVA
     // ==========================================
     async function cargarMatricula() {
       const tbody = document.getElementById("tabla-matricula");
@@ -716,6 +769,155 @@
         cerrarModalAlumno();
         cargarMatricula();
       } else alert(res.message);
+    }
+
+    // --- FUNCIONES CSV MASIVO ---
+    function abrirModalImportar() {
+      registrosCSVListos = [];
+      document.getElementById("archivo-csv-alumnos").value = "";
+      document.getElementById("resumen-csv").classList.add("hidden");
+      document.getElementById("preview-csv-container").classList.add("hidden");
+      document.getElementById("resultado-importacion").classList.add("hidden");
+      document.getElementById("btnEjecutarCSV").disabled = true;
+      document.getElementById("modal-importar").classList.remove("hidden");
+    }
+
+    function cerrarModalImportar() {
+      document.getElementById("modal-importar").classList.add("hidden");
+    }
+
+    function descargarPlantillaCSV() {
+      const contenido = [
+        "ID_Alumno,Nombre_Completo,Grado_SEP,Estatus,Correo_Tutor",
+        "101,EJEMPLO ALUMNO UNO,1 PRIMARIA,vigente,tutor1@gmail.com",
+        "102,EJEMPLO ALUMNO DOS,4 PRIMARIA,vigente,tutor2@gmail.com"
+      ].join("\n");
+      const blob = new Blob(["\uFEFF" + contenido], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Plantilla_Matricula_Montessori.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function parsearLineaCSV(linea, separador) {
+      const resultado = [];
+      let actual = "";
+      let enComillas = false;
+      for (let i = 0; i < linea.length; i++) {
+        const ch = linea[i];
+        if (ch === '"') {
+          enComillas = !enComillas;
+        } else if (ch === separador && !enComillas) {
+          resultado.push(actual.trim());
+          actual = "";
+        } else {
+          actual += ch;
+        }
+      }
+      resultado.push(actual.trim());
+      return resultado;
+    }
+
+    function previsualizarCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const texto = e.target.result.replace(/^\uFEFF/, "");
+        const lineas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
+        if (lineas.length < 2) {
+          alert("El archivo CSV está vacío o solo tiene encabezados.");
+          return;
+        }
+
+        const separador = lineas[0].includes(";") ? ";" : ",";
+        const headers = parsearLineaCSV(lineas[0], separador).map(h => h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+
+        const idxId = headers.findIndex(h => h === "id" || h.includes("id_alumno"));
+        const idxNom = headers.findIndex(h => h.includes("nombre"));
+        const idxGrado = headers.findIndex(h => h.includes("grado"));
+        const idxEst = headers.findIndex(h => h.includes("estatus") || h === "status");
+        const idxTutor = headers.findIndex(h => h.includes("tutor") || h.includes("correo"));
+
+        if (idxId === -1 || idxNom === -1 || idxGrado === -1) {
+          alert("No se encontraron las columnas obligatorias: ID_Alumno, Nombre_Completo y Grado_SEP.");
+          return;
+        }
+
+        registrosCSVListos = [];
+        let idsVistos = new Set();
+        let duplicados = [];
+
+        for (let i = 1; i < lineas.length; i++) {
+          const cols = parsearLineaCSV(lineas[i], separador);
+          const id = (cols[idxId] || "").trim();
+          const nombre = (cols[idxNom] || "").trim().toUpperCase();
+          const grado = (cols[idxGrado] || "").trim().toUpperCase();
+          const estatus = idxEst !== -1 && cols[idxEst] ? cols[idxEst].trim().toLowerCase() : "vigente";
+          const correoTutor = idxTutor !== -1 && cols[idxTutor] ? cols[idxTutor].trim().toLowerCase() : "";
+
+          if (!id && !nombre) continue;
+          if (idsVistos.has(id)) duplicados.push(id);
+          idsVistos.add(id);
+
+          const regla = reglasGradosCache.find(r => r.grado === grado);
+          registrosCSVListos.push({
+            id, nombre, grado,
+            ambiente: regla ? regla.ambiente : "SIN REGLA",
+            estatus, correoTutor
+          });
+        }
+
+        const sinRegla = registrosCSVListos.filter(r => r.ambiente === "SIN REGLA").length;
+        const resumen = document.getElementById("resumen-csv");
+        resumen.innerHTML = `Se detectaron <strong>${registrosCSVListos.length} alumnos</strong>.` +
+          (duplicados.length ? ` <span class="text-red-600">⚠️ IDs duplicados en el archivo: ${[...new Set(duplicados)].join(", ")}.</span>` : "") +
+          (sinRegla ? ` <span class="text-amber-700">⚠️ ${sinRegla} filas tienen un Grado SEP sin equivalencia en Config_Grados.</span>` : "");
+        resumen.classList.remove("hidden");
+
+        document.getElementById("tabla-preview-csv").innerHTML = registrosCSVListos.slice(0, 50).map(r => `
+          <tr>
+            <td class="px-3 py-1.5 font-bold">${r.id}</td>
+            <td class="px-3 py-1.5">${r.nombre}</td>
+            <td class="px-3 py-1.5">${r.grado}</td>
+            <td class="px-3 py-1.5"><span class="px-1.5 py-0.5 rounded font-bold ${r.ambiente === 'SIN REGLA' ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-blue-700'}">${r.ambiente}</span></td>
+            <td class="px-3 py-1.5">${r.estatus}</td>
+          </tr>
+        `).join('') + (registrosCSVListos.length > 50 ? `<tr><td colspan="5" class="px-3 py-2 text-center text-slate-400">... y ${registrosCSVListos.length - 50} registros más</td></tr>` : "");
+
+        document.getElementById("preview-csv-container").classList.remove("hidden");
+        document.getElementById("btnEjecutarCSV").disabled = registrosCSVListos.length === 0;
+      };
+      reader.readAsText(file, "UTF-8");
+    }
+
+    async function ejecutarImportacionCSV() {
+      const btn = document.getElementById("btnEjecutarCSV");
+      btn.textContent = "Importando..."; btn.disabled = true;
+
+      const res = await apiCall({
+        action: "importarAlumnosMasivo",
+        correoSolicitante: usuarioActual.correo,
+        alumnos: registrosCSVListos
+      });
+
+      btn.textContent = "Confirmar e Importar";
+      const box = document.getElementById("resultado-importacion");
+      box.classList.remove("hidden");
+
+      if (res.success) {
+        box.className = "text-xs p-3 rounded-lg mb-4 bg-green-50 text-green-800 border border-green-200";
+        box.innerHTML = `<strong>✅ ${res.message}</strong>` +
+          (res.errores && res.errores.length ? `<ul class="mt-2 list-disc pl-4 text-amber-800">${res.errores.map(e => `<li>${e}</li>`).join('')}</ul>` : "");
+        cargarMatricula();
+      } else {
+        box.className = "text-xs p-3 rounded-lg mb-4 bg-red-50 text-red-700";
+        box.textContent = res.message;
+        btn.disabled = false;
+      }
     }
 
     // ==========================================
