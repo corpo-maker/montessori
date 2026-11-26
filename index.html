@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Educativo</title>
+  <title>Portal Educativo Montessori</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800">
 
-  <!-- ========================================== -->
-  <!-- SECCIÓN 1: PANTALLAS DE LOGIN -->
-  <!-- ========================================== -->
-  <div id="login-section" class="flex items-center justify-center min-h-screen">
+  <!-- LOGIN -->
+  <div id="login-section" class="flex items-center justify-center min-h-screen p-4">
     <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
       <div class="text-center mb-8">
         <h1 class="text-2xl font-bold text-slate-800">Portal Docente</h1>
@@ -28,8 +26,7 @@
       </div>
 
       <div id="step-otp" class="hidden">
-        <p class="text-sm text-slate-600 mb-4 text-center">Hemos enviado un código de 6 dígitos a <br><strong id="displayEmail"></strong></p>
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Código de Acceso</label>
+        <p class="text-sm text-slate-600 mb-4 text-center">Código de 6 dígitos enviado a <br><strong id="displayEmail"></strong></p>
         <input type="text" id="otpInput" maxlength="6" placeholder="123456" 
                class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4 text-center tracking-widest text-lg font-bold">
         <button onclick="validarCodigo()" id="btnValidar" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all">
@@ -42,63 +39,78 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- SECCIÓN 2: EL PORTAL PRINCIPAL -->
-  <!-- ========================================== -->
+  <!-- DASHBOARD -->
   <div id="dashboard-section" class="hidden min-h-screen flex flex-col">
-    <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-      <h2 class="text-xl font-bold text-blue-700">Sistema de Evaluación</h2>
+    <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+      <div>
+        <h2 class="text-xl font-bold text-blue-700">Sistema Montessori</h2>
+        <span id="userRoleBadge" class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold"></span>
+      </div>
       <div class="flex items-center gap-4">
-        <span id="userNameDisplay" class="font-medium text-slate-600">Maestra</span>
+        <span id="userNameDisplay" class="font-medium text-slate-600 text-sm"></span>
         <button onclick="cerrarSesion()" class="text-sm text-red-500 hover:text-red-700 font-semibold">Salir</button>
       </div>
     </header>
 
-    <main class="p-6 flex-grow max-w-6xl mx-auto w-full">
-      <h3 class="text-2xl font-bold mb-6">Tus Alumnos Asignados</h3>
+    <!-- VISTA A: LISTA DE ALUMNOS -->
+    <main id="vista-alumnos" class="p-6 flex-grow max-w-6xl mx-auto w-full">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold">Alumnos Asignados</h3>
+        <button onclick="cargarAlumnos()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-lg font-medium">↻ Actualizar</button>
+      </div>
+      <div id="grid-alumnos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <p class="text-slate-500">Cargando alumnos...</p>
+      </div>
+    </main>
+
+    <!-- VISTA B: EVALUADOR DE ALUMNO -->
+    <main id="vista-evaluador" class="hidden p-6 flex-grow max-w-5xl mx-auto w-full">
+      <button onclick="volverAAlumnos()" class="mb-4 text-sm text-blue-600 hover:underline font-semibold">← Volver a Alumnos</button>
       
-      <!-- Cuadrícula de alumnos -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-xl shadow border border-slate-100 hover:shadow-md transition-all cursor-pointer">
-          <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xl mb-4">A</div>
-          <h4 class="font-bold text-lg">Ana Camila</h4>
-          <p class="text-sm text-slate-500">Taller 1</p>
-          <div class="mt-4 bg-slate-100 rounded-full h-2 w-full"><div class="bg-green-500 h-2 rounded-full w-3/4"></div></div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h3 id="eval-alumno-nombre" class="text-xl font-bold text-slate-800"></h3>
+          <p id="eval-alumno-meta" class="text-sm text-slate-500"></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <select id="filtro-periodo" onchange="renderAprendizajes()" class="border rounded-lg px-3 py-2 text-sm bg-slate-50">
+            <option value="TODOS">Todos los Periodos</option>
+            <option value="1ER">1ER Trimestre</option>
+            <option value="2DO">2DO Trimestre</option>
+            <option value="3ER">3ER Trimestre</option>
+          </select>
+          <select id="filtro-materia" onchange="renderAprendizajes()" class="border rounded-lg px-3 py-2 text-sm bg-slate-50">
+            <option value="TODAS">Todas las Materias</option>
+          </select>
+          <select id="filtro-estado" onchange="renderAprendizajes()" class="border rounded-lg px-3 py-2 text-sm bg-slate-50">
+            <option value="TODOS">Todos</option>
+            <option value="PENDIENTE">Pendientes</option>
+            <option value="EVALUADO">Evaluados</option>
+          </select>
         </div>
       </div>
+
+      <div id="lista-aprendizajes" class="space-y-4"></div>
     </main>
   </div>
 
-  <!-- ========================================== -->
-  <!-- SECCIÓN 3: MODAL DE HUELLA DIGITAL -->
-  <!-- ========================================== -->
+  <!-- MODAL HUELLA -->
   <div id="modal-huella" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all">
-      <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-        </svg>
-      </div>
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
       <h3 class="text-xl font-bold text-slate-800 mb-2">Entra más rápido</h3>
-      <p class="text-sm text-slate-500 mb-6">Protege tu cuenta y olvídate de los códigos por correo. Vincula tu huella digital o FaceID para tus próximos accesos.</p>
-      
-      <button onclick="vincularHuella()" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3 transition-all">
-        Vincular Huella Ahora
-      </button>
-      <button onclick="cerrarModalHuella()" class="w-full text-slate-500 hover:text-slate-700 text-sm font-medium py-2">
-        Hacerlo en otro momento
-      </button>
+      <p class="text-sm text-slate-500 mb-6">Vincula tu huella digital o FaceID para tus próximos accesos.</p>
+      <button onclick="vincularHuella()" id="btnHuella" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-3">Vincular Huella Ahora</button>
+      <button onclick="cerrarModalHuella()" class="w-full text-slate-500 text-sm py-2">En otro momento</button>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- SCRIPTS Y LÓGICA -->
-  <!-- ========================================== -->
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycby1TKv0B8_uHpuhoIQdpFDBLSGoJLK4yWkO15yZaEmZIfSZwqHL7HJmV5yhjc2O3p6j_w/exec";
     let correoActual = "";
-    
-    // --- UTILIDADES DE CRIPTOGRAFÍA PARA HUELLAS ---
+    let usuarioActual = null;
+    let alumnoSeleccionado = null;
+    let aprendizajesActuales = [];
+
     function bufferToBase64url(buffer) {
       const bytes = new Uint8Array(buffer);
       let str = '';
@@ -114,7 +126,6 @@
       for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
       return outputArray.buffer;
     }
-    // -----------------------------------------------
 
     function mostrarMensaje(texto, tipo) {
       const msgDiv = document.getElementById("statusMessage");
@@ -123,160 +134,206 @@
       msgDiv.classList.remove("hidden");
     }
 
-    // SOLICITAR ACCESO (EVALÚA SI PIDE HUELLA O ENVÍA CORREO)
-    async function solicitarCodigo() {
-      const email = document.getElementById("emailInput").value;
-      if (!email || !email.includes("@")) return mostrarMensaje("Ingresa un correo válido.", "error");
+    async function apiCall(payload) {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      return await response.json();
+    }
 
+    async function solicitarCodigo() {
+      const email = document.getElementById("emailInput").value.trim();
+      if (!email || !email.includes("@")) return mostrarMensaje("Ingresa un correo válido.", "error");
       correoActual = email;
       const btn = document.getElementById("btnSolicitar");
       btn.innerHTML = "Verificando..."; btn.disabled = true;
-      document.getElementById("statusMessage").classList.add("hidden");
 
       try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: "solicitarOTP", correo: correoActual })
-        });
-        const data = await response.json();
-
+        const data = await apiCall({ action: "solicitarOTP", correo: correoActual });
         if (data.success) {
           if (data.requiereHuella) {
-            // =====================================
-            // LOGEO MEDIANTE HUELLA DIGITAL
-            // =====================================
             mostrarMensaje("Verificando identidad biométrica...", "success");
-            try {
-              const idBuffer = base64urlToBuffer(data.passkeyId);
-              const challenge = new Uint8Array(32);
-              window.crypto.getRandomValues(challenge);
-
-              const publicKey = {
-                challenge: challenge,
-                rpId: window.location.hostname, // GitHub pages URL
-                allowCredentials: [{ type: "public-key", id: idBuffer }],
-                userVerification: "required",
-                timeout: 60000
-              };
-
-              // Abre el sensor biométrico del usuario
-              const assertion = await navigator.credentials.get({ publicKey });
-              const authPasskeyId = bufferToBase64url(assertion.rawId);
-
-              // Valida la huella con Google Sheets
-              const authResponse = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: "validarHuella", correo: correoActual, passkeyId: authPasskeyId })
-              });
-              const authData = await authResponse.json();
-
-              if (authData.success) {
-                entrarAlPortal(authData.datosUsuario.nombre, false); // false = No pedir registrar huella, ya la tiene
-              } else {
-                mostrarMensaje("Error de seguridad: " + authData.message, "error");
+            const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
+            const assertion = await navigator.credentials.get({
+              publicKey: {
+                challenge, rpId: window.location.hostname,
+                allowCredentials: [{ type: "public-key", id: base64urlToBuffer(data.passkeyId) }],
+                userVerification: "required", timeout: 60000
               }
-            } catch (err) {
-              mostrarMensaje("Autenticación biométrica cancelada o fallida.", "error");
-            }
+            });
+            const authData = await apiCall({ action: "validarHuella", correo: correoActual, passkeyId: bufferToBase64url(assertion.rawId) });
+            if (authData.success) entrarAlPortal(authData.datosUsuario, false);
+            else mostrarMensaje(authData.message, "error");
           } else {
-            // SI NO TIENE HUELLA -> OTP
             document.getElementById("step-email").classList.add("hidden");
             document.getElementById("step-otp").classList.remove("hidden");
             document.getElementById("displayEmail").textContent = correoActual;
           }
-        } else {
-          mostrarMensaje(data.message, "error");
-        }
-      } catch (error) { mostrarMensaje("Error de conexión.", "error"); }
-
+        } else mostrarMensaje(data.message, "error");
+      } catch (e) { mostrarMensaje("Error de conexión o biometría cancelada.", "error"); }
       btn.innerHTML = "Continuar"; btn.disabled = false;
     }
 
-    // VALIDACIÓN POR CORREO TRADICIONAL
     async function validarCodigo() {
-      const otp = document.getElementById("otpInput").value;
+      const otp = document.getElementById("otpInput").value.trim();
       if (otp.length !== 6) return mostrarMensaje("El código debe tener 6 dígitos.", "error");
-
       const btn = document.getElementById("btnValidar");
       btn.innerHTML = "Verificando..."; btn.disabled = true;
 
       try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: "validarOTP", correo: correoActual, otp: otp })
-        });
-        const data = await response.json();
-
-        if (data.success) {
-          // Entra al portal y SÍ pide registrar huella (porque entró por correo)
-          entrarAlPortal(data.datosUsuario.nombre, true); 
-        } else {
-          mostrarMensaje(data.message, "error");
-        }
-      } catch (error) { mostrarMensaje("Error de conexión.", "error"); }
-
+        const data = await apiCall({ action: "validarOTP", correo: correoActual, otp });
+        if (data.success) entrarAlPortal(data.datosUsuario, true);
+        else mostrarMensaje(data.message, "error");
+      } catch (e) { mostrarMensaje("Error de conexión.", "error"); }
       btn.innerHTML = "Verificar y Entrar"; btn.disabled = false;
     }
 
-    function entrarAlPortal(nombreUsuario, mostrarInvitacionHuella) {
+    function entrarAlPortal(datosUsuario, mostrarInvitacionHuella) {
+      usuarioActual = datosUsuario;
       document.getElementById("login-section").classList.add("hidden");
       document.getElementById("dashboard-section").classList.remove("hidden");
-      document.getElementById("userNameDisplay").textContent = nombreUsuario;
-      
-      if(mostrarInvitacionHuella) {
-        setTimeout(() => { document.getElementById("modal-huella").classList.remove("hidden"); }, 500);
+      document.getElementById("userNameDisplay").textContent = datosUsuario.nombre;
+      document.getElementById("userRoleBadge").textContent = datosUsuario.rol;
+      if (mostrarInvitacionHuella) setTimeout(() => document.getElementById("modal-huella").classList.remove("hidden"), 500);
+      cargarAlumnos();
+    }
+
+    async function cargarAlumnos() {
+      const grid = document.getElementById("grid-alumnos");
+      grid.innerHTML = `<p class="text-slate-500 col-span-3">Consultando base de datos...</p>`;
+      try {
+        const data = await apiCall({ action: "obtenerAlumnos", correo: usuarioActual.correo, rol: usuarioActual.rol });
+        if (!data.success || data.alumnos.length === 0) {
+          grid.innerHTML = `<p class="text-slate-500 col-span-3">No hay alumnos asignados a tu cuenta.</p>`;
+          return;
+        }
+        grid.innerHTML = data.alumnos.map(al => `
+          <div onclick='abrirEvaluador(${JSON.stringify(al)})' class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer">
+            <div class="flex justify-between items-start mb-3">
+              <div class="w-11 h-11 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-lg">${al.nombre.charAt(0)}</div>
+              <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">${al.ambiente}</span>
+            </div>
+            <h4 class="font-bold text-slate-800">${al.nombre}</h4>
+            <p class="text-xs text-slate-500 mb-4">${al.grado} • ID: ${al.id}</p>
+            <div class="bg-slate-100 rounded-full h-2.5 w-full overflow-hidden">
+              <div class="bg-green-500 h-2.5 rounded-full transition-all" style="width: ${al.progreso}%"></div>
+            </div>
+            <p class="text-xs text-right mt-1.5 text-slate-500 font-medium">${al.evaluados} / ${al.total} evaluados (${al.progreso}%)</p>
+          </div>
+        `).join('');
+      } catch (e) { grid.innerHTML = `<p class="text-red-500">Error cargando alumnos.</p>`; }
+    }
+
+    async function abrirEvaluador(alumno) {
+      alumnoSeleccionado = alumno;
+      document.getElementById("vista-alumnos").classList.add("hidden");
+      document.getElementById("vista-evaluador").classList.remove("hidden");
+      document.getElementById("eval-alumno-nombre").textContent = alumno.nombre;
+      document.getElementById("eval-alumno-meta").textContent = `${alumno.ambiente} • ${alumno.grado}`;
+      document.getElementById("lista-aprendizajes").innerHTML = `<p class="text-slate-500">Cargando aprendizajes...</p>`;
+
+      const data = await apiCall({ action: "obtenerDetalleAlumno", idAlumno: alumno.id, ambiente: alumno.ambiente });
+      if (data.success) {
+        aprendizajesActuales = data.aprendizajes;
+        const materias = [...new Set(aprendizajesActuales.map(a => a.materia))];
+        const selMat = document.getElementById("filtro-materia");
+        selMat.innerHTML = `<option value="TODAS">Todas las Materias</option>` + materias.map(m => `<option value="${m}">${m}</option>`).join('');
+        renderAprendizajes();
       }
     }
 
-    // =====================================
-    // REGISTRO DE NUEVA HUELLA DIGITAL
-    // =====================================
+    function renderAprendizajes() {
+      const per = document.getElementById("filtro-periodo").value;
+      const mat = document.getElementById("filtro-materia").value;
+      const est = document.getElementById("filtro-estado").value;
+
+      const filtrados = aprendizajesActuales.filter(a => {
+        if (per !== "TODOS" && a.periodo !== per) return false;
+        if (mat !== "TODAS" && a.materia !== mat) return false;
+        if (est === "PENDIENTE" && a.evaluado) return false;
+        if (est === "EVALUADO" && !a.evaluado) return false;
+        return true;
+      });
+
+      const cont = document.getElementById("lista-aprendizajes");
+      if (filtrados.length === 0) {
+        cont.innerHTML = `<p class="text-slate-500 text-center py-8 bg-white rounded-xl border">No hay aprendizajes con estos filtros.</p>`;
+        return;
+      }
+
+      cont.innerHTML = filtrados.map(a => `
+        <div class="bg-white p-5 rounded-xl shadow-sm border ${a.evaluado ? 'border-green-300 bg-green-50/30' : 'border-slate-200'}">
+          <div class="flex flex-wrap justify-between gap-2 mb-2">
+            <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">${a.periodo} • ${a.materia}</span>
+            <span class="text-xs font-semibold ${a.evaluado ? 'text-green-700' : 'text-amber-600'}">${a.evaluado ? '✓ Evaluado' : '● Pendiente'}</span>
+          </div>
+          <p class="text-xs text-slate-500 font-semibold">${a.tema}</p>
+          <p class="text-sm font-medium text-slate-800 mb-4">${a.aprendizaje}</p>
+          
+          <div class="flex flex-wrap items-center gap-2">
+            ${[1, 2, 3, 4].map(n => `
+              <button onclick="calificar('${a.idAprendizaje}', ${n}, this)" 
+                class="px-3.5 py-1.5 rounded-lg text-sm font-bold border transition-all ${Number(a.puntaje) === n ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'}">
+                ${n}
+              </button>
+            `).join('')}
+            <input type="text" id="obs-${a.idAprendizaje}" value="${a.observaciones || ''}" placeholder="Observaciones (opcional)" 
+              class="flex-grow min-w-[200px] border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-400">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function calificar(idAprendizaje, puntaje, btn) {
+      const obs = document.getElementById(`obs-${idAprendizaje}`).value;
+      const textoOriginal = btn.innerHTML;
+      btn.innerHTML = "..."; btn.disabled = true;
+
+      const res = await apiCall({
+        action: "guardarEvaluacion",
+        idAlumno: alumnoSeleccionado.id,
+        idAprendizaje: idAprendizaje,
+        correoDocente: usuarioActual.correo,
+        puntaje: puntaje,
+        observaciones: obs
+      });
+
+      if (res.success) {
+        const item = aprendizajesActuales.find(x => x.idAprendizaje === idAprendizaje);
+        if (item) { item.evaluado = true; item.puntaje = puntaje; item.observaciones = obs; }
+        renderAprendizajes();
+      } else {
+        alert("Error al guardar: " + res.message);
+        btn.innerHTML = textoOriginal; btn.disabled = false;
+      }
+    }
+
+    function volverAAlumnos() {
+      document.getElementById("vista-evaluador").classList.add("hidden");
+      document.getElementById("vista-alumnos").classList.remove("hidden");
+      cargarAlumnos();
+    }
+
     async function vincularHuella() {
       const btn = document.getElementById("btnHuella");
       btn.innerHTML = "Activando sensor..."; btn.disabled = true;
-
       try {
-        const challenge = new Uint8Array(32);
-        window.crypto.getRandomValues(challenge);
-        const userId = new Uint8Array(16);
-        window.crypto.getRandomValues(userId);
-
-        const publicKey = {
-          challenge: challenge,
-          rp: { name: "Portal Docente", id: window.location.hostname },
-          user: { id: userId, name: correoActual, displayName: correoActual },
-          pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256 Criptografía
-          authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-          timeout: 60000,
-          attestation: "none"
-        };
-
-        // Solicita el escaner de la Mac, iPhone, Android o Windows
-        const credential = await navigator.credentials.create({ publicKey });
-        const passkeyId = bufferToBase64url(credential.rawId);
-
-        // Envía el código encriptado a Google Sheets
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: "registrarHuella", correo: correoActual, passkeyId: passkeyId })
+        const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
+        const userId = new Uint8Array(16); window.crypto.getRandomValues(userId);
+        const credential = await navigator.credentials.create({
+          publicKey: {
+            challenge, rp: { name: "Portal Docente", id: window.location.hostname },
+            user: { id: userId, name: correoActual, displayName: correoActual },
+            pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+            authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+            timeout: 60000, attestation: "none"
+          }
         });
-        const data = await response.json();
-
-        if (data.success) {
-          alert("✅ ¡Huella registrada! La próxima vez entrarás sin pedir código al correo.");
-          cerrarModalHuella();
-        } else {
-          alert("Error del servidor: " + data.message);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("El registro fue cancelado o tu dispositivo no tiene lector biométrico.");
-      }
-      
+        const data = await apiCall({ action: "registrarHuella", correo: correoActual, passkeyId: bufferToBase64url(credential.rawId) });
+        if (data.success) { alert("✅ ¡Huella registrada!"); cerrarModalHuella(); }
+      } catch (err) { alert("Registro cancelado o no soportado."); }
       btn.innerHTML = "Vincular Huella Ahora"; btn.disabled = false;
     }
 
@@ -286,11 +343,7 @@
       document.getElementById("statusMessage").classList.add("hidden");
       document.getElementById("otpInput").value = "";
     }
-
-    function cerrarModalHuella() {
-      document.getElementById("modal-huella").classList.add("hidden");
-    }
-
+    function cerrarModalHuella() { document.getElementById("modal-huella").classList.add("hidden"); }
     function cerrarSesion() {
       document.getElementById("dashboard-section").classList.add("hidden");
       document.getElementById("login-section").classList.remove("hidden");
