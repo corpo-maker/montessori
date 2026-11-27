@@ -270,7 +270,6 @@
         </div>
       </div>
 
-      <!-- Barra de Filtros: Fecha + Grado Montessori + Buscador + Paginación -->
       <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-5 flex flex-wrap items-center gap-3">
         <div>
           <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Fecha</label>
@@ -310,10 +309,8 @@
         </div>
       </div>
 
-      <!-- Resumen rápido del día -->
       <div id="resumen-asistencias-dia" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"></div>
 
-      <!-- Tabla Responsiva de Pase de Lista -->
       <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-xs select-none">
@@ -392,7 +389,7 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- PESTAÑA 4: MAESTRAS Y AMBIENTES (CON PAGINACIÓN EN LOS 3 SUBMÓDULOS) -->
+    <!-- PESTAÑA 4: MAESTRAS Y AMBIENTES (3 SUB-PESTAÑAS PAGINADAS) -->
     <!-- ========================================== -->
     <main id="vista-maestras" class="hidden p-4 sm:p-6 flex-grow max-w-6xl mx-auto w-full">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-5">
@@ -762,7 +759,6 @@
       <input type="file" id="archivo-csv-alumnos" accept=".csv" onchange="previsualizarCSV(event)"
         class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-sm bg-slate-50 dark:bg-slate-800 mb-3 cursor-pointer">
 
-      <!-- PANEL DE INCONSISTENCIAS Y ALERTA PARA ORIGEN DEL DATO -->
       <div id="panel-inconsistencias-matricula" class="hidden mb-3 border border-amber-300 dark:border-amber-700 bg-amber-50/90 dark:bg-amber-950/50 rounded-xl p-3.5">
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
           <div class="text-xs font-bold text-amber-800 dark:text-amber-200">
@@ -824,7 +820,6 @@
       <input type="file" id="archivo-csv-reloj" accept=".csv" onchange="previsualizarRelojCSV(event)"
         class="w-full border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-sm bg-slate-50 dark:bg-slate-800 mb-3 cursor-pointer">
 
-      <!-- PANEL DE INCONSISTENCIAS DE CRUCE (RELOJ vs MATRÍCULA) -->
       <div id="panel-inconsistencias-reloj" class="hidden mb-3 border border-amber-300 dark:border-amber-700 bg-amber-50/90 dark:bg-amber-950/50 rounded-xl p-3.5">
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
           <div class="text-xs font-bold text-amber-800 dark:text-amber-200">
@@ -985,6 +980,7 @@
       </button>
     </div>
   </div>
+<!-- FIN PARTE 1 - PEGAR PARTE 2 DEBAJO -->
 
   <!-- ========================================== -->
   <!-- SCRIPTS Y LÓGICA (PARTE 2 DE 2) -->
@@ -1949,7 +1945,7 @@
       }
     }
 
-    // --- IMPORTADOR RELOJ CHECADOR (CON CRUCE DIFUSO Y DETECTOR DE INCONSISTENCIAS) ---
+    // --- IMPORTADOR RELOJ CHECADOR ULTRA-FLEXIBLE ---
     function abrirModalImportarReloj() {
       relojParsedRows = [];
       relojDateCols = [];
@@ -1966,18 +1962,15 @@
 
     function buscarCoincidenciaAlumno(nombreReloj, listaAlumnos) {
       const claveReloj = normalizarTextoClave(nombreReloj);
-      // 1. Coincidencia exacta normalizada (quita acentos y espacios dobles)
       const exacta = listaAlumnos.find(al => normalizarTextoClave(al.nombre) === claveReloj);
       if (exacta) return { tipo: "EXACTA", alumno: exacta };
 
-      // 2. Coincidencia por tokens (ej. 2 apellidos + primer nombre, o pequeñas diferencias de letras)
       const tokensReloj = claveReloj.split(" ").filter(Boolean);
       let mejorCandidato = null;
       let mejorScore = 0;
 
       listaAlumnos.forEach(al => {
         const tokensMat = normalizarTextoClave(al.nombre).split(" ").filter(Boolean);
-        // Si comparten al menos los 2 apellidos o >= 3 tokens
         let coincidencias = 0;
         tokensReloj.forEach(tr => {
           if (tokensMat.some(tm => tm === tr || (tr.length >= 5 && tm.startsWith(tr.slice(0, 5))))) {
@@ -2002,47 +1995,80 @@
       if (!file) return;
 
       leerArchivoTextoInteligente(file, function(texto) {
-        const lineas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
-        if (lineas.length < 2) return alert("El archivo del reloj está vacío.");
+        const todasLasLineas = texto.split(/\r?\n/).filter(l => l.trim() !== "");
+        if (todasLasLineas.length < 2) return alert("El archivo del reloj está vacío.");
 
-        const separador = lineas[0].includes(";") ? ";" : ",";
-        const headers = parsearLineaCSV(lineas[0], separador);
+        const muestra = todasLasLineas.slice(0, 5).join("\n");
+        const countSemi = (muestra.match(/;/g) || []).length;
+        const countComma = (muestra.match(/,/g) || []).length;
+        const countTab = (muestra.match(/\t/g) || []).length;
+        const separador = countTab > countComma && countTab > countSemi ? "\t" : (countSemi > countComma ? ";" : ",");
 
-        const idxAp = headers.findIndex(h => h.toLowerCase().trim() === "apellidos");
-        const idxNom = headers.findIndex(h => h.toLowerCase().trim() === "nombre");
-        const idxGrp = headers.findIndex(h => h.toLowerCase().trim() === "grupo");
+        let filaHeaderIdx = -1;
+        let headersRaw = [];
+        for (let i = 0; i < Math.min(10, todasLasLineas.length); i++) {
+          const cols = parsearLineaCSV(todasLasLineas[i], separador);
+          const norm = cols.map(c => c.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, ""));
+          const tieneApellidos = norm.some(c => c.includes("apellido"));
+          const tieneNombre = norm.some(c => c.includes("nombre") || c.includes("alumno"));
+          const tieneFechas = cols.some(c => /^\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}$/.test(c.trim()));
 
-        if (idxAp === -1 || idxNom === -1) {
-          return alert("El archivo debe contener las columnas 'Apellidos' y 'Nombre'.");
+          if ((tieneApellidos && tieneNombre) || (tieneNombre && tieneFechas) || tieneFechas) {
+            filaHeaderIdx = i;
+            headersRaw = cols;
+            break;
+          }
         }
 
-        // Detectar columnas de fecha DD-MM-YYYY (cada fecha tiene entrada en colIndex y salida en colIndex + 1)
+        if (filaHeaderIdx === -1) {
+          return alert("No se reconoció la estructura del reporte de asistencia. Verifica que tenga columnas de Apellidos/Nombre y fechas (DD-MM-YYYY).");
+        }
+
+        const headersNorm = headersRaw.map(h =>
+          h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "")
+        );
+
+        let idxAp = headersNorm.findIndex(h => h.includes("apellido"));
+        let idxNom = headersNorm.findIndex(h => h === "nombre" || h === "nombres" || h.includes("nombrealumno"));
+        let idxGrp = headersNorm.findIndex(h => h.includes("grupo") || h.includes("ambiente") || h.includes("salon"));
+
+        if (idxAp === -1 && idxNom === -1 && headersRaw.length >= 4) {
+          idxAp = 0;
+          idxNom = 1;
+          idxGrp = 2;
+        }
+
         relojDateCols = [];
-        headers.forEach((h, idx) => {
-          const m = h.trim().match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
+        headersRaw.forEach((h, idx) => {
+          const m = h.trim().match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})$/);
           if (m) {
+            const dd = m[1].padStart(2, "0");
+            const mm = m[2].padStart(2, "0");
+            const yyyy = m[3].length === 2 ? "20" + m[3] : m[3];
             relojDateCols.push({
               colEntrada: idx,
               colSalida: idx + 1,
               fechaOriginal: h.trim(),
-              fechaISO: `${m[3]}-${m[2]}-${m[1]}`
+              fechaISO: `${yyyy}-${mm}-${dd}`
             });
           }
         });
 
         if (relojDateCols.length === 0) {
-          return alert("No se detectaron columnas de fechas con formato DD-MM-YYYY.");
+          return alert("No se detectaron columnas de fechas con formato DD-MM-YYYY en los encabezados.");
         }
 
         relojParsedRows = [];
         relojInconsistencias = [];
 
-        for (let i = 1; i < lineas.length; i++) {
-          const cols = parsearLineaCSV(lineas[i], separador);
-          const ap = (cols[idxAp] || "").trim();
-          const nom = (cols[idxNom] || "").trim();
+        for (let i = filaHeaderIdx + 1; i < todasLasLineas.length; i++) {
+          const cols = parsearLineaCSV(todasLasLineas[i], separador);
+          const ap = idxAp !== -1 ? (cols[idxAp] || "").trim() : "";
+          const nom = idxNom !== -1 ? (cols[idxNom] || "").trim() : "";
           const grp = idxGrp !== -1 ? (cols[idxGrp] || "").trim() : "";
+
           if (!ap && !nom) continue;
+          if (ap.toLowerCase().startsWith("total") || nom.toLowerCase().startsWith("total")) continue;
 
           const nombreCompletoReloj = `${ap} ${nom}`.replace(/\s+/g, " ").trim().toUpperCase();
           const match = buscarCoincidenciaAlumno(nombreCompletoReloj, asistenciasCache);
@@ -2099,7 +2125,6 @@
         </div>
       `).join('');
 
-      // Preseleccionar las sugerencias detectadas
       const selects = lista.querySelectorAll("select");
       relojInconsistencias.forEach((inc, idx) => {
         if (inc.idAlumnoAsignado && selects[idx]) {
@@ -2240,7 +2265,6 @@
           }
         }
 
-        // Posicionar el calendario en la última fecha importada para que el usuario vea el resultado inmediato
         if (relojDateCols.length > 0) {
           document.getElementById("fecha-asistencia").value = relojDateCols[relojDateCols.length - 1].fechaISO;
         }
@@ -2452,6 +2476,11 @@
           h.toLowerCase().replace(/\s+/g, " ").trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         );
 
+        // Si el usuario subió el reporte del reloj checador aquí por error, avisarle claramente
+        if (headers.some(h => h.includes("apellido")) && !headers.some(h => h === "id" || h.includes("id_alumno"))) {
+          return alert("⚠️ Este archivo parece ser el Reporte de Asistencias del Reloj Checador (contiene columna 'Apellidos').\n\nPor favor súbelo desde la pestaña 'Asistencias' usando el botón '↑ Importar Reporte Reloj (CSV)'.");
+        }
+
         const idxId = headers.findIndex(h => h === "id" || h.includes("id_alumno"));
         const idxNom = headers.findIndex(h => h === "nombre" || h.includes("nombre_completo") || h.includes("alumno"));
         const idxGrado = headers.findIndex(h => h.includes("grado"));
@@ -2460,7 +2489,6 @@
         const idxPadre = headers.findIndex(h => h.includes("padre"));
         const idxMama = headers.findIndex(h => h.includes("mama"));
 
-        // Detectar todas las columnas de correo (CORREO, CORREO .1, Correo_Tutor, etc.)
         const indicesCorreos = [];
         headers.forEach((h, i) => {
           if (h.startsWith("correo") || h.includes("tutor")) indicesCorreos.push(i);
@@ -2480,7 +2508,6 @@
           const nombre = (cols[idxNom] || "").trim().replace(/\s+/g, " ").toUpperCase();
           const grado = (cols[idxGrado] || "").trim().toUpperCase();
 
-          // Ignorar filas totalmente vacías al final del Excel
           if (!idRaw && !nombre && !grado) continue;
 
           const estatus = idxEst !== -1 && cols[idxEst] ? cols[idxEst].trim().toLowerCase() : "vigente";
@@ -2511,7 +2538,6 @@
             correoTutor: correosUnicos.join(", ")
           };
 
-          // Detectar inconsistencias: ID duplicado o sin correo de tutor
           if (!idRaw || idsVistos.has(idRaw)) {
             matriculaInconsistencias.push({
               tipo: "ID_DUPLICADO",
@@ -3167,4 +3193,3 @@
   </script>
 </body>
 </html>
-<!-- FIN PARTE 1 - PEGAR PARTE 2 DEBAJO -->
